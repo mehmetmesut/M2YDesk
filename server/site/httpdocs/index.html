@@ -71,7 +71,7 @@
 
   /* Birincil indirme (otomatik cihaz algılama) */
   .birincil{padding:18px;display:grid;gap:12px;justify-items:center;text-align:center}
-  .btn-ana{display:inline-flex;align-items:center;gap:10px;padding:14px 24px;border-radius:999px;font-size:1.02rem;font-weight:600;color:#fff;text-decoration:none;white-space:nowrap;max-width:100%;
+  .btn-ana{display:inline-flex;align-items:center;gap:10px;padding:14px 24px;border-radius:999px;font-size:clamp(.92rem,3.6vw,1.02rem);font-weight:600;color:#fff;text-decoration:none;white-space:nowrap;max-width:100%;
     background:linear-gradient(180deg,var(--vurgu) 0%,var(--vurgu2) 100%);
     box-shadow:0 10px 30px rgba(14,124,255,.35),0 1px 0 rgba(255,255,255,.45) inset;transition:transform .18s ease,box-shadow .18s ease;min-width:min(100%,300px);justify-content:center}
   .btn-ana:hover{transform:translateY(-2px);box-shadow:0 16px 36px rgba(14,124,255,.42),0 1px 0 rgba(255,255,255,.45) inset}
@@ -131,23 +131,24 @@
       M2YDesk
     </div>
     <h1>Uzaktan destek, üç&nbsp;adımda.</h1>
-    <p>İndirin, çalıştırın, ekrandaki bağlantı numarasını paylaşın. Kurulum ve ayar gerektirmez; bağlantı yalnızca sizin onayınızla kurulur.</p>
+    <p>M2YDesk QS'i indirin, çalıştırın, ekrandaki bağlantı numarasını paylaşın. Kurulum ve ayar gerektirmez; bağlantı yalnızca sizin onayınızla kurulur.</p>
   </header>
 
   <section class="cam birincil" aria-labelledby="indir-baslik">
-    <h2 id="indir-baslik" class="kucuk" style="margin:0;font-weight:500">Cihazınız için önerilen</h2>
+    <h2 id="indir-baslik" class="kucuk" style="margin:0;font-weight:500">Destek almak için cihazınıza önerilen</h2>
     <a class="btn-ana pasif" id="btn-ana" href="#">
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <span id="btn-ana-metin">Hazırlanıyor…</span>
     </a>
     <div class="alt">Sürüm <span id="surum">—</span> · Güncelleme <span id="guncelleme">—</span></div>
     <div class="haplar" id="haplar">
-      <a class="hap pasif" data-k="windows" href="#">Windows<small>Taşınabilir</small></a>
-      <a class="hap pasif" data-k="macos_apple" href="#">macOS<small>Apple Silicon</small></a>
-      <a class="hap pasif" data-k="macos_intel" href="#">macOS<small>Intel</small></a>
-      <a class="hap pasif" data-k="linux_deb" href="#">Linux<small>.deb</small></a>
-      <a class="hap pasif" data-k="linux_appimage" href="#">Linux<small>AppImage</small></a>
-      <a class="hap pasif" data-k="android" href="#">Android<small>.apk</small></a>
+      <a class="hap pasif" data-k="windows_qs" href="#">M2YDesk QS<small>Windows · destek al</small></a>
+      <a class="hap pasif" data-k="windows" href="#">M2YDesk<small>Windows · taşınabilir</small></a>
+      <a class="hap pasif" data-k="windows_install" href="#">M2YDesk<small>Windows · kurulum</small></a>
+      <a class="hap pasif" data-k="macos_apple" href="#">M2YDesk<small>macOS · Apple Silicon</small></a>
+      <a class="hap pasif" data-k="macos_intel" href="#">M2YDesk<small>macOS · Intel</small></a>
+      <a class="hap pasif" data-k="linux_deb" href="#">M2YDesk<small>Linux · .deb</small></a>
+      <a class="hap pasif" data-k="android" href="#">M2YDesk<small>Android · .apk</small></a>
     </div>
   </section>
 
@@ -173,7 +174,7 @@
     <h2>Telefon ve tablet</h2>
     <div class="mobil">
       <div>
-        <p>iPhone/iPad için App Store'dan, Android için yukarıdaki APK veya Google Play'den <strong>RustDesk</strong> uygulamasını kurun. Ardından <em>Ayarlar → ID/Relay Sunucusu → QR tara</em> ile kodu okutun.</p>
+        <p><strong>Android:</strong> yukarıdaki M2YDesk APK'sı sunucuya hazır gelir; ek ayar gerekmez.<br><strong>iPhone/iPad:</strong> App Store'dan <strong>RustDesk</strong> uygulamasını kurun, <em>Ayarlar → ID/Relay Sunucusu → QR tara</em> ile kodu okutun.</p>
         <details>
           <summary>QR okutamıyorsanız elle girin</summary>
           <div class="id-kutu"><span>ID Sunucusu</span><code id="elle-sunucu"></code></div>
@@ -196,12 +197,12 @@
 <script src="ayar.js"></script>
 <script>
 (function () {
-  var a = window.RUSTDESK_AYAR;
+  var a = window.M2Y_AYAR;
   var anaBtn = document.getElementById('btn-ana'), anaMetin = document.getElementById('btn-ana-metin');
   if (!a) { anaMetin.textContent = 'ayar.js bulunamadı'; return; }
 
-  var etiket = { windows:'Windows için indir', macos_apple:'macOS (Apple Silicon) için indir', macos_intel:'macOS (Intel) için indir',
-                 linux_deb:'Linux (.deb) için indir', linux_appimage:'Linux (AppImage) için indir', android:'Android (.apk) için indir' };
+  var etiket = { windows_qs:'M2YDesk QS indir', windows:'M2YDesk indir', windows_install:'M2YDesk kurulumu indir',
+                 macos_apple:'M2YDesk indir', macos_intel:'M2YDesk indir', linux_deb:'M2YDesk indir', android:'M2YDesk indir' };
 
   // Metin alanları
   ['surum','guncelleme'].forEach(function (k) { document.getElementById(k).textContent = a[k]; });
@@ -214,10 +215,11 @@
     var ua = navigator.userAgent, p = navigator.platform || '';
     if (/Android/i.test(ua)) return 'android';
     if (/iPhone|iPad|iPod/i.test(ua)) return 'ios';
-    if (/Win/i.test(p) || /Windows/i.test(ua)) return 'windows';
+    // Windows'ta danışanlar için birincil ürün QS'tir; QS yoksa taşınabilir tam istemciye düşülür
+    if (/Win/i.test(p) || /Windows/i.test(ua)) return a.dosyalar.windows_qs ? 'windows_qs' : 'windows';
     if (/Mac/i.test(p)) return 'macos_apple'; // Tarayıcıdan mimari ayırt edilemez; Apple Silicon varsayılır
-    if (/Linux/i.test(p)) return 'linux_appimage';
-    return 'windows';
+    if (/Linux/i.test(p)) return 'linux_deb';
+    return 'windows_qs';
   }
   var k = cihaz();
 
