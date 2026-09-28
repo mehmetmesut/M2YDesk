@@ -1,14 +1,66 @@
-# Gizli anahtar ve veritabanı ASLA depoya gönderilmemeli
-data/
-yedekler/
-
-# Ortama özel ayarlar
-.env
-
-# Sistem dosyaları
+/build
+/target
+.vscode
+.idea
 .DS_Store
-Thumbs.db
+.env
+libsciter-gtk.so
+src/ui/inline.rs
+extractor
+__pycache__
+src/version.rs
+*dmg
+*exe
+*tgz
+cert.pfx
+*.bak
+*png
+*svg
+*jpg
+sciter.dll
+**pdb
+src/bridge_generated.rs
+src/bridge_generated.io.rs
+*deb
+rustdesk
+*.cache
+# appimage
+appimage/AppDir
+appimage/*.AppImage
+appimage/appimage-build
+appimage/*.xz
+# flutter
+flutter/linux/build/**
+flutter/linux/cmake-build-debug/**
+# flatpak
+flatpak/.flatpak-builder/**
+flatpak/ccache/**
+flatpak/.flatpak-builder/build/**
+flatpak/.flatpak-builder/shared-modules/**
+flatpak/.flatpak-builder/shared-modules/*.tar.xz
+flatpak/.flatpak-builder/debian-binary
+flatpak/build/**
+flatpak/repo/**
+flatpak/*.flatpak
+# bridge file
+lib/generated_bridge.dart
+# vscode devcontainer
+.gitconfig
+.vscode-server/
+.ssh
+.devcontainer/.*
+# build cache in examples
+examples/**/target/
+# ===
+vcpkg_installed
+flutter/lib/generated_plugin_registrant.dart
+libsciter.dylib
+flutter/web/
 
-# İndirme sayfası: üretilen dosyalar
-site/httpdocs/indir/
-site/httpdocs/ayar.js
+# --- M2YDesk: sunucu klasörü (server/) ---
+server/data/
+server/yedekler/
+server/.env
+server/site/httpdocs/indir/
+server/site/httpdocs/ayar.js
+!server/site/httpdocs/favicon.svg
