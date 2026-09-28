@@ -54,26 +54,26 @@
   }
 
   /* Cam yüzey */
-  .cam{background:var(--cam);border:1px solid var(--cam-cerceve);border-radius:24px;box-shadow:var(--golge);
+  .cam{background:var(--cam);border:1px solid var(--cam-cerceve);border-radius:22px;box-shadow:var(--golge);
        -webkit-backdrop-filter:blur(26px) saturate(170%);backdrop-filter:blur(26px) saturate(170%)}
   @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
     .cam{background:var(--bg2)}
   }
 
-  main{max-width:960px;margin:0 auto;padding:clamp(20px,4vw,48px) 16px 32px;display:grid;gap:16px}
+  main{max-width:920px;margin:0 auto;padding:clamp(16px,3vw,40px) 16px 24px;display:grid;gap:12px}
 
   /* Üst bölüm: minimal, geniş boşluk */
-  .ust{text-align:center;padding:clamp(28px,6vw,64px) 16px 8px}
-  .logo{display:inline-flex;align-items:center;gap:10px;font-weight:600;letter-spacing:-.01em;font-size:1.05rem;color:var(--ikincil);margin-bottom:22px}
+  .ust{text-align:center;padding:clamp(20px,5vw,52px) 8px 4px}
+  .logo{display:inline-flex;align-items:center;gap:8px;font-weight:600;letter-spacing:-.01em;font-size:1rem;color:var(--ikincil);margin-bottom:16px}
   .logo svg{width:28px;height:28px}
-  h1{font-size:clamp(1.9rem,5.4vw,3rem);font-weight:700;letter-spacing:-.03em;margin:0 0 10px;line-height:1.12}
-  .ust p{margin:0 auto;max-width:560px;color:var(--ikincil);font-size:clamp(1rem,2.4vw,1.15rem)}
+  h1{font-size:clamp(1.65rem,5vw,2.75rem);font-weight:700;letter-spacing:-.03em;margin:0 0 8px;line-height:1.1;text-wrap:balance}
+  .ust p{margin:0 auto;max-width:520px;color:var(--ikincil);font-size:clamp(.95rem,2.3vw,1.08rem);text-wrap:pretty}
 
   /* Birincil indirme (otomatik cihaz algılama) */
-  .birincil{padding:22px;display:grid;gap:14px;justify-items:center;text-align:center}
-  .btn-ana{display:inline-flex;align-items:center;gap:12px;padding:16px 28px;border-radius:999px;font-size:1.08rem;font-weight:600;color:#fff;text-decoration:none;
+  .birincil{padding:18px;display:grid;gap:12px;justify-items:center;text-align:center}
+  .btn-ana{display:inline-flex;align-items:center;gap:10px;padding:14px 24px;border-radius:999px;font-size:1.02rem;font-weight:600;color:#fff;text-decoration:none;white-space:nowrap;max-width:100%;
     background:linear-gradient(180deg,var(--vurgu) 0%,var(--vurgu2) 100%);
-    box-shadow:0 10px 30px rgba(14,124,255,.35),0 1px 0 rgba(255,255,255,.45) inset;transition:transform .18s ease,box-shadow .18s ease;min-width:min(100%,320px);justify-content:center}
+    box-shadow:0 10px 30px rgba(14,124,255,.35),0 1px 0 rgba(255,255,255,.45) inset;transition:transform .18s ease,box-shadow .18s ease;min-width:min(100%,300px);justify-content:center}
   .btn-ana:hover{transform:translateY(-2px);box-shadow:0 16px 36px rgba(14,124,255,.42),0 1px 0 rgba(255,255,255,.45) inset}
   .btn-ana:active{transform:translateY(0) scale(.99)}
   .btn-ana.pasif{background:var(--pasif);box-shadow:none;pointer-events:none;color:var(--metin)}
@@ -81,11 +81,12 @@
   .birincil .alt{color:var(--ikincil);font-size:.92rem}
 
   /* Diğer platformlar: cam haplar */
-  .haplar{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:100%}
-  @media(min-width:640px){.haplar{grid-template-columns:repeat(3,1fr)}}
-  .hap{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px 14px;border-radius:16px;text-decoration:none;color:var(--metin);
-    background:var(--cam-ic);border:1px solid var(--cam-cerceve);transition:transform .18s ease,background .18s ease;font-weight:600;font-size:.95rem}
-  .hap small{font-weight:400;color:var(--ikincil);font-size:.8rem}
+  .haplar{display:grid;grid-template-columns:1fr;gap:8px;width:100%}
+  @media(min-width:480px){.haplar{grid-template-columns:repeat(2,1fr)}}
+  @media(min-width:720px){.haplar{grid-template-columns:repeat(3,1fr)}}
+  .hap{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 14px;border-radius:14px;text-decoration:none;color:var(--metin);white-space:nowrap;min-width:0;
+    background:var(--cam-ic);border:1px solid var(--cam-cerceve);transition:transform .18s ease,background .18s ease;font-weight:600;font-size:.93rem}
+  .hap small{font-weight:400;color:var(--ikincil);font-size:.78rem;overflow:hidden;text-overflow:ellipsis}
   .hap:hover{transform:translateY(-2px);background:var(--cam)}
   .hap.pasif{opacity:.5;pointer-events:none}
   .hap.secili{outline:2px solid var(--vurgu);outline-offset:1px}
@@ -93,30 +94,30 @@
   /* Adımlar */
   .adimlar{display:grid;gap:12px;grid-template-columns:1fr}
   @media(min-width:640px){.adimlar{grid-template-columns:repeat(3,1fr)}}
-  .adim{padding:20px}
-  .adim .no{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:12px;background:linear-gradient(180deg,var(--vurgu),var(--vurgu2));color:#fff;font-weight:700;margin-bottom:12px;box-shadow:0 6px 16px rgba(14,124,255,.3)}
-  .adim h3{margin:0 0 6px;font-size:1.02rem;letter-spacing:-.01em}
-  .adim p{margin:0;color:var(--ikincil);font-size:.94rem}
+  .adim{padding:16px 18px}
+  .adim .no{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:10px;font-size:.92rem;background:linear-gradient(180deg,var(--vurgu),var(--vurgu2));color:#fff;font-weight:700;margin-bottom:10px;box-shadow:0 6px 16px rgba(14,124,255,.3)}
+  .adim h3{margin:0 0 4px;font-size:1rem;letter-spacing:-.01em}
+  .adim p{margin:0;color:var(--ikincil);font-size:.92rem;text-wrap:pretty}
 
   /* Bölümler */
-  .bolum{padding:22px}
+  .bolum{padding:18px}
   .bolum h2{margin:0 0 10px;font-size:1.15rem;letter-spacing:-.01em}
-  .bolum p{margin:0 0 8px;color:var(--ikincil);font-size:.95rem}
+  .bolum p{margin:0 0 8px;color:var(--ikincil);font-size:.94rem;text-wrap:pretty}
   details{margin-top:8px}
-  details summary{cursor:pointer;font-weight:600;font-size:.95rem;list-style:none;display:flex;align-items:center;gap:8px}
+  details summary{cursor:pointer;font-weight:600;font-size:.93rem;list-style:none;display:flex;align-items:center;gap:8px;text-wrap:pretty}
   details summary::-webkit-details-marker{display:none}
-  details summary::before{content:"";width:8px;height:8px;border-right:2px solid var(--ikincil);border-bottom:2px solid var(--ikincil);transform:rotate(-45deg);transition:transform .2s}
+  details summary::before{content:"";flex:none;width:8px;height:8px;border-right:2px solid var(--ikincil);border-bottom:2px solid var(--ikincil);transform:rotate(-45deg);transition:transform .2s}
   details[open] summary::before{transform:rotate(45deg)}
   details p{margin:8px 0 0}
   .mobil{display:grid;gap:16px;align-items:center;grid-template-columns:1fr}
   @media(min-width:640px){.mobil{grid-template-columns:1fr auto}}
   #qr{display:grid;place-items:center;padding:14px;background:#fff;border-radius:18px;border:1px solid var(--cam-cerceve);width:fit-content;justify-self:center}
-  code{background:var(--cam-ic);border:1px solid var(--cam-cerceve);padding:3px 8px;border-radius:8px;font-size:.88rem;word-break:break-all}
+  code{background:var(--cam-ic);border:1px solid var(--cam-cerceve);padding:3px 8px;border-radius:8px;font-size:.86rem;overflow-wrap:anywhere}
   .id-kutu{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px;font-size:.92rem}
   .kopyala{background:none;border:1px solid var(--vurgu);color:var(--vurgu);border-radius:999px;padding:4px 12px;cursor:pointer;font-size:.85rem}
-  .uyari{background:var(--uyari-bg);border:1px solid var(--uyari-k);border-radius:20px;padding:16px 20px;font-size:.93rem;color:var(--metin);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+  .uyari{background:var(--uyari-bg);border:1px solid var(--uyari-k);border-radius:18px;padding:14px 18px;font-size:.92rem;text-wrap:pretty;color:var(--metin);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
   .kucuk{color:var(--ikincil);font-size:.86rem}
-  footer{text-align:center;padding:18px 16px 32px;font-size:.88rem;color:var(--ikincil)}
+  footer{text-align:center;padding:12px 16px 28px;font-size:.86rem;color:var(--ikincil)}
   footer a{color:var(--vurgu);text-decoration:none}
 </style>
 </head>
@@ -129,7 +130,7 @@
       <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="3" y="6" width="26" height="17" rx="4" stroke="currentColor" stroke-width="2"/><path d="M11 27h10M16 23v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M11 14.5l3 3 7-7" stroke="var(--vurgu)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       M2YDesk
     </div>
-    <h1>Uzaktan destek, üç adımda.</h1>
+    <h1>Uzaktan destek, üç&nbsp;adımda.</h1>
     <p>İndirin, çalıştırın, ekrandaki bağlantı numarasını paylaşın. Kurulum ve ayar gerektirmez; bağlantı yalnızca sizin onayınızla kurulur.</p>
   </header>
 
@@ -141,10 +142,10 @@
     </a>
     <div class="alt">Sürüm <span id="surum">—</span> · Güncelleme <span id="guncelleme">—</span></div>
     <div class="haplar" id="haplar">
-      <a class="hap pasif" data-k="windows" href="#">Windows<small>Kurulum gerekmez</small></a>
-      <a class="hap pasif" data-k="macos_apple" href="#">macOS<small>Apple Silicon (M1–M4)</small></a>
+      <a class="hap pasif" data-k="windows" href="#">Windows<small>Taşınabilir</small></a>
+      <a class="hap pasif" data-k="macos_apple" href="#">macOS<small>Apple Silicon</small></a>
       <a class="hap pasif" data-k="macos_intel" href="#">macOS<small>Intel</small></a>
-      <a class="hap pasif" data-k="linux_deb" href="#">Linux<small>.deb · Ubuntu/Debian</small></a>
+      <a class="hap pasif" data-k="linux_deb" href="#">Linux<small>.deb</small></a>
       <a class="hap pasif" data-k="linux_appimage" href="#">Linux<small>AppImage</small></a>
       <a class="hap pasif" data-k="android" href="#">Android<small>.apk</small></a>
     </div>
@@ -228,7 +229,7 @@
       el.setAttribute('download', dosya);
       el.classList.remove('pasif');
     } else {
-      el.querySelector('small').textContent = 'şu an mevcut değil';
+      el.querySelector('small').textContent = 'yakında';
     }
     if (key === k) el.classList.add('secili');
   });
@@ -236,13 +237,13 @@
   // Birincil düğme
   if (k === 'ios') {
     anaBtn.href = 'https://apps.apple.com/app/rustdesk-remote-desktop/id1581225015';
-    anaBtn.removeAttribute('download'); anaMetin.textContent = 'App Store\'dan RustDesk\'i kur'; anaBtn.classList.remove('pasif');
+    anaBtn.removeAttribute('download'); anaMetin.textContent = 'App Store\'dan kur'; anaBtn.classList.remove('pasif');
   } else if (a.dosyalar[k]) {
     anaBtn.href = 'indir/' + encodeURIComponent(a.dosyalar[k]);
     anaBtn.setAttribute('download', a.dosyalar[k]);
     anaMetin.textContent = etiket[k]; anaBtn.classList.remove('pasif');
   } else {
-    anaMetin.textContent = 'Aşağıdan cihazınızı seçin';
+    anaMetin.textContent = 'Cihazınızı seçin';
   }
 
   // Mobil için QR: RustDesk "QR tara" bu biçimi bekler
