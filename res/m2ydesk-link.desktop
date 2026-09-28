@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=M2YDesk
+NoDisplay=true
+MimeType=x-scheme-handler/m2ydesk;
+TryExec=m2ydesk
+Exec=m2ydesk %u
+Icon=m2ydesk
+Terminal=false
+Type=Application
+StartupNotify=false
+StartupWMClass=m2ydesk

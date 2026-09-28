@@ -5,10 +5,15 @@
 // 'flutter create' template.
 
 // The application's name. By default this is also the title of the Flutter window.
-PRODUCT_NAME = RustDesk
+PRODUCT_NAME = M2YDesk
+
+// Swift module name is kept as "RustDesk" on purpose: Runner/Base.lproj/MainMenu.xib references
+// customModule="RustDesk" (AppDelegate, MainFlutterWindow). Without this line the module name would
+// follow PRODUCT_NAME (M2YDesk / M2YDeskQS) and the xib classes would not resolve at launch.
+PRODUCT_MODULE_NAME = RustDesk
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.carriez.flutterHbb
+PRODUCT_BUNDLE_IDENTIFIER = com.m2y.m2ydesk
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2026 Purslane Tech Pte. Ltd. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2026 Purslane Tech Pte. Ltd. All rights reserved. M2YDesk uyarlaması: Mehmet Mesut YILMAZ, AGPL-3.0

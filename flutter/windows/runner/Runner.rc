@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "Purslane Tech Pte. Ltd." "\0"
-            VALUE "FileDescription", "RustDesk Remote Desktop" "\0"
+            VALUE "CompanyName", "Mehmet Mesut YILMAZ (M2Y)" "\0"
+            VALUE "FileDescription", "M2YDesk Uzaktan Erişim" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "rustdesk" "\0"
-            VALUE "LegalCopyright", "Copyright © 2026 Purslane Tech Pte. Ltd. All rights reserved." "\0"
-            VALUE "OriginalFilename", "rustdesk.exe" "\0"
-            VALUE "ProductName", "RustDesk" "\0"
+            VALUE "InternalName", "M2YDesk" "\0"
+            VALUE "LegalCopyright", "Copyright © 2026 Purslane Tech Pte. Ltd. All rights reserved. M2YDesk uyarlaması: Mehmet Mesut YILMAZ, AGPL-3.0" "\0"
+            VALUE "OriginalFilename", "M2YDesk.exe" "\0"
+            VALUE "ProductName", "M2YDesk" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

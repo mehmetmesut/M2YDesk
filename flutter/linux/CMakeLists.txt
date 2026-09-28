@@ -11,7 +11,7 @@ if(DEFINED ENV{M2Y_BINARY_NAME} AND NOT "$ENV{M2Y_BINARY_NAME}" STREQUAL "")
 endif()
 # The unique GTK application identifier for this application. See:
 # https://wiki.gnome.org/HowDoI/ChooseApplicationID
-set(APPLICATION_ID "com.carriez.flutter_hbb")
+set(APPLICATION_ID "com.m2y.m2ydesk")
 
 # Explicitly opt into modern CMake behaviors to avoid warnings with recent
 # versions of CMake.

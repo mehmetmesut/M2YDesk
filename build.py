@@ -302,16 +302,17 @@ def generate_control_file(version):
     control_file_path = "../res/DEBIAN/control"
     system2('/bin/rm -rf %s' % control_file_path)
 
-    content = """Package: rustdesk
+    content = """Package: m2ydesk
 Section: net
 Priority: optional
 Version: %s
 Architecture: %s
-Maintainer: rustdesk <info@rustdesk.com>
-Homepage: https://rustdesk.com
+Maintainer: Mehmet Mesut YILMAZ
 Depends: libgtk-3-0t64 | libgtk-3-0, libxcb-randr0, libxdo3 | libxdo4, libxfixes3, libxcb-shape0, libxcb-xfixes0, libasound2t64 | libasound2, libsystemd0, curl, libva2, libva-drm2, libva-x11-2, libgstreamer-plugins-base1.0-0, libpam0g, gstreamer1.0-pipewire%s
 Recommends: libayatana-appindicator3-1
-Description: A remote control software.
+Description: M2YDesk remote control software.
+ Based on RustDesk, Copyright (c) Purslane Tech Pte. Ltd.
+ M2YDesk adaptation: Mehmet Mesut YILMAZ (M2Y), AGPL-3.0.
 
 """ % (version, get_deb_arch(), get_deb_extra_depends())
     file = open(control_file_path, "w")
@@ -332,82 +333,93 @@ def build_flutter_deb(version, features):
     os.chdir('flutter')
     system2('flutter build linux --release')
     system2('mkdir -p tmpdeb/usr/bin/')
-    system2('mkdir -p tmpdeb/usr/share/rustdesk')
-    system2('mkdir -p tmpdeb/etc/rustdesk/')
+    system2('mkdir -p tmpdeb/usr/share/m2ydesk')
+    system2('mkdir -p tmpdeb/etc/m2ydesk/')
     system2('mkdir -p tmpdeb/etc/pam.d/')
-    system2('mkdir -p tmpdeb/usr/share/rustdesk/files/systemd/')
+    system2('mkdir -p tmpdeb/usr/share/m2ydesk/files/systemd/')
     system2('mkdir -p tmpdeb/usr/share/icons/hicolor/256x256/apps/')
     system2('mkdir -p tmpdeb/usr/share/icons/hicolor/scalable/apps/')
     system2('mkdir -p tmpdeb/usr/share/applications/')
     system2('mkdir -p tmpdeb/usr/share/polkit-1/actions')
-    system2('rm tmpdeb/usr/bin/rustdesk || true')
+    system2('rm tmpdeb/usr/bin/m2ydesk || true')
     system2(
-        f'cp -r {flutter_build_dir}/* tmpdeb/usr/share/rustdesk/')
+        f'cp -r {flutter_build_dir}/* tmpdeb/usr/share/m2ydesk/')
+    # M2YDesk: flutter ciktisindaki ikili CMake'te M2Y_BINARY_NAME=m2ydesk ile
+    # uretilir; eski adla (rustdesk) uretilmisse postinst'in bekledigi ada tasi.
     system2(
-        'cp ../res/rustdesk.service tmpdeb/usr/share/rustdesk/files/systemd/')
+        'if [ -f tmpdeb/usr/share/m2ydesk/rustdesk ] && [ ! -f tmpdeb/usr/share/m2ydesk/m2ydesk ]; then mv tmpdeb/usr/share/m2ydesk/rustdesk tmpdeb/usr/share/m2ydesk/m2ydesk; fi')
     system2(
-        'cp ../res/128x128@2x.png tmpdeb/usr/share/icons/hicolor/256x256/apps/rustdesk.png')
+        'cp ../res/m2ydesk.service tmpdeb/usr/share/m2ydesk/files/systemd/')
     system2(
-        'cp ../res/scalable.svg tmpdeb/usr/share/icons/hicolor/scalable/apps/rustdesk.svg')
+        'cp ../res/128x128@2x.png tmpdeb/usr/share/icons/hicolor/256x256/apps/m2ydesk.png')
     system2(
-        'cp ../res/rustdesk.desktop tmpdeb/usr/share/applications/rustdesk.desktop')
+        'cp ../res/scalable.svg tmpdeb/usr/share/icons/hicolor/scalable/apps/m2ydesk.svg')
     system2(
-        'cp ../res/rustdesk-link.desktop tmpdeb/usr/share/applications/rustdesk-link.desktop')
+        'cp ../res/m2ydesk.desktop tmpdeb/usr/share/applications/m2ydesk.desktop')
     system2(
-        'cp ../res/startwm.sh tmpdeb/etc/rustdesk/')
+        'cp ../res/m2ydesk-link.desktop tmpdeb/usr/share/applications/m2ydesk-link.desktop')
     system2(
-        'cp ../res/xorg.conf tmpdeb/etc/rustdesk/')
+        'cp ../res/startwm.sh tmpdeb/etc/m2ydesk/')
     system2(
-        'cp ../res/pam.d/rustdesk.debian tmpdeb/etc/pam.d/rustdesk')
+        'cp ../res/xorg.conf tmpdeb/etc/m2ydesk/')
+    # PAM servis adi: src/platform/linux_desktop_manager.rs pam_get_service_name()
+    # APP_NAME.to_lowercase() ("m2ydesk") ile /etc/pam.d/<ad> dosyasini arar.
     system2(
-        "echo \"#!/bin/sh\" >> tmpdeb/usr/share/rustdesk/files/polkit && chmod a+x tmpdeb/usr/share/rustdesk/files/polkit")
+        'cp ../res/pam.d/rustdesk.debian tmpdeb/etc/pam.d/m2ydesk')
+    system2(
+        "echo \"#!/bin/sh\" >> tmpdeb/usr/share/m2ydesk/files/polkit && chmod a+x tmpdeb/usr/share/m2ydesk/files/polkit")
 
     system2('mkdir -p tmpdeb/DEBIAN')
     generate_control_file(version)
     system2('cp -a ../res/DEBIAN/* tmpdeb/DEBIAN/')
     md5_file_folder("tmpdeb/")
-    system2('dpkg-deb -b tmpdeb rustdesk.deb;')
+    system2('dpkg-deb -b tmpdeb m2ydesk.deb;')
 
     system2('/bin/rm -rf tmpdeb/')
     system2('/bin/rm -rf ../res/DEBIAN/control')
-    os.rename('rustdesk.deb', '../rustdesk-%s.deb' % version)
+    # CI cikti adina guvenir: m2ydesk-<version>.deb
+    os.rename('m2ydesk.deb', '../m2ydesk-%s.deb' % version)
     os.chdir("..")
 
 
 def build_deb_from_folder(version, binary_folder):
     os.chdir('flutter')
     system2('mkdir -p tmpdeb/usr/bin/')
-    system2('mkdir -p tmpdeb/usr/share/rustdesk')
-    system2('mkdir -p tmpdeb/usr/share/rustdesk/files/systemd/')
+    system2('mkdir -p tmpdeb/usr/share/m2ydesk')
+    system2('mkdir -p tmpdeb/usr/share/m2ydesk/files/systemd/')
     system2('mkdir -p tmpdeb/usr/share/icons/hicolor/256x256/apps/')
     system2('mkdir -p tmpdeb/usr/share/icons/hicolor/scalable/apps/')
     system2('mkdir -p tmpdeb/usr/share/applications/')
     system2('mkdir -p tmpdeb/usr/share/polkit-1/actions')
-    system2('rm tmpdeb/usr/bin/rustdesk || true')
+    system2('rm tmpdeb/usr/bin/m2ydesk || true')
     system2(
-        f'cp -r ../{binary_folder}/* tmpdeb/usr/share/rustdesk/')
+        f'cp -r ../{binary_folder}/* tmpdeb/usr/share/m2ydesk/')
+    # M2YDesk: sciter yolunda cargo ikilisi "rustdesk" adiyla gelir; postinst
+    # /usr/share/m2ydesk/m2ydesk bekler.
     system2(
-        'cp ../res/rustdesk.service tmpdeb/usr/share/rustdesk/files/systemd/')
+        'if [ -f tmpdeb/usr/share/m2ydesk/rustdesk ] && [ ! -f tmpdeb/usr/share/m2ydesk/m2ydesk ]; then mv tmpdeb/usr/share/m2ydesk/rustdesk tmpdeb/usr/share/m2ydesk/m2ydesk; fi')
     system2(
-        'cp ../res/128x128@2x.png tmpdeb/usr/share/icons/hicolor/256x256/apps/rustdesk.png')
+        'cp ../res/m2ydesk.service tmpdeb/usr/share/m2ydesk/files/systemd/')
     system2(
-        'cp ../res/scalable.svg tmpdeb/usr/share/icons/hicolor/scalable/apps/rustdesk.svg')
+        'cp ../res/128x128@2x.png tmpdeb/usr/share/icons/hicolor/256x256/apps/m2ydesk.png')
     system2(
-        'cp ../res/rustdesk.desktop tmpdeb/usr/share/applications/rustdesk.desktop')
+        'cp ../res/scalable.svg tmpdeb/usr/share/icons/hicolor/scalable/apps/m2ydesk.svg')
     system2(
-        'cp ../res/rustdesk-link.desktop tmpdeb/usr/share/applications/rustdesk-link.desktop')
+        'cp ../res/m2ydesk.desktop tmpdeb/usr/share/applications/m2ydesk.desktop')
     system2(
-        "echo \"#!/bin/sh\" >> tmpdeb/usr/share/rustdesk/files/polkit && chmod a+x tmpdeb/usr/share/rustdesk/files/polkit")
+        'cp ../res/m2ydesk-link.desktop tmpdeb/usr/share/applications/m2ydesk-link.desktop')
+    system2(
+        "echo \"#!/bin/sh\" >> tmpdeb/usr/share/m2ydesk/files/polkit && chmod a+x tmpdeb/usr/share/m2ydesk/files/polkit")
 
     system2('mkdir -p tmpdeb/DEBIAN')
     generate_control_file(version)
     system2('cp -a ../res/DEBIAN/* tmpdeb/DEBIAN/')
     md5_file_folder("tmpdeb/")
-    system2('dpkg-deb -b tmpdeb rustdesk.deb;')
+    system2('dpkg-deb -b tmpdeb m2ydesk.deb;')
 
     system2('/bin/rm -rf tmpdeb/')
     system2('/bin/rm -rf ../res/DEBIAN/control')
-    os.rename('rustdesk.deb', '../rustdesk-%s.deb' % version)
+    os.rename('m2ydesk.deb', '../m2ydesk-%s.deb' % version)
     os.chdir("..")
 
 
@@ -426,11 +438,11 @@ def build_flutter_dmg(version, features):
     mac_arch = 'arm64' if platform.machine().lower() in ('arm64', 'aarch64') else 'x86_64'
     system2(
         f'FLUTTER_XCODE_ARCHS={mac_arch} FLUTTER_XCODE_ONLY_ACTIVE_ARCH=YES flutter build macos --release')
-    system2('cp -rf ../target/release/service ./build/macos/Build/Products/Release/RustDesk.app/Contents/MacOS/')
+    system2('cp -rf ../target/release/service ./build/macos/Build/Products/Release/M2YDesk.app/Contents/MacOS/')
     '''
     system2(
-        "create-dmg --volname \"RustDesk Installer\" --window-pos 200 120 --window-size 800 400 --icon-size 100 --app-drop-link 600 185 --icon RustDesk.app 200 190 --hide-extension RustDesk.app rustdesk.dmg ./build/macos/Build/Products/Release/RustDesk.app")
-    os.rename("rustdesk.dmg", f"../rustdesk-{version}.dmg")
+        "create-dmg --volname \"M2YDesk\" --window-pos 200 120 --window-size 800 400 --icon-size 100 --app-drop-link 600 185 --icon M2YDesk.app 200 190 --hide-extension M2YDesk.app M2YDesk.dmg ./build/macos/Build/Products/Release/M2YDesk.app")
+    os.rename("M2YDesk.dmg", f"../M2YDesk-{version}.dmg")
     '''
     os.chdir("..")
 

@@ -1,0 +1,22 @@
+[Desktop Entry]
+Name=M2YDesk
+GenericName=Remote Desktop
+GenericName[tr]=Uzak Masaüstü
+Comment=Remote Desktop
+Comment[tr]=Uzak Masaüstü
+Exec=m2ydesk %u
+Icon=m2ydesk
+Terminal=false
+Type=Application
+StartupNotify=true
+Categories=Network;RemoteAccess;GTK;
+Keywords=m2ydesk;internet;linux;dart;rust;remote-control;p2p;rdp;remote-desktop;vnc;uzak-masaüstü;
+Actions=new-window;
+StartupWMClass=m2ydesk
+
+X-Desktop-File-Install-Version=0.23
+
+[Desktop Action new-window]
+Name=Open a New Window
+Name[tr]=Yeni Pencere Aç
+Exec=m2ydesk %u
