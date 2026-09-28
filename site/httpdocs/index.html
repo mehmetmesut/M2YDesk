@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uzaktan Destek | Mehmet Mesut YILMAZ</title>
+<meta name="description" content="Uzaktan destek için önceden yapılandırılmış RustDesk istemcisini indirin, çalıştırın ve ekrandaki bağlantı numarasını danışmanınızla paylaşın.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://rustdesk.mehmetmesut.com/">
+<meta property="og:title" content="Uzaktan Destek | Mehmet Mesut YILMAZ">
+<meta property="og:description" content="Üç adımda güvenli uzaktan destek bağlantısı.">
+<meta property="og:type" content="website">
+<style>
+  /* Mobil öncelikli, harici bağımlılık yok */
+  :root{--bg:#f6f8fa;--kart:#fff;--metin:#1f2937;--ikincil:#6b7280;--vurgu:#0f766e;--vurgu2:#115e59;--cerceve:#e5e7eb;--uyari:#fff7ed;--uyari-k:#fdba74}
+  @media (prefers-color-scheme:dark){:root{--bg:#0f172a;--kart:#1e293b;--metin:#f1f5f9;--ikincil:#94a3b8;--cerceve:#334155;--uyari:#3b2a13;--uyari-k:#a16207}}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--metin);line-height:1.55}
+  header{background:var(--vurgu);color:#fff;padding:32px 16px;text-align:center}
+  header h1{margin:0 0 8px;font-size:1.6rem}
+  header p{margin:0;opacity:.9}
+  main{max-width:860px;margin:0 auto;padding:16px}
+  .kart{background:var(--kart);border:1px solid var(--cerceve);border-radius:12px;padding:20px;margin-bottom:16px}
+  h2{font-size:1.15rem;margin:0 0 12px}
+  ol{padding-left:22px;margin:0}
+  ol li{margin-bottom:8px}
+  .platformlar{display:grid;gap:12px;grid-template-columns:1fr}
+  @media(min-width:640px){.platformlar{grid-template-columns:1fr 1fr}}
+  .btn{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-radius:10px;background:var(--vurgu);color:#fff;text-decoration:none;font-weight:600;transition:background .15s}
+  .btn:hover{background:var(--vurgu2)}
+  .btn small{font-weight:400;opacity:.85}
+  .btn.pasif{background:var(--ikincil);pointer-events:none}
+  .ikincil-btn{display:inline-block;margin-top:8px;font-size:.9rem;color:var(--vurgu)}
+  .id-kutu{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+  code{background:var(--bg);border:1px solid var(--cerceve);padding:3px 8px;border-radius:6px;font-size:.9rem;word-break:break-all}
+  .uyari{background:var(--uyari);border:1px solid var(--uyari-k);border-radius:10px;padding:12px 16px;font-size:.95rem}
+  .kucuk{color:var(--ikincil);font-size:.9rem}
+  #qr{display:flex;justify-content:center;margin:12px 0;background:#fff;padding:12px;border-radius:10px}
+  details summary{cursor:pointer;font-weight:600}
+  footer{text-align:center;padding:24px 16px;font-size:.9rem;color:var(--ikincil)}
+  footer a{color:var(--vurgu);text-decoration:none}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Uzaktan Destek Bağlantısı</h1>
+  <p>Üç adımda güvenli bağlantı. Kurulum gerektirmez, ayar girmezsiniz.</p>
+</header>
+
+<main>
+  <section class="kart">
+    <h2>Nasıl çalışır?</h2>
+    <ol>
+      <li>Aşağıdan cihazınıza uygun dosyayı indirin ve <strong>çalıştırın</strong>.</li>
+      <li>Açılan pencerede <strong>ID</strong> ve <strong>Şifre</strong> görünür.</li>
+      <li>Bu iki bilgiyi danışmanınıza (WhatsApp, telefon, e-posta) iletin. Bağlantı sizin onayınızla kurulur.</li>
+    </ol>
+    <p class="kucuk" style="margin:12px 0 0">Bağlantı, <span id="sunucu-adi"></span> üzerindeki özel sunucudan şifreli olarak geçer; üçüncü taraf bir hizmet kullanılmaz.</p>
+  </section>
+
+  <section class="kart">
+    <h2>İndir</h2>
+    <div class="platformlar" id="platformlar">
+      <a class="btn pasif" id="btn-windows" href="#">Windows <small>indiriliyor…</small></a>
+      <a class="btn pasif" id="btn-macos_apple" href="#">macOS (Apple Silicon) <small>M1 / M2 / M3 / M4</small></a>
+      <a class="btn pasif" id="btn-macos_intel" href="#">macOS (Intel) <small>2020 öncesi Mac</small></a>
+      <a class="btn pasif" id="btn-linux_deb" href="#">Linux (.deb) <small>Ubuntu / Debian</small></a>
+      <a class="btn pasif" id="btn-linux_appimage" href="#">Linux (AppImage) <small>Tüm dağıtımlar</small></a>
+      <a class="btn pasif" id="btn-android" href="#">Android (.apk) <small>Sunucu ayarı için QR tarayın</small></a>
+    </div>
+    <p class="kucuk">Sürüm: <span id="surum"></span> · Güncelleme: <span id="guncelleme"></span></p>
+
+    <details>
+      <summary>Windows: "Windows PC'nizi korudu" uyarısı çıkarsa</summary>
+      <p class="kucuk">Dosya açık kaynaklı RustDesk'in imzasız taşınabilir sürümüdür. <em>Ek bilgi → Yine de çalıştır</em> seçin. Dosya yalnızca bu sayfadan indirildiyse güvenlidir.</p>
+    </details>
+    <details>
+      <summary>macOS: "Geliştirici doğrulanamadı" uyarısı çıkarsa</summary>
+      <p class="kucuk">Uygulamaya sağ tıklayıp <em>Aç</em> seçin. Ekran paylaşımı için <em>Sistem Ayarları → Gizlilik ve Güvenlik → Ekran Kaydı ve Erişilebilirlik</em> izinlerini verin.</p>
+    </details>
+  </section>
+
+  <section class="kart">
+    <h2>Android / iOS</h2>
+    <p>iPhone/iPad için App Store'dan, Android için yukarıdaki APK veya Google Play'den <strong>RustDesk</strong> uygulamasını kurun. Ardından <em>Ayarlar → ID/Relay Sunucusu → QR tara</em> ile aşağıdaki kodu okutun:</p>
+    <div id="qr"></div>
+    <details>
+      <summary>QR okutamıyorsanız elle girin</summary>
+      <div class="id-kutu">
+        <span>ID Sunucusu:</span><code id="elle-sunucu"></code>
+      </div>
+      <div class="id-kutu">
+        <span>Anahtar (Key):</span><code id="elle-anahtar"></code>
+        <button class="ikincil-btn" id="kopyala" type="button" style="background:none;border:1px solid var(--vurgu);border-radius:6px;padding:4px 10px;cursor:pointer">Kopyala</button>
+      </div>
+      <p class="kucuk">Relay ve API alanlarını boş bırakın.</p>
+    </details>
+  </section>
+
+  <section class="uyari">
+    <strong>Güvenlik ve gizlilik:</strong> Bağlantı yalnızca siz ID ve şifreyi paylaştığınızda kurulur; her oturum için şifre yenilenir. Oturumu istediğiniz an kapatabilirsiniz. Ekran içeriği sunucuda kaydedilmez; işlenen kişisel veriler KVKK kapsamında yalnızca destek amacıyla kullanılır.
+  </section>
+</main>
+
+<footer>
+  <a href="https://mehmetmesut.com">Yeşil Dönüşüm Mühendisi © Creator M2Y</a>
+</footer>
+
+<!-- QR kütüphanesi (yalnızca mobil kurulum için) -->
+<script src="qrcode.min.js"></script>
+<script src="ayar.js"></script>
+<script>
+(function () {
+  var a = window.RUSTDESK_AYAR;
+  if (!a) { document.getElementById('surum').textContent = 'ayar.js bulunamadı'; return; }
+
+  // Metin alanları
+  document.getElementById('sunucu-adi').textContent = a.sunucu;
+  document.getElementById('surum').textContent = a.surum;
+  document.getElementById('guncelleme').textContent = a.guncelleme;
+  document.getElementById('elle-sunucu').textContent = a.sunucu;
+  document.getElementById('elle-anahtar').textContent = a.anahtar;
+
+  // İndirme düğmeleri: dosya yoksa düğme pasif kalır
+  var etiket = { windows:'Windows', macos_apple:'macOS (Apple Silicon)', macos_intel:'macOS (Intel)',
+                 linux_deb:'Linux (.deb)', linux_appimage:'Linux (AppImage)', android:'Android (.apk)' };
+  Object.keys(a.dosyalar).forEach(function (k) {
+    var btn = document.getElementById('btn-' + k);
+    if (!btn) return;
+    var dosya = a.dosyalar[k];
+    var small = btn.querySelector('small');
+    if (dosya) {
+      btn.href = 'indir/' + encodeURIComponent(dosya);
+      btn.setAttribute('download', dosya);
+      btn.classList.remove('pasif');
+      if (k === 'windows') small.textContent = 'Kurulum gerekmez, çift tıklayın';
+    } else {
+      small.textContent = 'şu an mevcut değil';
+    }
+    btn.firstChild.textContent = etiket[k] + ' ';
+  });
+
+  // Mobil uygulama için QR: RustDesk "QR tara" bu JSON biçimini bekler
+  var qrIcerik = 'config=' + JSON.stringify({ host: a.sunucu, relay: '', api: '', key: a.anahtar });
+  if (window.QRCode) new QRCode(document.getElementById('qr'), { text: qrIcerik, width: 200, height: 200 });
+
+  // Anahtar kopyalama
+  document.getElementById('kopyala').addEventListener('click', function () {
+    navigator.clipboard.writeText(a.anahtar).then(function () { this.textContent = 'Kopyalandı'; }.bind(this));
+  });
+})();
+</script>
+</body>
+</html>

@@ -8,3 +8,7 @@ yedekler/
 # Sistem dosyaları
 .DS_Store
 Thumbs.db
+
+# İndirme sayfası: üretilen dosyalar
+site/httpdocs/indir/
+site/httpdocs/ayar.js

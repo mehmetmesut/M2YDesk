@@ -20,6 +20,23 @@ TeamViewer, AnyDesk ve Splashtop'a açık kaynaklı alternatif. Uzaktan erişim 
 
 > ⚠️ Projeyi `httpdocs` ya da başka bir web dizinine **kurmayın**. `data/id_ed25519` özel anahtarı internetten erişilebilir hale gelir.
 
+## Danışanlar için indirme sayfası
+
+`site/httpdocs/` klasörü, danışanların tek tıkla önceden yapılandırılmış istemciyi indirdiği sayfadır.
+İstemci dosya adında sunucu ve açık anahtar taşır (`rustdesk-host=…,key=….exe`); danışan hiçbir ayar girmez.
+
+1. Plesk'te `rustdesk.mehmetmesut.com` alt alan adını oluşturun, Let's Encrypt SSL alın.
+2. `site/httpdocs/` içeriğini alt alan adının `httpdocs` klasörüne yükleyin (SFTP veya `cp`).
+3. İstemcileri indirip yapılandırın (her sürüm güncellemesinde tekrar çalıştırın):
+   ```bash
+   cd /opt/rustdesk
+   SITE_DIZINI=/var/www/vhosts/mehmetmesut.com/rustdesk.mehmetmesut.com \
+   RUSTDESK_ISTEMCI_SURUM=1.4.9 sudo bash scripts/istemci-hazirla.sh
+   ```
+4. Danışan akışı: sayfaya girer → dosyayı indirip çalıştırır → ekrandaki **ID + şifreyi** size iletir → siz kendi RustDesk istemcinizden bağlanırsınız.
+
+Alt alan adı hem web sayfasını (443) hem RustDesk portlarını (21115-21119) aynı IP'de taşır; Cloudflare proxy **kapalı** olmalıdır.
+
 ## Portlar
 
 | Port | Protokol | Servis | Amaç |
