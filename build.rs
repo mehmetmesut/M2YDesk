@@ -91,4 +91,9 @@ fn main() {
         println!("cargo:rustc-link-lib=framework=ApplicationServices");
     }
     println!("cargo:rerun-if-changed=build.rs");
+    // M2YDesk: gömülü yapılandırma ve sunucu bilgileri değişince yeniden derle
+    println!("cargo:rerun-if-changed=res/m2y/m2ydesk.json");
+    println!("cargo:rerun-if-changed=res/m2y/m2ydesk-qs.json");
+    println!("cargo:rerun-if-env-changed=M2Y_SERVER_HOST");
+    println!("cargo:rerun-if-env-changed=M2Y_SERVER_KEY");
 }

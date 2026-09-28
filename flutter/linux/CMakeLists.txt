@@ -5,6 +5,10 @@ project(runner LANGUAGES C CXX)
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
 set(BINARY_NAME "rustdesk")
+# M2YDesk: ikili adı ortam değişkeniyle değiştirilebilir (CI: M2Y_BINARY_NAME=m2ydesk)
+if(DEFINED ENV{M2Y_BINARY_NAME} AND NOT "$ENV{M2Y_BINARY_NAME}" STREQUAL "")
+  set(BINARY_NAME "$ENV{M2Y_BINARY_NAME}")
+endif()
 # The unique GTK application identifier for this application. See:
 # https://wiki.gnome.org/HowDoI/ChooseApplicationID
 set(APPLICATION_ID "com.carriez.flutter_hbb")

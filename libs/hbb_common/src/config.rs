@@ -54,7 +54,8 @@ const SERIAL: i32 = 3;
 
 #[cfg(target_os = "macos")]
 lazy_static::lazy_static! {
-    pub static ref ORG: RwLock<String> = RwLock::new("com.carriez".to_owned());
+    // M2YDesk: macOS launchd/bundle kimliği için kuruluş öneki
+    pub static ref ORG: RwLock<String> = RwLock::new("com.m2y".to_owned());
 }
 
 type Size = (i32, i32, i32, i32);
@@ -69,7 +70,9 @@ lazy_static::lazy_static! {
     static ref ONLINE: Mutex<HashMap<String, i64>> = Default::default();
     pub static ref PROD_RENDEZVOUS_SERVER: RwLock<String> = RwLock::new("".to_owned());
     pub static ref EXE_RENDEZVOUS_SERVER: RwLock<String> = Default::default();
-    pub static ref APP_NAME: RwLock<String> = RwLock::new("RustDesk".to_owned());
+    // M2YDesk: derleme zamanı varsayılanı; res/m2y/*.json açılışta varyanta göre üzerine yazar
+    // (M2YDesk / M2YDeskQS). "RustDesk" dışındaki her ad is_custom_client() = true anlamına gelir.
+    pub static ref APP_NAME: RwLock<String> = RwLock::new("M2YDesk".to_owned());
     static ref KEY_PAIR: Mutex<Option<KeyPair>> = Default::default();
     static ref USER_DEFAULT_CONFIG: RwLock<(UserDefaultConfig, Instant)> = RwLock::new((UserDefaultConfig::load(), Instant::now()));
     pub static ref NEW_STORED_PEER_CONFIG: Mutex<HashSet<String>> = Default::default();
@@ -117,7 +120,9 @@ const CHARS: &[char] = &[
     'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
 ];
 
-pub const RENDEZVOUS_SERVERS: &[&str] = &["rs-ny.rustdesk.com"];
+// M2YDesk: en düşük öncelikli yedek; asıl adres res/m2y/*.json override-settings ile gelir.
+// Hiçbir koşulda rustdesk.com genel sunucularına düşülmez.
+pub const RENDEZVOUS_SERVERS: &[&str] = &["rustdesk.mehmetmesut.com"];
 pub const RS_PUB_KEY: &str = "OeVuKk5nlHiXp+APNn0Y3pC1Iwpwn44JGqrQCsWqmBw=";
 
 pub const RENDEZVOUS_PORT: i32 = 21116;

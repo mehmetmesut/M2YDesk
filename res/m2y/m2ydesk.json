@@ -1,0 +1,20 @@
+{
+  "app-name": "M2YDesk",
+  "disable-account": "Y",
+  "disable-ab": "Y",
+  "override-settings": {
+    "custom-rendezvous-server": "${M2Y_SERVER_HOST}",
+    "relay-server": "${M2Y_SERVER_HOST}",
+    "key": "${M2Y_SERVER_KEY}",
+    "register-device": "N",
+    "allow-auto-update": "N",
+    "enable-check-update": "N",
+    "hide-server-settings": "Y",
+    "hide-powered-by-me": "Y"
+  },
+  "default-settings": {
+    "lang": "tr",
+    "image-quality": "balanced",
+    "codec-preference": "auto"
+  }
+}

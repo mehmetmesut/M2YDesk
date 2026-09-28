@@ -2080,25 +2080,46 @@ pub fn rustdesk_interval(i: Interval) -> ThrottledInterval {
     ThrottledInterval::new(i)
 }
 
+// ---- M2YDesk: derlemeye gömülü özel istemci yapılandırması ----
+// Üst kaynak (RustDesk) bu ayarları exe yanındaki, RustDesk'in özel anahtarıyla
+// imzalanmış `custom.txt` dosyasından okur. Fork'ta o özel anahtar olmadığından
+// yapılandırma derleme zamanında kaynağa gömülür (res/m2y/*.json) ve imzasız uygulanır.
+// Varyant seçimi Cargo özelliği ile yapılır: `m2y_qs` -> M2YDesk QS (yalnızca gelen bağlantı).
+#[cfg(feature = "m2y_qs")]
+const M2Y_EMBEDDED_CONFIG: &str = include_str!("../res/m2y/m2ydesk-qs.json");
+#[cfg(not(feature = "m2y_qs"))]
+const M2Y_EMBEDDED_CONFIG: &str = include_str!("../res/m2y/m2ydesk.json");
+
+// Sunucu adresi ve hbbs açık anahtarı derleme zamanında ortam değişkeninden alınır
+// (CI: repository variables). Anahtar gizli değildir; hbbs'nin id_ed25519.pub içeriğidir.
+const M2Y_SERVER_HOST: &str = match option_env!("M2Y_SERVER_HOST") {
+    Some(v) => v,
+    None => "rustdesk.mehmetmesut.com",
+};
+const M2Y_SERVER_KEY: &str = match option_env!("M2Y_SERVER_KEY") {
+    Some(v) => v,
+    None => "",
+};
+
 pub fn load_custom_client() {
-    #[cfg(debug_assertions)]
-    if let Ok(data) = std::fs::read_to_string("./custom.txt") {
-        read_custom_client(data.trim());
-        return;
-    }
-    let Some(path) = std::env::current_exe().map_or(None, |x| x.parent().map(|x| x.to_path_buf()))
-    else {
-        return;
-    };
-    #[cfg(target_os = "macos")]
-    let path = path.join("../Resources");
-    let path = path.join("custom.txt");
-    if path.is_file() {
-        let Ok(data) = std::fs::read_to_string(&path) else {
-            log::error!("Failed to read custom client config");
-            return;
-        };
-        read_custom_client(&data.trim());
+    let cfg = M2Y_EMBEDDED_CONFIG
+        .replace("${M2Y_SERVER_HOST}", M2Y_SERVER_HOST)
+        .replace("${M2Y_SERVER_KEY}", M2Y_SERVER_KEY);
+    match serde_json::from_str::<std::collections::HashMap<String, serde_json::Value>>(&cfg) {
+        Ok(data) => {
+            if M2Y_SERVER_KEY.is_empty() {
+                log::warn!(
+                    "M2YDesk: M2Y_SERVER_KEY derlemeye gömülmedi; -k anahtarlı sunucu bağlantıyı reddedebilir"
+                );
+            }
+            apply_custom_client(data);
+            log::info!(
+                "M2YDesk: gömülü yapılandırma uygulandı (app={}, host={})",
+                get_app_name(),
+                M2Y_SERVER_HOST
+            );
+        }
+        Err(e) => log::error!("M2YDesk: gömülü yapılandırma ayrıştırılamadı: {}", e),
     }
 }
 
@@ -2192,13 +2213,18 @@ pub fn read_custom_client(config: &str) {
         log::error!("Failed to dec custom client config");
         return;
     };
-    let Ok(mut data) =
+    let Ok(data) =
         serde_json::from_slice::<std::collections::HashMap<String, serde_json::Value>>(&data)
     else {
         log::error!("Failed to parse custom client config");
         return;
     };
+    apply_custom_client(data);
+}
 
+/// Ayrıştırılmış özel istemci JSON'unu (imzalı custom.txt veya M2YDesk gömülü
+/// yapılandırması) APP_NAME, DEFAULT/OVERWRITE ve HARD ayarlarına uygular.
+fn apply_custom_client(mut data: std::collections::HashMap<String, serde_json::Value>) {
     if let Some(app_name) = data.remove("app-name") {
         if let Some(app_name) = app_name.as_str() {
             *config::APP_NAME.write().unwrap() = app_name.to_owned();

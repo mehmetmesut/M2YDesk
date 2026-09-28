@@ -222,7 +222,8 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                                   ?.color
                                   ?.withOpacity(0.5)),
                         ).marginOnly(top: 5),
-                        buildPopupMenu(context)
+                        // M2YDesk QS: yalnızca gelen bağlantı modunda ayar menüsü (⋮) gizlenir
+                        if (!bind.isIncomingOnly()) buildPopupMenu(context)
                       ],
                     ),
                   ),

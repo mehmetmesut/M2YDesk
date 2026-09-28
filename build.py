@@ -121,6 +121,12 @@ def make_parser():
         help='Enable feature vram, only available on windows now.'
     )
     parser.add_argument(
+        '--m2y-qs',
+        dest='m2y_qs',
+        action='store_true',
+        help='M2YDesk QS (QuickSupport) varyantini derle: res/m2y/m2ydesk-qs.json gomulur.'
+    )
+    parser.add_argument(
         '--portable',
         action='store_true',
         help='Build windows portable'
@@ -285,6 +291,9 @@ def get_features(args):
     if osx:
         if args.screencapturekit:
             features.append('screencapturekit')
+    # M2YDesk: QS (QuickSupport) varyantı
+    if getattr(args, 'm2y_qs', False):
+        features.append('m2y_qs')
     print("features:", features)
     return features
 

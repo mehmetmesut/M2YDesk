@@ -1988,9 +1988,11 @@ fn get_public_base_dir() -> PathBuf {
 
 #[inline]
 pub fn get_custom_client_staging_dir() -> PathBuf {
+    // M2YDesk: klasör uygulama adından türer; varyantlar ve orijinal RustDesk ayrışır
+    let app_name = crate::get_app_name();
     get_public_base_dir()
-        .join("RustDesk")
-        .join("RustDeskCustomClientStaging")
+        .join(&app_name)
+        .join(format!("{}CustomClientStaging", app_name))
 }
 
 /// Removes the custom client staging directory.

@@ -65,13 +65,16 @@ def write_app_metadata(output_folder: str):
         f.write(f"timestamp = {int(datetime.datetime.now().timestamp() * 1000)}\n")
     print(f"App metadata has been written to {output_path}")
 
-def build_portable(output_folder: str, target: str):
+def build_portable(output_folder: str, target: str, features: str = ""):
     current_dir = os.getcwd()
     try:
         os.chdir(output_folder)
         cmd = ["cargo", "build", "--locked", "--release"]
         if target:
             cmd.extend(["--target", target])
+        # M2YDesk: varyant ozelligi (ornek: --features m2y_qs)
+        if features:
+            cmd.extend(["--features", features])
         subprocess.run(cmd, check=True)
     finally:
         os.chdir(current_dir)
@@ -92,6 +95,8 @@ if __name__ == '__main__':
                       help="the target used by cargo")
     parser.add_option("-l", "--level", dest="level", type="int",
                       help="compression level, default is 11, highest", default=11)
+    parser.add_option("--features", dest="features",
+                      help="cargo features for the packer, e.g. m2y_qs", default="")
     (options, args) = parser.parse_args()
     folder = options.folder or './rustdesk'
     output_folder = os.path.abspath(options.output_folder or './')
@@ -110,4 +115,4 @@ if __name__ == '__main__':
     md5_table = generate_md5_table(folder, options.level)
     write_package_metadata(md5_table, output_folder, exe)
     write_app_metadata(output_folder)
-    build_portable(output_folder, options.target)
+    build_portable(output_folder, options.target, options.features)

@@ -40,6 +40,8 @@ unix-file-copy-paste = [
     "clipboard/unix-file-copy-paste",
 ]
 screencapturekit = ["cpal/screencapturekit"]
+# M2YDesk QS (QuickSupport) varyantı: res/m2y/m2ydesk-qs.json gömülür
+m2y_qs = []
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

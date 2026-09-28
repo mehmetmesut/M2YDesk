@@ -5,6 +5,10 @@ project(rustdesk LANGUAGES CXX)
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
 set(BINARY_NAME "rustdesk")
+# M2YDesk: ikili adı ortam değişkeniyle değiştirilebilir (CI: M2Y_BINARY_NAME=M2YDesk / M2YDeskQS)
+if(DEFINED ENV{M2Y_BINARY_NAME} AND NOT "$ENV{M2Y_BINARY_NAME}" STREQUAL "")
+  set(BINARY_NAME "$ENV{M2Y_BINARY_NAME}")
+endif()
 
 # Explicitly opt into modern CMake behaviors to avoid warnings with recent
 # versions of CMake.

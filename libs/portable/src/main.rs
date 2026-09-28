@@ -17,7 +17,12 @@ const APP_METADATA: &[u8] = include_bytes!("../app_metadata.toml");
 const APP_METADATA: &[u8] = &[];
 const APP_METADATA_CONFIG: &str = "meta.toml";
 const META_LINE_PREFIX_TIMESTAMP: &str = "timestamp = ";
-const APP_PREFIX: &str = "rustdesk";
+// M2YDesk: açılım klasörü varyanta özeldir (%LOCALAPPDATA%\<APP_PREFIX>), böylece
+// M2YDesk, M2YDesk QS ve orijinal RustDesk birbirinin dosyalarını silmez.
+#[cfg(feature = "m2y_qs")]
+const APP_PREFIX: &str = "m2ydesk-qs";
+#[cfg(not(feature = "m2y_qs"))]
+const APP_PREFIX: &str = "m2ydesk";
 const APPNAME_RUNTIME_ENV_KEY: &str = "RUSTDESK_APPNAME";
 #[cfg(windows)]
 const SET_FOREGROUND_WINDOW_ENV_KEY: &str = "SET_FOREGROUND_WINDOW";
@@ -216,7 +221,11 @@ mod win {
 
     // Used for privacy mode(magnifier impl).
     pub const RUNTIME_BROKER_EXE: &'static str = "C:\\Windows\\System32\\RuntimeBroker.exe";
-    pub const WIN_TOPMOST_INJECTED_PROCESS_EXE: &'static str = "RuntimeBroker_rustdesk.exe";
+    // M2YDesk: src/privacy_mode/win_topmost_window.rs ile aynı ad kullanılmalı
+    #[cfg(feature = "m2y_qs")]
+    pub const WIN_TOPMOST_INJECTED_PROCESS_EXE: &'static str = "RuntimeBroker_m2ydeskqs.exe";
+    #[cfg(not(feature = "m2y_qs"))]
+    pub const WIN_TOPMOST_INJECTED_PROCESS_EXE: &'static str = "RuntimeBroker_m2ydesk.exe";
 
     pub(super) fn copy_runtime_broker(dir: &Path) {
         let src = RUNTIME_BROKER_EXE;
@@ -232,7 +241,7 @@ mod win {
             }
         }
         let _allow_err = Command::new("taskkill")
-            .args(&["/F", "/IM", "RuntimeBroker_rustdesk.exe"])
+            .args(&["/F", "/IM", WIN_TOPMOST_INJECTED_PROCESS_EXE])
             .creation_flags(winapi::um::winbase::CREATE_NO_WINDOW)
             .output();
         let _allow_err = std::fs::copy(src, &format!("{}\\{}", dir.to_string_lossy(), tgt));
