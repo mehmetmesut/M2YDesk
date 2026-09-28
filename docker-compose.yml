@@ -1,0 +1,46 @@
+# RustDesk Server OSS - Kendi sunucunuzda barındırılan uzaktan erişim altyapısı
+# hbbs: ID / Rendezvous sunucusu  |  hbbr: Relay (aktarma) sunucusu
+# Ayarlar .env dosyasından okunur (bkz. .env.example)
+
+services:
+  hbbs:
+    container_name: hbbs
+    # Üretimde "latest" yerine sabit sürüm kullanılması önerilir (.env -> RUSTDESK_SURUM)
+    image: rustdesk/rustdesk-server:${RUSTDESK_SURUM:-latest}
+    # -r : istemcilere bildirilecek relay adresi
+    # -k _ : yalnızca sunucu anahtarına sahip istemcilerin bağlanmasına izin ver
+    command: hbbs -r ${ALAN_ADI}:21117 -k _
+    volumes:
+      # Anahtar çifti (id_ed25519, id_ed25519.pub) ve SQLite veritabanı burada tutulur
+      - ./data:/root
+    # UDP hole-punching ve gerçek istemci IP'si için host ağı kullanılır
+    network_mode: host
+    environment:
+      - TZ=${TZ:-Europe/Istanbul}
+    depends_on:
+      - hbbr
+    restart: unless-stopped
+    logging:
+      # Log dosyalarının diski doldurmasını engelle
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  hbbr:
+    container_name: hbbr
+    image: rustdesk/rustdesk-server:${RUSTDESK_SURUM:-latest}
+    # -k _ : relay üzerinden de yalnızca anahtarlı bağlantılar kabul edilir
+    command: hbbr -k _
+    volumes:
+      # hbbs ile aynı anahtarı paylaşması için aynı klasör bağlanır
+      - ./data:/root
+    network_mode: host
+    environment:
+      - TZ=${TZ:-Europe/Istanbul}
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

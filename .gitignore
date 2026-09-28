@@ -1,0 +1,10 @@
+# Gizli anahtar ve veritabanı ASLA depoya gönderilmemeli
+data/
+yedekler/
+
+# Ortama özel ayarlar
+.env
+
+# Sistem dosyaları
+.DS_Store
+Thumbs.db
