@@ -25,17 +25,18 @@ g_arpsystemcomponent = {
         "t": "string",
         "v": "!(loc.AR_Comment)",
     },
+    # M2YDesk: destek/yardim baglantilari
     "Contact": {
         "msi": "ARPCONTACT",
-        "v": "https://github.com/rustdesk/rustdesk",
+        "v": "https://mehmetmesut.com",
     },
     "HelpLink": {
         "msi": "ARPHELPLINK",
-        "v": "https://github.com/rustdesk/rustdesk/issues/",
+        "v": "https://rustdesk.mehmetmesut.com",
     },
     "ReadMe": {
         "msi": "ARPREADME",
-        "v": "https://github.com/rustdesk/rustdesk",
+        "v": "https://github.com/mehmetmesut/RustDesk",
     },
 }
 
@@ -498,10 +499,26 @@ def update_license_file(app_name):
     with open(license_file, "r", encoding="utf-8") as f:
         license_content = f.read()
     license_content = license_content.replace("website rustdesk.com and other ", "")
+    # M2YDesk: AGPL-3.0 geregi ust kaynagin telif bildirimi (RustDesk / Purslane Tech Pte. Ltd.)
+    # KORUNUR; yalnizca urun adi degistirilir ve uyarlama notu eklenir.
     license_content = license_content.replace("RustDesk", app_name)
-    license_content = re.sub(r"Purslane(?: Tech Pte\.)? Ltd", app_name, license_content, flags=re.IGNORECASE)
+    license_content = license_content.replace(
+        app_name, f"{app_name} (based on RustDesk, Copyright Purslane Tech Pte. Ltd.; {app_name} adaptation: Mehmet Mesut YILMAZ, AGPL-3.0)", 1)
     with open(license_file, "w", encoding="utf-8") as f:
         f.write(license_content)
+
+
+def update_runtime_broker_name(app_name):
+    """M2YDesk: gizlilik modu yardimci sureci adi src/privacy_mode/win_topmost_window.rs ile
+    ayni olmali (RuntimeBroker_<app_name.lower()>.exe); kaldirma/yukseltmede sonlandirilir."""
+    if app_name == "RustDesk":
+        return
+    wxs_file = Path(sys.argv[0]).parent.joinpath("Package/Components/RustDesk.wxs")
+    with open(wxs_file, "r", encoding="utf-8") as f:
+        content = f.read()
+    content = content.replace("RuntimeBroker_rustdesk.exe", f"RuntimeBroker_{app_name.lower()}.exe")
+    with open(wxs_file, "w", encoding="utf-8") as f:
+        f.write(content)
 
 
 def replace_component_guids_in_wxs():
@@ -534,6 +551,7 @@ if __name__ == "__main__":
         sys.exit(-1)
 
     update_license_file(app_name)
+    update_runtime_broker_name(app_name)
 
     if not gen_pre_vars(args, dist_dir):
         sys.exit(-1)

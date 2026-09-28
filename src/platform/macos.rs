@@ -307,6 +307,12 @@ fn correct_app_name(s: &str) -> String {
     if let Some(bundleid) = get_bundle_id() {
         s = s.replace("com.carriez.rustdesk", &bundleid);
     }
+    // M2YDesk: launchd plist etiketleri (com.carriez.RustDesk_service/_server) ORG ile
+    // türetilen get_full_name() ("com.m2y.M2YDesk") biçimine eşitlenir.
+    s = s.replace(
+        "com.carriez",
+        hbb_common::config::ORG.read().unwrap().as_str(),
+    );
     s = s.replace("rustdesk", &crate::get_app_name().to_lowercase());
     s = s.replace("RustDesk", &crate::get_app_name());
     s
