@@ -2,152 +2,255 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Uzaktan Destek | Mehmet Mesut YILMAZ</title>
-<meta name="description" content="Uzaktan destek için önceden yapılandırılmış RustDesk istemcisini indirin, çalıştırın ve ekrandaki bağlantı numarasını danışmanınızla paylaşın.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>M2YDesk | Uzaktan Destek</title>
+<meta name="description" content="M2YDesk ile üç adımda güvenli uzaktan destek: indirin, çalıştırın, ekrandaki bağlantı numarasını danışmanınızla paylaşın. Kurulum ve ayar gerektirmez.">
 <meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#eef3f9" media="(prefers-color-scheme: light)">
 <link rel="canonical" href="https://rustdesk.mehmetmesut.com/">
-<meta property="og:title" content="Uzaktan Destek | Mehmet Mesut YILMAZ">
+<meta property="og:title" content="M2YDesk | Uzaktan Destek">
 <meta property="og:description" content="Üç adımda güvenli uzaktan destek bağlantısı.">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://rustdesk.mehmetmesut.com/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
-  /* Mobil öncelikli, harici bağımlılık yok */
-  :root{--bg:#f6f8fa;--kart:#fff;--metin:#1f2937;--ikincil:#6b7280;--vurgu:#0f766e;--vurgu2:#115e59;--cerceve:#e5e7eb;--uyari:#fff7ed;--uyari-k:#fdba74}
-  @media (prefers-color-scheme:dark){:root{--bg:#0f172a;--kart:#1e293b;--metin:#f1f5f9;--ikincil:#94a3b8;--cerceve:#334155;--uyari:#3b2a13;--uyari-k:#a16207}}
+  /* ---------- Tasarım dili: TeamViewer minimalizmi + Apple Liquid Glass ---------- */
+  :root{
+    --bg:#eef3f9; --bg2:#f7f9fc;
+    --metin:#0f172a; --ikincil:#5b6b82; --vurgu:#0e7cff; --vurgu2:#0862d1;
+    --cam:rgba(255,255,255,.58); --cam-cerceve:rgba(255,255,255,.75); --cam-ic:rgba(255,255,255,.9);
+    --golge:0 10px 40px rgba(15,23,42,.10), 0 1px 0 rgba(255,255,255,.8) inset;
+    --blob1:#9fc6ff; --blob2:#b8f0e4; --blob3:#e2d4ff;
+    --uyari-bg:rgba(255,247,237,.7); --uyari-k:rgba(251,146,60,.5);
+    --pasif:rgba(148,163,184,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0b1220; --bg2:#0f172a;
+      --metin:#f1f5f9; --ikincil:#a0aec0; --vurgu:#3b9dff; --vurgu2:#1d7fe6;
+      --cam:rgba(30,41,59,.55); --cam-cerceve:rgba(255,255,255,.12); --cam-ic:rgba(255,255,255,.08);
+      --golge:0 10px 40px rgba(0,0,0,.45), 0 1px 0 rgba(255,255,255,.08) inset;
+      --blob1:#1e4fa3; --blob2:#0f6b5c; --blob3:#4b2f9e;
+      --uyari-bg:rgba(69,45,20,.55); --uyari-k:rgba(217,119,6,.5);
+      --pasif:rgba(100,116,139,.35);
+    }
+  }
   *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--metin);line-height:1.55}
-  header{background:var(--vurgu);color:#fff;padding:32px 16px;text-align:center}
-  header h1{margin:0 0 8px;font-size:1.6rem}
-  header p{margin:0;opacity:.9}
-  main{max-width:860px;margin:0 auto;padding:16px}
-  .kart{background:var(--kart);border:1px solid var(--cerceve);border-radius:12px;padding:20px;margin-bottom:16px}
-  h2{font-size:1.15rem;margin:0 0 12px}
-  ol{padding-left:22px;margin:0}
-  ol li{margin-bottom:8px}
-  .platformlar{display:grid;gap:12px;grid-template-columns:1fr}
-  @media(min-width:640px){.platformlar{grid-template-columns:1fr 1fr}}
-  .btn{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-radius:10px;background:var(--vurgu);color:#fff;text-decoration:none;font-weight:600;transition:background .15s}
-  .btn:hover{background:var(--vurgu2)}
-  .btn small{font-weight:400;opacity:.85}
-  .btn.pasif{background:var(--ikincil);pointer-events:none}
-  .ikincil-btn{display:inline-block;margin-top:8px;font-size:.9rem;color:var(--vurgu)}
-  .id-kutu{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
-  code{background:var(--bg);border:1px solid var(--cerceve);padding:3px 8px;border-radius:6px;font-size:.9rem;word-break:break-all}
-  .uyari{background:var(--uyari);border:1px solid var(--uyari-k);border-radius:10px;padding:12px 16px;font-size:.95rem}
-  .kucuk{color:var(--ikincil);font-size:.9rem}
-  #qr{display:flex;justify-content:center;margin:12px 0;background:#fff;padding:12px;border-radius:10px}
-  details summary{cursor:pointer;font-weight:600}
-  footer{text-align:center;padding:24px 16px;font-size:.9rem;color:var(--ikincil)}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Inter,Roboto,system-ui,sans-serif;background:var(--bg);color:var(--metin);line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100dvh;overflow-x:hidden}
+
+  /* Arka plan: yumuşak ışık lekeleri (liquid glass'ın altındaki renk) */
+  .arka{position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);overflow:hidden}
+  .arka i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.75;will-change:transform}
+  .arka i:nth-child(1){width:52vw;height:52vw;max-width:560px;max-height:560px;background:var(--blob1);top:-14%;left:-12%}
+  .arka i:nth-child(2){width:44vw;height:44vw;max-width:480px;max-height:480px;background:var(--blob2);top:32%;right:-14%}
+  .arka i:nth-child(3){width:40vw;height:40vw;max-width:420px;max-height:420px;background:var(--blob3);bottom:-12%;left:18%}
+  @media (prefers-reduced-motion:no-preference){
+    .arka i{animation:suzul 22s ease-in-out infinite alternate}
+    .arka i:nth-child(2){animation-duration:28s}
+    .arka i:nth-child(3){animation-duration:34s}
+    @keyframes suzul{to{transform:translate3d(6%,4%,0) scale(1.08)}}
+  }
+
+  /* Cam yüzey */
+  .cam{background:var(--cam);border:1px solid var(--cam-cerceve);border-radius:24px;box-shadow:var(--golge);
+       -webkit-backdrop-filter:blur(26px) saturate(170%);backdrop-filter:blur(26px) saturate(170%)}
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+    .cam{background:var(--bg2)}
+  }
+
+  main{max-width:960px;margin:0 auto;padding:clamp(20px,4vw,48px) 16px 32px;display:grid;gap:16px}
+
+  /* Üst bölüm: minimal, geniş boşluk */
+  .ust{text-align:center;padding:clamp(28px,6vw,64px) 16px 8px}
+  .logo{display:inline-flex;align-items:center;gap:10px;font-weight:600;letter-spacing:-.01em;font-size:1.05rem;color:var(--ikincil);margin-bottom:22px}
+  .logo svg{width:28px;height:28px}
+  h1{font-size:clamp(1.9rem,5.4vw,3rem);font-weight:700;letter-spacing:-.03em;margin:0 0 10px;line-height:1.12}
+  .ust p{margin:0 auto;max-width:560px;color:var(--ikincil);font-size:clamp(1rem,2.4vw,1.15rem)}
+
+  /* Birincil indirme (otomatik cihaz algılama) */
+  .birincil{padding:22px;display:grid;gap:14px;justify-items:center;text-align:center}
+  .btn-ana{display:inline-flex;align-items:center;gap:12px;padding:16px 28px;border-radius:999px;font-size:1.08rem;font-weight:600;color:#fff;text-decoration:none;
+    background:linear-gradient(180deg,var(--vurgu) 0%,var(--vurgu2) 100%);
+    box-shadow:0 10px 30px rgba(14,124,255,.35),0 1px 0 rgba(255,255,255,.45) inset;transition:transform .18s ease,box-shadow .18s ease;min-width:min(100%,320px);justify-content:center}
+  .btn-ana:hover{transform:translateY(-2px);box-shadow:0 16px 36px rgba(14,124,255,.42),0 1px 0 rgba(255,255,255,.45) inset}
+  .btn-ana:active{transform:translateY(0) scale(.99)}
+  .btn-ana.pasif{background:var(--pasif);box-shadow:none;pointer-events:none;color:var(--metin)}
+  .btn-ana svg{width:22px;height:22px;flex:none}
+  .birincil .alt{color:var(--ikincil);font-size:.92rem}
+
+  /* Diğer platformlar: cam haplar */
+  .haplar{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:100%}
+  @media(min-width:640px){.haplar{grid-template-columns:repeat(3,1fr)}}
+  .hap{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px 14px;border-radius:16px;text-decoration:none;color:var(--metin);
+    background:var(--cam-ic);border:1px solid var(--cam-cerceve);transition:transform .18s ease,background .18s ease;font-weight:600;font-size:.95rem}
+  .hap small{font-weight:400;color:var(--ikincil);font-size:.8rem}
+  .hap:hover{transform:translateY(-2px);background:var(--cam)}
+  .hap.pasif{opacity:.5;pointer-events:none}
+  .hap.secili{outline:2px solid var(--vurgu);outline-offset:1px}
+
+  /* Adımlar */
+  .adimlar{display:grid;gap:12px;grid-template-columns:1fr}
+  @media(min-width:640px){.adimlar{grid-template-columns:repeat(3,1fr)}}
+  .adim{padding:20px}
+  .adim .no{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:12px;background:linear-gradient(180deg,var(--vurgu),var(--vurgu2));color:#fff;font-weight:700;margin-bottom:12px;box-shadow:0 6px 16px rgba(14,124,255,.3)}
+  .adim h3{margin:0 0 6px;font-size:1.02rem;letter-spacing:-.01em}
+  .adim p{margin:0;color:var(--ikincil);font-size:.94rem}
+
+  /* Bölümler */
+  .bolum{padding:22px}
+  .bolum h2{margin:0 0 10px;font-size:1.15rem;letter-spacing:-.01em}
+  .bolum p{margin:0 0 8px;color:var(--ikincil);font-size:.95rem}
+  details{margin-top:8px}
+  details summary{cursor:pointer;font-weight:600;font-size:.95rem;list-style:none;display:flex;align-items:center;gap:8px}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"";width:8px;height:8px;border-right:2px solid var(--ikincil);border-bottom:2px solid var(--ikincil);transform:rotate(-45deg);transition:transform .2s}
+  details[open] summary::before{transform:rotate(45deg)}
+  details p{margin:8px 0 0}
+  .mobil{display:grid;gap:16px;align-items:center;grid-template-columns:1fr}
+  @media(min-width:640px){.mobil{grid-template-columns:1fr auto}}
+  #qr{display:grid;place-items:center;padding:14px;background:#fff;border-radius:18px;border:1px solid var(--cam-cerceve);width:fit-content;justify-self:center}
+  code{background:var(--cam-ic);border:1px solid var(--cam-cerceve);padding:3px 8px;border-radius:8px;font-size:.88rem;word-break:break-all}
+  .id-kutu{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px;font-size:.92rem}
+  .kopyala{background:none;border:1px solid var(--vurgu);color:var(--vurgu);border-radius:999px;padding:4px 12px;cursor:pointer;font-size:.85rem}
+  .uyari{background:var(--uyari-bg);border:1px solid var(--uyari-k);border-radius:20px;padding:16px 20px;font-size:.93rem;color:var(--metin);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+  .kucuk{color:var(--ikincil);font-size:.86rem}
+  footer{text-align:center;padding:18px 16px 32px;font-size:.88rem;color:var(--ikincil)}
   footer a{color:var(--vurgu);text-decoration:none}
 </style>
 </head>
 <body>
-
-<header>
-  <h1>Uzaktan Destek Bağlantısı</h1>
-  <p>Üç adımda güvenli bağlantı. Kurulum gerektirmez, ayar girmezsiniz.</p>
-</header>
+<div class="arka" aria-hidden="true"><i></i><i></i><i></i></div>
 
 <main>
-  <section class="kart">
-    <h2>Nasıl çalışır?</h2>
-    <ol>
-      <li>Aşağıdan cihazınıza uygun dosyayı indirin ve <strong>çalıştırın</strong>.</li>
-      <li>Açılan pencerede <strong>ID</strong> ve <strong>Şifre</strong> görünür.</li>
-      <li>Bu iki bilgiyi danışmanınıza (WhatsApp, telefon, e-posta) iletin. Bağlantı sizin onayınızla kurulur.</li>
-    </ol>
-    <p class="kucuk" style="margin:12px 0 0">Bağlantı, <span id="sunucu-adi"></span> üzerindeki özel sunucudan şifreli olarak geçer; üçüncü taraf bir hizmet kullanılmaz.</p>
-  </section>
-
-  <section class="kart">
-    <h2>İndir</h2>
-    <div class="platformlar" id="platformlar">
-      <a class="btn pasif" id="btn-windows" href="#">Windows <small>indiriliyor…</small></a>
-      <a class="btn pasif" id="btn-macos_apple" href="#">macOS (Apple Silicon) <small>M1 / M2 / M3 / M4</small></a>
-      <a class="btn pasif" id="btn-macos_intel" href="#">macOS (Intel) <small>2020 öncesi Mac</small></a>
-      <a class="btn pasif" id="btn-linux_deb" href="#">Linux (.deb) <small>Ubuntu / Debian</small></a>
-      <a class="btn pasif" id="btn-linux_appimage" href="#">Linux (AppImage) <small>Tüm dağıtımlar</small></a>
-      <a class="btn pasif" id="btn-android" href="#">Android (.apk) <small>Sunucu ayarı için QR tarayın</small></a>
+  <header class="ust">
+    <div class="logo">
+      <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="3" y="6" width="26" height="17" rx="4" stroke="currentColor" stroke-width="2"/><path d="M11 27h10M16 23v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M11 14.5l3 3 7-7" stroke="var(--vurgu)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      M2YDesk
     </div>
-    <p class="kucuk">Sürüm: <span id="surum"></span> · Güncelleme: <span id="guncelleme"></span></p>
+    <h1>Uzaktan destek, üç adımda.</h1>
+    <p>İndirin, çalıştırın, ekrandaki bağlantı numarasını paylaşın. Kurulum ve ayar gerektirmez; bağlantı yalnızca sizin onayınızla kurulur.</p>
+  </header>
 
+  <section class="cam birincil" aria-labelledby="indir-baslik">
+    <h2 id="indir-baslik" class="kucuk" style="margin:0;font-weight:500">Cihazınız için önerilen</h2>
+    <a class="btn-ana pasif" id="btn-ana" href="#">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span id="btn-ana-metin">Hazırlanıyor…</span>
+    </a>
+    <div class="alt">Sürüm <span id="surum">—</span> · Güncelleme <span id="guncelleme">—</span></div>
+    <div class="haplar" id="haplar">
+      <a class="hap pasif" data-k="windows" href="#">Windows<small>Kurulum gerekmez</small></a>
+      <a class="hap pasif" data-k="macos_apple" href="#">macOS<small>Apple Silicon (M1–M4)</small></a>
+      <a class="hap pasif" data-k="macos_intel" href="#">macOS<small>Intel</small></a>
+      <a class="hap pasif" data-k="linux_deb" href="#">Linux<small>.deb · Ubuntu/Debian</small></a>
+      <a class="hap pasif" data-k="linux_appimage" href="#">Linux<small>AppImage</small></a>
+      <a class="hap pasif" data-k="android" href="#">Android<small>.apk</small></a>
+    </div>
+  </section>
+
+  <section class="adimlar" aria-label="Adımlar">
+    <div class="cam adim"><span class="no">1</span><h3>İndirin ve çalıştırın</h3><p>Dosya taşınabilirdir; bilgisayarınıza hiçbir şey kurmaz.</p></div>
+    <div class="cam adim"><span class="no">2</span><h3>Numarayı paylaşın</h3><p>Açılan pencerede <strong>ID</strong> ve <strong>Şifre</strong> görünür. Danışmanınıza iletin.</p></div>
+    <div class="cam adim"><span class="no">3</span><h3>Onaylayın</h3><p>Bağlantı isteğini görür, kabul edersiniz. İstediğiniz an kapatabilirsiniz.</p></div>
+  </section>
+
+  <section class="cam bolum">
+    <h2>Sık karşılaşılan uyarılar</h2>
     <details>
-      <summary>Windows: "Windows PC'nizi korudu" uyarısı çıkarsa</summary>
-      <p class="kucuk">Dosya açık kaynaklı RustDesk'in imzasız taşınabilir sürümüdür. <em>Ek bilgi → Yine de çalıştır</em> seçin. Dosya yalnızca bu sayfadan indirildiyse güvenlidir.</p>
+      <summary>Windows: "Windows PC'nizi korudu"</summary>
+      <p class="kucuk">Dosya imzasız taşınabilir bir uygulamadır. <em>Ek bilgi → Yine de çalıştır</em> seçin. Yalnızca bu sayfadan indirilen dosyayı çalıştırın.</p>
     </details>
     <details>
-      <summary>macOS: "Geliştirici doğrulanamadı" uyarısı çıkarsa</summary>
-      <p class="kucuk">Uygulamaya sağ tıklayıp <em>Aç</em> seçin. Ekran paylaşımı için <em>Sistem Ayarları → Gizlilik ve Güvenlik → Ekran Kaydı ve Erişilebilirlik</em> izinlerini verin.</p>
+      <summary>macOS: "Geliştirici doğrulanamadı"</summary>
+      <p class="kucuk">Uygulamaya sağ tıklayıp <em>Aç</em> seçin. Ekran paylaşımı için <em>Sistem Ayarları → Gizlilik ve Güvenlik → Ekran Kaydı</em> ve <em>Erişilebilirlik</em> izinlerini verin.</p>
     </details>
   </section>
 
-  <section class="kart">
-    <h2>Android / iOS</h2>
-    <p>iPhone/iPad için App Store'dan, Android için yukarıdaki APK veya Google Play'den <strong>RustDesk</strong> uygulamasını kurun. Ardından <em>Ayarlar → ID/Relay Sunucusu → QR tara</em> ile aşağıdaki kodu okutun:</p>
-    <div id="qr"></div>
-    <details>
-      <summary>QR okutamıyorsanız elle girin</summary>
-      <div class="id-kutu">
-        <span>ID Sunucusu:</span><code id="elle-sunucu"></code>
+  <section class="cam bolum">
+    <h2>Telefon ve tablet</h2>
+    <div class="mobil">
+      <div>
+        <p>iPhone/iPad için App Store'dan, Android için yukarıdaki APK veya Google Play'den <strong>RustDesk</strong> uygulamasını kurun. Ardından <em>Ayarlar → ID/Relay Sunucusu → QR tara</em> ile kodu okutun.</p>
+        <details>
+          <summary>QR okutamıyorsanız elle girin</summary>
+          <div class="id-kutu"><span>ID Sunucusu</span><code id="elle-sunucu"></code></div>
+          <div class="id-kutu"><span>Anahtar</span><code id="elle-anahtar"></code><button class="kopyala" id="kopyala" type="button">Kopyala</button></div>
+          <p class="kucuk">Relay ve API alanlarını boş bırakın.</p>
+        </details>
       </div>
-      <div class="id-kutu">
-        <span>Anahtar (Key):</span><code id="elle-anahtar"></code>
-        <button class="ikincil-btn" id="kopyala" type="button" style="background:none;border:1px solid var(--vurgu);border-radius:6px;padding:4px 10px;cursor:pointer">Kopyala</button>
-      </div>
-      <p class="kucuk">Relay ve API alanlarını boş bırakın.</p>
-    </details>
+      <div id="qr" aria-label="Mobil kurulum QR kodu"></div>
+    </div>
   </section>
 
   <section class="uyari">
-    <strong>Güvenlik ve gizlilik:</strong> Bağlantı yalnızca siz ID ve şifreyi paylaştığınızda kurulur; her oturum için şifre yenilenir. Oturumu istediğiniz an kapatabilirsiniz. Ekran içeriği sunucuda kaydedilmez; işlenen kişisel veriler KVKK kapsamında yalnızca destek amacıyla kullanılır.
+    <strong>Güvenlik ve gizlilik.</strong> Bağlantı, <span id="sunucu-adi"></span> üzerindeki özel sunucudan uçtan uca şifreli geçer; üçüncü taraf hizmet kullanılmaz. Şifre her oturumda yenilenir, ekran içeriği kaydedilmez. İşlenen kişisel veriler KVKK kapsamında yalnızca destek amacıyla kullanılır.
   </section>
 </main>
 
-<footer>
-  <a href="https://mehmetmesut.com">Yeşil Dönüşüm Mühendisi © Creator M2Y</a>
-</footer>
+<footer><a href="https://mehmetmesut.com">Yeşil Dönüşüm Mühendisi © Creator M2Y</a></footer>
 
-<!-- QR kütüphanesi (yalnızca mobil kurulum için) -->
 <script src="qrcode.min.js"></script>
 <script src="ayar.js"></script>
 <script>
 (function () {
   var a = window.RUSTDESK_AYAR;
-  if (!a) { document.getElementById('surum').textContent = 'ayar.js bulunamadı'; return; }
+  var anaBtn = document.getElementById('btn-ana'), anaMetin = document.getElementById('btn-ana-metin');
+  if (!a) { anaMetin.textContent = 'ayar.js bulunamadı'; return; }
+
+  var etiket = { windows:'Windows için indir', macos_apple:'macOS (Apple Silicon) için indir', macos_intel:'macOS (Intel) için indir',
+                 linux_deb:'Linux (.deb) için indir', linux_appimage:'Linux (AppImage) için indir', android:'Android (.apk) için indir' };
 
   // Metin alanları
+  ['surum','guncelleme'].forEach(function (k) { document.getElementById(k).textContent = a[k]; });
   document.getElementById('sunucu-adi').textContent = a.sunucu;
-  document.getElementById('surum').textContent = a.surum;
-  document.getElementById('guncelleme').textContent = a.guncelleme;
   document.getElementById('elle-sunucu').textContent = a.sunucu;
   document.getElementById('elle-anahtar').textContent = a.anahtar;
 
-  // İndirme düğmeleri: dosya yoksa düğme pasif kalır
-  var etiket = { windows:'Windows', macos_apple:'macOS (Apple Silicon)', macos_intel:'macOS (Intel)',
-                 linux_deb:'Linux (.deb)', linux_appimage:'Linux (AppImage)', android:'Android (.apk)' };
-  Object.keys(a.dosyalar).forEach(function (k) {
-    var btn = document.getElementById('btn-' + k);
-    if (!btn) return;
-    var dosya = a.dosyalar[k];
-    var small = btn.querySelector('small');
+  // Cihaz algılama: uygun dosya birincil düğmeye bağlanır
+  function cihaz() {
+    var ua = navigator.userAgent, p = navigator.platform || '';
+    if (/Android/i.test(ua)) return 'android';
+    if (/iPhone|iPad|iPod/i.test(ua)) return 'ios';
+    if (/Win/i.test(p) || /Windows/i.test(ua)) return 'windows';
+    if (/Mac/i.test(p)) return 'macos_apple'; // Tarayıcıdan mimari ayırt edilemez; Apple Silicon varsayılır
+    if (/Linux/i.test(p)) return 'linux_appimage';
+    return 'windows';
+  }
+  var k = cihaz();
+
+  // Platform hapları
+  document.querySelectorAll('.hap').forEach(function (el) {
+    var key = el.getAttribute('data-k'), dosya = a.dosyalar[key];
     if (dosya) {
-      btn.href = 'indir/' + encodeURIComponent(dosya);
-      btn.setAttribute('download', dosya);
-      btn.classList.remove('pasif');
-      if (k === 'windows') small.textContent = 'Kurulum gerekmez, çift tıklayın';
+      el.href = 'indir/' + encodeURIComponent(dosya);
+      el.setAttribute('download', dosya);
+      el.classList.remove('pasif');
     } else {
-      small.textContent = 'şu an mevcut değil';
+      el.querySelector('small').textContent = 'şu an mevcut değil';
     }
-    btn.firstChild.textContent = etiket[k] + ' ';
+    if (key === k) el.classList.add('secili');
   });
 
-  // Mobil uygulama için QR: RustDesk "QR tara" bu JSON biçimini bekler
-  var qrIcerik = 'config=' + JSON.stringify({ host: a.sunucu, relay: '', api: '', key: a.anahtar });
-  if (window.QRCode) new QRCode(document.getElementById('qr'), { text: qrIcerik, width: 200, height: 200 });
+  // Birincil düğme
+  if (k === 'ios') {
+    anaBtn.href = 'https://apps.apple.com/app/rustdesk-remote-desktop/id1581225015';
+    anaBtn.removeAttribute('download'); anaMetin.textContent = 'App Store\'dan RustDesk\'i kur'; anaBtn.classList.remove('pasif');
+  } else if (a.dosyalar[k]) {
+    anaBtn.href = 'indir/' + encodeURIComponent(a.dosyalar[k]);
+    anaBtn.setAttribute('download', a.dosyalar[k]);
+    anaMetin.textContent = etiket[k]; anaBtn.classList.remove('pasif');
+  } else {
+    anaMetin.textContent = 'Aşağıdan cihazınızı seçin';
+  }
 
-  // Anahtar kopyalama
+  // Mobil için QR: RustDesk "QR tara" bu biçimi bekler
+  var qrIcerik = 'config=' + JSON.stringify({ host: a.sunucu, relay: '', api: '', key: a.anahtar });
+  if (window.QRCode) new QRCode(document.getElementById('qr'), { text: qrIcerik, width: 176, height: 176, correctLevel: QRCode.CorrectLevel.M });
+
   document.getElementById('kopyala').addEventListener('click', function () {
-    navigator.clipboard.writeText(a.anahtar).then(function () { this.textContent = 'Kopyalandı'; }.bind(this));
+    var b = this; navigator.clipboard.writeText(a.anahtar).then(function () { b.textContent = 'Kopyalandı'; });
   });
 })();
 </script>
