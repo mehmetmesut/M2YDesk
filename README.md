@@ -30,6 +30,23 @@ TeamViewer, AnyDesk ve Splashtop'a açık kaynaklı alternatif. Uzaktan erişim 
 | 21118 | TCP | hbbs | Web istemcisi (isteğe bağlı) |
 | 21119 | TCP | hbbr | Web istemcisi (isteğe bağlı) |
 
+## Yedekleme
+
+Özel anahtar (`data/id_ed25519`) kaybolursa tüm istemcilerin yeniden yapılandırılması gerekir.
+
+```bash
+sudo bash scripts/yedekleme.sh                 # /opt/rustdesk/yedekler altına .tar.gz
+sudo bash scripts/geri-yukleme.sh yedekler/rustdesk-yedek-XXXX.tar.gz
+```
+
+Otomatik gece yedeği için `sudo crontab -e`:
+
+```
+15 3 * * * /opt/rustdesk/scripts/yedekleme.sh >> /var/log/rustdesk-yedek.log 2>&1
+```
+
+Yedekler 30 gün saklanır (`SAKLAMA_GUNU` ile değiştirilebilir). Yedek klasörünü sunucu dışına da (Plesk Yedekleme Yöneticisi, S3 vb.) kopyalayın.
+
 ## Yönetim
 
 ```bash
