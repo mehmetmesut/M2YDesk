@@ -28,8 +28,15 @@ Amaç: RustDesk Server Pro'da lisansla gelen özellikleri, yalnızca kendi danı
 - **Hızlı Destek'te cihaz raporlama:** QS'te hesap/ayar kapalı (`disable-account`). Envanterin QS cihazlarını da içermesi için QS'e yalnızca salt "sistem bilgisi gönder" işlevi gömülür (giriş yok, kullanıcı arayüzü değişmez). Bu, danışana **açıkça bildirilmelidir** (aşağıdaki KVKK notu).
 - Denetim: süper adminin cihaz listesini görüntülemesi ve takma ad değişiklikleri denetim günlüğüne yazılır.
 
-## KVKK / gizlilik notu (yeni)
-IP, MAC adresi, bilgisayar ve oturum adı **kişisel veri** sayılabilir. Danışanlar için: (1) programda ve indirme sayfasında kısa aydınlatma metni (hangi veri, ne amaçla, ne kadar saklanır, kim görür), (2) amaç yalnızca destek ve güvenlik, (3) saklama süresi tanımı ve silme yolu, (4) erişim yalnızca süper admin/yetkili üyeler. Ekran içeriği sunucuda kaydedilmez. Metin ayrıca bir hukuk danışmanıyla gözden geçirilmelidir.
+**Canlı kullanım paneli (madde 11, Aşama 1 ve 4):** Sunucuyu şu an kullanan cihaz sayısı ve listesi (çevrimiçi/çevrimdışı, aktif oturum, kim kime bağlı) ve yönetim: oturumu sonlandırma, cihaz/IP engelleme, üyeyi pasife alma. Yaklaşım: istemci kalp atışı (heartbeat) ile çevrimiçi durum; hbbs'in kayıtlı eş listesi ve relay bağlantı sayısı; engelleme için hbbs/hbbr'ın IP/ID engelleme yetenekleri (**kullandığımız sürümde doğrulanacak**), API'de cihaz "engelli" bayrağı ve iptables; aktif oturumu sonlandırmak için relay bağlantısını düşürme. Bileşen: API + sunucu. Risk: orta.
+
+## Rıza ve KVKK / gizlilik notu
+Program **kimseye zorunlu tutulmaz**. Yalnızca sizden destek almak isteyen ve bağlanmanıza rıza veren danışanlar kendi istekleriyle indirip çalıştırır. Bu, açık rıza temelini güçlendirir, ancak yine de:
+1. İndirme sayfasında kısa, anlaşılır bir **rıza/aydınlatma** metni ve indirmeden önce onay kutusu ("Destek amacıyla cihaz bilgilerimin ve bağlantı kayıtlarımın işlenmesini kabul ediyorum"). Onay kaydı tutulur (tarih, sürüm).
+2. Metinde: hangi veri (ID, IP, MAC, bilgisayar/oturum adı, OS, sürüm), amaç (yalnızca destek ve güvenlik), saklama süresi, kim görür, rızayı geri çekme ve verinin silinmesi yolu.
+3. Danışan programı kaldırdığında veya rızasını geri çektiğinde kaydı silinir/anonimleştirilir (panelde "cihazı sil").
+4. Erişim yalnızca süper admin ve yetkili üyeler. Ekran içeriği sunucuda kaydedilmez.
+Metin ayrıca bir hukuk danışmanıyla gözden geçirilmelidir.
 
 ## Aşamalar
 
