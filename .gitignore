@@ -65,3 +65,7 @@ server/site/httpdocs/indir/
 server/site/httpdocs/ayar.js
 !server/site/httpdocs/favicon.svg
 !res/m2y/icons/**
+
+# Yerel indirilen sürüm dosyaları
+*.msi
+RustDesk-*.zip
