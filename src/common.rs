@@ -899,8 +899,9 @@ pub fn get_sysinfo() -> serde_json::Value {
         }
     }
     // M2YDesk: cihaz envanteri için MAC adresi (yalnızca onay verilmişse gönderilir, bkz. `heartbeat_url`)
-    if let Ok(Some(mac)) = hbb_common::mac_address::get_mac_address() {
-        out["mac"] = json!(mac.to_string());
+    let mac = m2y_mac_address();
+    if !mac.is_empty() {
+        out["mac"] = json!(mac);
     }
     out
 }
@@ -1019,6 +1020,35 @@ pub async fn do_check_software_update() -> hbb_common::ResultType<()> {
     Ok(())
 }
 
+/// MAC adresi (Android/iOS'ta `mac_address` kütüphanesi yok → boş).
+pub fn m2y_mac_address() -> String {
+    #[cfg(not(any(target_os = "android", target_os = "ios")))]
+    {
+        hbb_common::mac_address::get_mac_address()
+            .ok()
+            .flatten()
+            .map(|m| m.to_string())
+            .unwrap_or_default()
+    }
+    #[cfg(any(target_os = "android", target_os = "ios"))]
+    {
+        String::new()
+    }
+}
+
+/// Arayüz metni çevirisi; Android/iOS'ta `lang` modülü yoktur, anahtar aynen döner
+/// (Flutter msgbox metnini kendisi çevirir).
+pub fn m2y_tr(key: &str) -> String {
+    #[cfg(not(any(target_os = "android", target_os = "ios")))]
+    {
+        crate::lang::translate(key.to_owned())
+    }
+    #[cfg(any(target_os = "android", target_os = "ios"))]
+    {
+        key.to_owned()
+    }
+}
+
 static M2Y_BLOCK_CACHE: std::sync::Mutex<Option<(std::time::Instant, hbb_common::m2y::BlockList)>> =
     std::sync::Mutex::new(None);
 
@@ -1054,19 +1084,15 @@ pub async fn m2y_connect_gate() -> Option<String> {
         if secs > 0 {
             return Some(format!(
                 "{} ({} sn)",
-                crate::lang::translate("m2y-nonmember-wait".to_owned()),
+                m2y_tr("m2y-nonmember-wait"),
                 secs
             ));
         }
     }
     let list = m2y_block_list().await?;
-    let mac = hbb_common::mac_address::get_mac_address()
-        .ok()
-        .flatten()
-        .map(|m| m.to_string())
-        .unwrap_or_default();
+    let mac = m2y_mac_address();
     if list.is_blocked(&Config::get_id(), &encode64(hbb_common::get_uuid()), &mac) {
-        return Some(crate::lang::translate("m2y-blocked".to_owned()));
+        return Some(m2y_tr("m2y-blocked"));
     }
     None
 }

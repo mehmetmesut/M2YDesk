@@ -313,7 +313,7 @@ impl<T: InvokeUiSession> Remote<T> {
                                         self.handler.msgbox(
                                             "error",
                                             "Session limit",
-                                            &crate::lang::translate("m2y-nonmember-expired".to_owned()),
+                                            &crate::common::m2y_tr("m2y-nonmember-expired"),
                                             "",
                                         );
                                         break;
@@ -323,7 +323,7 @@ impl<T: InvokeUiSession> Remote<T> {
                                         self.handler.msgbox(
                                             "custom-nocancel",
                                             "Session limit",
-                                            &crate::lang::translate("m2y-nonmember-warn".to_owned()),
+                                            &crate::common::m2y_tr("m2y-nonmember-warn"),
                                             "",
                                         );
                                     }
