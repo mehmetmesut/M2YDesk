@@ -53,10 +53,15 @@ M2YDesk: RustDesk 1.4.9 tabanlı, kendi sunucuda barındırılan uzaktan destek 
 `mehmetmesut/RustDesk` → **`mehmetmesut/M2YDesk`** olarak yeniden adlandırıldı (özel, dal aynı). Eski adres GitHub'da yönlendirilir; yeni klonlar `https://github.com/mehmetmesut/M2YDesk.git` kullanmalı, Actions adresleri `/mehmetmesut/M2YDesk/actions/...` olur.
 
 ## Bulut uygulama planı (29.09.2026, onay bekliyor)
-Görev 1–8'in kod doğrulamalı planı: [`bulut-uygulama-plani.md`](bulut-uygulama-plani.md). Yerel oturumdan istenecek işler planın §2'sinde (ikinci hbbr `:21127`, `guncelleme/` dizini, güncelleme testi, API sunucusu). Onay 29.09.2026 alındı. **Görev 4 ✅** (QS → Hızlı Destek: pencere başlığı `displayAppName`, exe metaverisi, belgeler; iç ad `M2YDeskQS` ve dosya adı `-qs-` değişmedi). Sıradaki: Görev 1.
+Görev 1–8'in kod doğrulamalı planı: [`bulut-uygulama-plani.md`](bulut-uygulama-plani.md). Yerel oturumdan istenecek işler planın §2'sinde (ikinci hbbr `:21127`, `guncelleme/` dizini, güncelleme testi, API sunucusu). Onay 29.09.2026 alındı. **Görev 4 ✅** (QS → Hızlı Destek: pencere başlığı `displayAppName`, exe metaverisi, belgeler; iç ad `M2YDeskQS` ve dosya adı `-qs-` değişmedi). **Görev 1 ✅ (kod; derlenmedi, yerel test bekliyor)**: `surum.json` denetimi, SHA-256 doğrulamalı sessiz güncelleme (kurulu Windows), diğerlerinde kart. Ayrıntı: [`guncelleme.md`](guncelleme.md). Sıradaki: Görev 3.
 
 ## Yeni plan (29.09.2026)
 - Pro özelliklerinin kendi çözümümüzle karşılanması planı: [`yonetim-katmani-plani.md`](yonetim-katmani-plani.md). Sıra: Aşama 0 (1.0.0 derleme + dosyalar + ilk bağlantı testi) → 1 (hesap/API sunucusu) → 2/3 (güncelleme, üye/üye olmayan sınırları).
 - **Bulut oturumundan istenen iş (Aşama 2/3 istemci kodu):** güncelleme denetimini `desk.mehmetmesut.com/guncelleme/surum.json`'a yönlendirme + sessiz güncelleme; girişsiz kullanıcı için relay `:21127`, 5 dk oturum kesme, 2 dk bekleme; girişli kullanıcı için sınırsız. Ayrıntı planda.
 - Derleme #4 `Cargo.lock` uyuşmazlığıyla düştü (portable-packer 1.4.9→1.0.0), düzeltildi (`2b9dcd4`), run #5 çalışıyor.
 - **Süper admin gereksinimi (29.09.2026):** `mehmetmesut@gmail.com` Google girişi = süper admin; tüm cihazların ID, IP, MAC, bilgisayar/oturum adı görünür, takma adla adres defterine eklenir. Bulut oturumundan istenen iş: istemci sistem bilgisine MAC adresi eklenmesi + QS'e salt raporlama işlevi. Ayrıntı ve KVKK notu: `docs/yonetim-katmani-plani.md` (satır 10).
+
+## Yerel oturumdan istenen iş — Görev 1 (29.09.2026)
+- Sunucuda `server/site/httpdocs/.htaccess` yeni sürümünü (surum/engel.json için no-store) siteye kopyala.
+- Sürüm 1.0.1 derlemesinden sonra `istemci-hazirla.sh` çalıştır → `guncelleme/surum.json` + boş `engel.json` oluşur; `guncelleme.md` "Test" adımlarını uygula (özellikle MSI ile kurulu sürüm).
+- Not: ana crate bulut ortamında derlenemiyor (gstreamer yok); yalnızca `hbb_common` testleri (`cargo test -p hbb_common m2y`) çalıştı. Derleme hatası çıkarsa Actions günlüğünü DEVIR'e yaz.

@@ -21,3 +21,9 @@ Header always set Referrer-Policy "strict-origin-when-cross-origin"
 
 # Büyük dosyalar sıkıştırılmasın (zaten sıkıştırılmış)
 SetEnvIfNoCase Request_URI "\.(exe|dmg|deb|AppImage|apk)$" no-gzip
+
+# İstemci güncelleme/engel bildirimleri her istekte yeniden okunsun (JSON, önbelleğe alınmaz)
+<FilesMatch "^(surum|engel)\.json$">
+    Header set Cache-Control "no-store, max-age=0"
+    Header set Content-Type "application/json; charset=utf-8"
+</FilesMatch>

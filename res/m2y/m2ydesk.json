@@ -7,8 +7,8 @@
     "relay-server": "${M2Y_SERVER_HOST}",
     "key": "${M2Y_SERVER_KEY}",
     "register-device": "N",
-    "allow-auto-update": "N",
-    "enable-check-update": "N",
+    "allow-auto-update": "Y",
+    "enable-check-update": "Y",
     "hide-server-settings": "Y",
     "hide-powered-by-me": "Y"
   },

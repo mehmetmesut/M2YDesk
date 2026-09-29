@@ -489,6 +489,57 @@ pub struct VersionCheckResponse {
     pub url: String,
 }
 
+/// M2YDesk güncelleme bildirimi (`surum.json`). Şema:
+/// `{"version":"1.0.1","tarih":"2026-09-29","dosyalar":{"windows_install":{"url":"https://…","sha256":"…"}}}`
+#[derive(Debug, Default, Clone, Deserialize, Serialize)]
+pub struct M2yUpdateFile {
+    #[serde(default)]
+    pub url: String,
+    #[serde(default)]
+    pub sha256: String,
+}
+
+#[derive(Debug, Default, Deserialize, Serialize)]
+pub struct M2yUpdateInfo {
+    #[serde(default)]
+    pub version: String,
+    #[serde(default)]
+    pub tarih: String,
+    #[serde(default)]
+    pub dosyalar: std::collections::HashMap<String, M2yUpdateFile>,
+}
+
+/// Güncelleme sunucusu (derleme zamanı `M2Y_SERVER_HOST`).
+pub fn m2y_update_host() -> &'static str {
+    match option_env!("M2Y_SERVER_HOST") {
+        Some(v) if !v.is_empty() => v,
+        _ => "desk.mehmetmesut.com",
+    }
+}
+
+pub fn m2y_update_url() -> String {
+    format!("https://{}/guncelleme/surum.json", m2y_update_host())
+}
+
+/// İndirme adresi yalnızca güncelleme sunucusunun kendi alan adında ve https olmalıdır.
+pub fn m2y_update_file_url_ok(url: &str) -> bool {
+    url.starts_with(&format!("https://{}/", m2y_update_host()))
+}
+
+pub fn sha256_hex(data: &[u8]) -> String {
+    use sha2::{Digest, Sha256};
+    Sha256::digest(data)
+        .iter()
+        .map(|b| format!("{:02x}", b))
+        .collect()
+}
+
+/// Büyük/küçük harf duyarsız SHA-256 karşılaştırması; boş beklenen değer asla eşleşmez.
+pub fn sha256_matches(data: &[u8], expected: &str) -> bool {
+    let expected = expected.trim();
+    !expected.is_empty() && sha256_hex(data).eq_ignore_ascii_case(expected)
+}
+
 pub const VER_TYPE_RUSTDESK_CLIENT: &str = "rustdesk-client";
 pub const VER_TYPE_RUSTDESK_SERVER: &str = "rustdesk-server";
 
@@ -531,6 +582,28 @@ pub fn time_based_rand() -> u32 {
 #[cfg(test)]
 mod test {
     use super::*;
+
+    #[test]
+    fn test_m2y_update_info() {
+        let j = r#"{"version":"1.0.1","tarih":"2026-09-29","dosyalar":{"windows_install":{"url":"https://desk.mehmetmesut.com/indir/a-install.exe","sha256":"AB"}}}"#;
+        let i: M2yUpdateInfo = serde_json::from_str(j).unwrap();
+        assert_eq!(i.version, "1.0.1");
+        assert_eq!(i.dosyalar["windows_install"].sha256, "AB");
+        assert!(serde_json::from_str::<M2yUpdateInfo>("{}").unwrap().version.is_empty());
+    }
+
+    #[test]
+    fn test_m2y_sha256() {
+        // "abc" SHA-256
+        let h = "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad";
+        assert!(sha256_matches(b"abc", h));
+        assert!(sha256_matches(b"abc", &h.to_uppercase()));
+        assert!(!sha256_matches(b"abd", h));
+        assert!(!sha256_matches(b"abc", ""));
+        assert!(m2y_update_file_url_ok(&format!("https://{}/indir/x.exe", m2y_update_host())));
+        assert!(!m2y_update_file_url_ok("https://evil.example/indir/x.exe"));
+        assert!(!m2y_update_file_url_ok(&format!("http://{}/x", m2y_update_host())));
+    }
 
     #[test]
     fn test_mangle() {

@@ -132,72 +132,60 @@ fn check_update(manually: bool) -> ResultType<()> {
     if update_url.is_empty() {
         log::debug!("No update available.");
     } else {
-        let download_url = update_url.replace("tag", "download");
-        let version = download_url.split('/').last().unwrap_or_default();
+        let version = update_url.rsplit('/').next().unwrap_or_default().to_owned();
+        // M2YDesk: sessiz güncelleme yalnızca kurulu Windows sürümünde; diğer varyantlar yalnızca bildirir.
+        #[cfg(not(target_os = "windows"))]
+        {
+            log::debug!("New version available: {} (silent update only on Windows)", &version);
+            return Ok(());
+        }
         #[cfg(target_os = "windows")]
-        let download_url = if cfg!(feature = "flutter") {
-            let Some(arch) = crate::platform::windows::release_arch_suffix() else {
-                bail!(
-                    "Unsupported Windows release architecture: {}",
-                    std::env::consts::ARCH
-                );
+        {
+            if crate::common::m2y_update_file_key() != "windows_install" {
+                log::debug!("New version available: {} (notify only)", &version);
+                return Ok(());
+            }
+            let file = crate::common::M2Y_UPDATE_FILE.lock().unwrap().clone();
+            let Some(file) = file else {
+                bail!("No verified update file for version {}", version);
             };
-            format!(
-                "{}/rustdesk-{}-{}.{}",
-                download_url,
-                version,
-                arch,
-                if update_msi { "msi" } else { "exe" }
-            )
-        } else {
-            format!("{}/rustdesk-{}-x86-sciter.exe", download_url, version)
-        };
-        log::debug!("New version available: {}", &version);
-        let client = create_http_client_with_url(&download_url);
-        let Some(file_path) = get_download_file_from_url(&download_url) else {
-            bail!("Failed to get the file path from the URL: {}", download_url);
-        };
-        let mut is_file_exists = false;
-        if file_path.exists() {
-            // Check if the file size is the same as the server file size
-            // If the file size is the same, we don't need to download it again.
-            let file_size = std::fs::metadata(&file_path)?.len();
-            let response = client.head(&download_url).send()?;
-            if !response.status().is_success() {
-                bail!("Failed to get the file size: {}", response.status());
-            }
-            let total_size = response
-                .headers()
-                .get(reqwest::header::CONTENT_LENGTH)
-                .and_then(|ct_len| ct_len.to_str().ok())
-                .and_then(|ct_len| ct_len.parse::<u64>().ok());
-            let Some(total_size) = total_size else {
-                bail!("Failed to get content length");
+            let download_url = file.url;
+            log::debug!("New version available: {}", &version);
+            let client = create_http_client_with_url(&download_url);
+            let Some(file_path) = get_download_file_from_url(&download_url) else {
+                bail!("Failed to get the file path from the URL: {}", download_url);
             };
-            if file_size == total_size {
-                is_file_exists = true;
-            } else {
-                std::fs::remove_file(&file_path)?;
+            // Önceden indirilmiş dosya yalnızca SHA-256 eşleşiyorsa yeniden kullanılır.
+            if file_path.exists() {
+                let reusable = std::fs::read(&file_path)
+                    .map(|d| hbb_common::sha256_matches(&d, &file.sha256))
+                    .unwrap_or(false);
+                if !reusable {
+                    std::fs::remove_file(&file_path)?;
+                }
             }
-        }
-        if !is_file_exists {
-            let response = client.get(&download_url).send()?;
-            if !response.status().is_success() {
-                bail!(
-                    "Failed to download the new version file: {}",
-                    response.status()
-                );
+            if !file_path.exists() {
+                let response = client.get(&download_url).send()?;
+                if !response.status().is_success() {
+                    bail!(
+                        "Failed to download the new version file: {}",
+                        response.status()
+                    );
+                }
+                let file_data = response.bytes()?;
+                // Doğrulanmadan diske yazılmaz / çalıştırılmaz.
+                if !hbb_common::sha256_matches(&file_data, &file.sha256) {
+                    bail!("SHA-256 mismatch for the downloaded update, version {}", version);
+                }
+                let mut f = std::fs::File::create(&file_path)?;
+                f.write_all(&file_data)?;
             }
-            let file_data = response.bytes()?;
-            let mut file = std::fs::File::create(&file_path)?;
-            file.write_all(&file_data)?;
-        }
-        // We have checked if the `conns` is empty before, but we need to check again.
-        // No need to care about the downloaded file here, because it's rare case that the `conns` are empty
-        // before the download, but not empty after the download.
-        if has_no_active_conns() {
-            #[cfg(target_os = "windows")]
-            update_new_version(update_msi, &version, &file_path);
+            // We have checked if the `conns` is empty before, but we need to check again.
+            // No need to care about the downloaded file here, because it's rare case that the `conns` are empty
+            // before the download, but not empty after the download.
+            if has_no_active_conns() {
+                update_new_version(update_msi, &version, &file_path);
+            }
         }
     }
     Ok(())

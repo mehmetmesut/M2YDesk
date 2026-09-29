@@ -94,6 +94,7 @@ pub mod input {
 
 lazy_static::lazy_static! {
     pub static ref SOFTWARE_UPDATE_URL: Arc<Mutex<String>> = Default::default();
+    pub static ref M2Y_UPDATE_FILE: Arc<Mutex<Option<hbb_common::M2yUpdateFile>>> = Default::default();
     pub static ref DEVICE_ID: Arc<Mutex<String>> = Default::default();
     pub static ref DEVICE_NAME: Arc<Mutex<String>> = Default::default();
     static ref PUBLIC_IPV6_ADDR: Arc<Mutex<(Option<SocketAddr>, Option<Instant>)>> = Default::default();
@@ -939,28 +940,24 @@ pub fn is_modifier(evt: &KeyEvent) -> bool {
 }
 
 pub fn check_software_update() {
-    if is_custom_client() {
-        return;
-    }
     let opt = LocalConfig::get_option(keys::OPTION_ENABLE_CHECK_UPDATE);
     if config::option2bool(keys::OPTION_ENABLE_CHECK_UPDATE, &opt) {
         std::thread::spawn(move || allow_err!(do_check_software_update()));
     }
 }
 
-// No need to check `danger_accept_invalid_cert` for now.
-// Because the url is always `https://api.rustdesk.com/version/latest`.
+// M2YDesk: güncelleme bildirimi kendi sunucumuzdaki `surum.json` dosyasından (GET) okunur.
+// Adres derleme zamanında sabittir (`hbb_common::m2y_update_url`), `danger_accept_invalid_cert` gerekmez.
 #[tokio::main(flavor = "current_thread")]
 pub async fn do_check_software_update() -> hbb_common::ResultType<()> {
-    let (request, url) =
-        hbb_common::version_check_request(hbb_common::VER_TYPE_RUSTDESK_CLIENT.to_string());
+    let url = hbb_common::m2y_update_url();
     let proxy_conf = Config::get_socks();
     let tls_url = get_url_for_tls(&url, &proxy_conf);
     let tls_type = get_cached_tls_type(tls_url);
     let is_tls_not_cached = tls_type.is_none();
     let tls_type = tls_type.unwrap_or(TlsType::Rustls);
     let client = create_http_client_async(tls_type, false);
-    let latest_release_response = match client.post(&url).json(&request).send().await {
+    let latest_release_response = match client.get(&url).send().await {
         Ok(resp) => {
             upsert_tls_cache(tls_url, tls_type, false);
             resp
@@ -969,7 +966,7 @@ pub async fn do_check_software_update() -> hbb_common::ResultType<()> {
             if is_tls_not_cached && err.is_request() {
                 let tls_type = TlsType::NativeTls;
                 let client = create_http_client_async(tls_type, false);
-                let resp = client.post(&url).json(&request).send().await?;
+                let resp = client.get(&url).send().await?;
                 upsert_tls_cache(tls_url, tls_type, false);
                 resp
             } else {
@@ -977,12 +974,30 @@ pub async fn do_check_software_update() -> hbb_common::ResultType<()> {
             }
         }
     };
+    if !latest_release_response.status().is_success() {
+        hbb_common::bail!("surum.json: {}", latest_release_response.status());
+    }
     let bytes = latest_release_response.bytes().await?;
-    let resp: hbb_common::VersionCheckResponse = serde_json::from_slice(&bytes)?;
-    let response_url = resp.url;
-    let latest_release_version = response_url.rsplit('/').next().unwrap_or_default();
+    let info: hbb_common::M2yUpdateInfo = serde_json::from_slice(&bytes)?;
+    let latest_release_version = info.version.trim().trim_start_matches('v').to_owned();
+    if latest_release_version.is_empty() {
+        hbb_common::bail!("surum.json: sürüm alanı boş");
+    }
+    // Arayüz yalnızca son yol parçasını sürüm olarak okur (`get_new_version`).
+    let response_url = format!(
+        "https://{}/surum/{}",
+        hbb_common::m2y_update_host(),
+        latest_release_version
+    );
 
     if get_version_number(&latest_release_version) > get_version_number(crate::VERSION) {
+        // Bu platform/varyant için indirilecek dosya; adres alan adı ve SHA-256 doğrulanır.
+        let file = info
+            .dosyalar
+            .get(m2y_update_file_key())
+            .filter(|f| hbb_common::m2y_update_file_url_ok(&f.url) && !f.sha256.trim().is_empty())
+            .cloned();
+        *M2Y_UPDATE_FILE.lock().unwrap() = file;
         #[cfg(feature = "flutter")]
         {
             let mut m = HashMap::new();
@@ -994,9 +1009,49 @@ pub async fn do_check_software_update() -> hbb_common::ResultType<()> {
         }
         *SOFTWARE_UPDATE_URL.lock().unwrap() = response_url;
     } else {
+        *M2Y_UPDATE_FILE.lock().unwrap() = None;
         *SOFTWARE_UPDATE_URL.lock().unwrap() = "".to_string();
     }
     Ok(())
+}
+
+/// `surum.json` içindeki `dosyalar` anahtarı (platform + varyant).
+pub fn m2y_update_file_key() -> &'static str {
+    #[cfg(target_os = "windows")]
+    {
+        if cfg!(feature = "m2y_qs") {
+            "windows_qs"
+        } else if is_installed() {
+            "windows_install"
+        } else {
+            "windows"
+        }
+    }
+    #[cfg(target_os = "macos")]
+    {
+        if cfg!(target_arch = "aarch64") {
+            "macos_apple"
+        } else {
+            "macos_intel"
+        }
+    }
+    #[cfg(target_os = "linux")]
+    {
+        "linux_deb"
+    }
+    #[cfg(target_os = "android")]
+    {
+        "android"
+    }
+    #[cfg(not(any(
+        target_os = "windows",
+        target_os = "macos",
+        target_os = "linux",
+        target_os = "android"
+    )))]
+    {
+        ""
+    }
 }
 
 #[inline]

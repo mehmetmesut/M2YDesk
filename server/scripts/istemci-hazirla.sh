@@ -10,7 +10,8 @@
 #   SITE_DIZINI=/var/www/vhosts/mehmetmesut.com/desk.mehmetmesut.com sudo bash scripts/istemci-hazirla.sh
 #   GITHUB_TOKEN=ghp_... (depo ÖZEL ise zorunlu; herkese açık depoda gerekmez)
 #
-# Çıktı: $SITE_DIZINI/indir/  ve  $SITE_DIZINI/ayar.js
+# Çıktı: $SITE_DIZINI/indir/, $SITE_DIZINI/ayar.js ve $SITE_DIZINI/guncelleme/surum.json
+#         (istemcilerin güncelleme denetimi; dosya adresi + SHA-256 içerir)
 
 set -euo pipefail
 
@@ -115,8 +116,45 @@ window.M2Y_AYAR = {
 };
 EOF
 
-chmod 755 "$INDIR_DIZINI"
-chmod 644 "$INDIR_DIZINI"/* "$SITE_DIZINI/ayar.js" 2>/dev/null || true
+# 7) İstemci güncelleme bildirimi: guncelleme/surum.json (istemciler GET ile okur, SHA-256 doğrular)
+GUNCELLEME_DIZINI="$SITE_DIZINI/guncelleme"
+mkdir -p "$GUNCELLEME_DIZINI"
+SURUM_SAYI="${SURUM#v}"
+if [[ "$SURUM_SAYI" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    ALAN="$ALAN_ADI" SURUM_SAYI="$SURUM_SAYI" INDIR="$INDIR_DIZINI" \
+    HEDEF="$GUNCELLEME_DIZINI/surum.json" \
+    SONUC_JSON="$(for p in "${!SONUC[@]}"; do printf '%s\t%s\n' "$p" "${SONUC[$p]}"; done)" \
+    python3 - <<'PY'
+import hashlib, json, os, datetime
+alan, indir = os.environ["ALAN"], os.environ["INDIR"]
+dosyalar = {}
+for satir in os.environ["SONUC_JSON"].splitlines():
+    platform, _, ad = satir.partition("\t")
+    yol = os.path.join(indir, ad)
+    if not ad or not os.path.isfile(yol):
+        continue
+    h = hashlib.sha256()
+    with open(yol, "rb") as f:
+        for blok in iter(lambda: f.read(1 << 20), b""):
+            h.update(blok)
+    dosyalar[platform] = {"url": f"https://{alan}/indir/{ad}", "sha256": h.hexdigest()}
+veri = {"version": os.environ["SURUM_SAYI"],
+        "tarih": datetime.date.today().isoformat(),
+        "dosyalar": dosyalar}
+gecici = os.environ["HEDEF"] + ".tmp"
+with open(gecici, "w", encoding="utf-8") as f:
+    json.dump(veri, f, ensure_ascii=False, indent=2)
+os.replace(gecici, os.environ["HEDEF"])
+PY
+    basari "guncelleme/surum.json yazıldı (sürüm $SURUM_SAYI)"
+else
+    uyari "Etiket '$SURUM' x.y.z biçiminde değil; surum.json güncellenmedi (istemciler eski bildirimi görür)."
+fi
+# Engel listesi yoksa boş oluştur (SHA-256 özetleri: id / uuid / mac)
+[[ -f "$GUNCELLEME_DIZINI/engel.json" ]] || echo '{"id":[],"uuid":[],"mac":[]}' > "$GUNCELLEME_DIZINI/engel.json"
+
+chmod 755 "$INDIR_DIZINI" "$GUNCELLEME_DIZINI"
+chmod 644 "$INDIR_DIZINI"/* "$SITE_DIZINI/ayar.js" "$GUNCELLEME_DIZINI"/*.json 2>/dev/null || true
 
 echo
 basari "İstemciler hazır: $INDIR_DIZINI"
