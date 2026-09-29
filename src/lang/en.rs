@@ -286,5 +286,9 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("m2y-nonmember-expired", "Guest session limit (5 min) reached. You can reconnect in 2 minutes. Sign in for unlimited use."),
         ("m2y-nonmember-wait", "Guest cooldown in progress. Please wait or sign in."),
         ("m2y-blocked", "This device has been blocked. Contact the administrator if you think this is a mistake."),
+        ("m2y-consent-title", "Share device information"),
+        ("m2y-consent-text", "For the remote support service, this device's ID, IP address, MAC address, computer and user name, operating system and online status are sent to the M2YDesk server. Purpose: letting your support provider recognise the device and preventing abuse. If you decline, connections still work but this information is not shared. Details: desk.mehmetmesut.com"),
+        ("m2y-consent-accept", "I agree"),
+        ("m2y-consent-decline", "Not now"),
     ].iter().cloned().collect();
 }

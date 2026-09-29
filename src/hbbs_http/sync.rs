@@ -274,6 +274,10 @@ async fn start_hbbs_sync_async() {
 }
 
 fn heartbeat_url() -> String {
+    // M2YDesk: onay verilmeden (veya raporlama kapalıyken) hiçbir cihaz bilgisi gönderilmez.
+    if !hbb_common::m2y::device_report_allowed() {
+        return "".to_owned();
+    }
     let url = crate::common::get_api_server(
         Config::get_option("api-server"),
         Config::get_option("custom-rendezvous-server"),

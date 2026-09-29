@@ -898,6 +898,10 @@ pub fn get_sysinfo() -> serde_json::Value {
             out["username"] = json!(username);
         }
     }
+    // M2YDesk: cihaz envanteri için MAC adresi (yalnızca onay verilmişse gönderilir, bkz. `heartbeat_url`)
+    if let Ok(Some(mac)) = hbb_common::mac_address::get_mac_address() {
+        out["mac"] = json!(mac.to_string());
+    }
     out
 }
 

@@ -15,6 +15,11 @@ pub const OPT_NONMEMBER_LIMIT: &str = "m2y-nonmember-limit";
 /// Yerel yapılandırmada saklanan bekleme bitiş zamanı (Unix saniye).
 pub const OPT_BLOCK_UNTIL: &str = "m2y-block-until";
 
+/// Cihaz bilgisi raporlama anahtarı (derleme zamanı, yapılandırma JSON'u): "Y" ise kullanıcı onayı sorulur.
+pub const OPT_REPORT_DEVICE: &str = "m2y-report-device";
+/// Kullanıcı onayı ("Y"); arayüzden `set_option` ile yazılır, hizmet sürecine IPC ile ulaşır.
+pub const OPT_REPORT_CONSENT: &str = "m2y-report-consent";
+
 pub const NONMEMBER_SESSION: Duration = Duration::from_secs(5 * 60);
 pub const NONMEMBER_WARN_AT: Duration = Duration::from_secs(4 * 60 + 30);
 pub const NONMEMBER_BLOCK: Duration = Duration::from_secs(2 * 60);
@@ -22,6 +27,12 @@ pub const NONMEMBER_RELAY_PORT: u16 = 21127;
 
 pub fn limits_enabled() -> bool {
     Config::get_option(OPT_NONMEMBER_LIMIT) == "Y"
+}
+
+/// Cihaz bilgisi (ID, IP, MAC, ad, işletim sistemi, çevrimiçi durum) sunucuya YALNIZCA
+/// derleme anahtarı açık **ve** kullanıcı açıkça onay verdiyse gönderilir (KVKK).
+pub fn device_report_allowed() -> bool {
+    Config::get_option(OPT_REPORT_DEVICE) == "Y" && Config::get_option(OPT_REPORT_CONSENT) == "Y"
 }
 
 /// Üye = hesap girişi yapılmış (`access_token` ve `user_info` dolu).

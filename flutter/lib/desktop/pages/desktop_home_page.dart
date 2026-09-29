@@ -682,9 +682,39 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     );
   }
 
+  void _m2yAskDeviceReportConsent() {
+    if (!mounted) return;
+    if (bind.mainGetOptionSync(key: 'm2y-report-device') != 'Y') return;
+    if (bind.mainGetOptionSync(key: 'm2y-report-consent') == 'Y') return;
+    gFFI.dialogManager.show((setState, close, context) {
+      accept() async {
+        await bind.mainSetOption(key: 'm2y-report-consent', value: 'Y');
+        close();
+      }
+
+      return CustomAlertDialog(
+        title: Text(translate('m2y-consent-title')),
+        content: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 320),
+          child: SingleChildScrollView(
+            child: Text(translate('m2y-consent-text')),
+          ),
+        ),
+        actions: [
+          dialogButton('m2y-consent-decline', onPressed: close, isOutline: true),
+          dialogButton('m2y-consent-accept', onPressed: accept),
+        ],
+        onSubmit: accept,
+        onCancel: close,
+      );
+    }, tag: 'm2y-consent');
+  }
+
   @override
   void initState() {
     super.initState();
+    // M2YDesk: cihaz bilgisi paylaşımı için açık onay (KVKK); onay yoksa hiçbir bilgi gönderilmez.
+    Future.delayed(const Duration(seconds: 2), _m2yAskDeviceReportConsent);
     _updateTimer = periodic_immediate(const Duration(seconds: 1), () async {
       await gFFI.serverModel.fetchID();
       final error = await bind.mainGetError();
