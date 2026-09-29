@@ -152,6 +152,9 @@ def uygula(varyant):
 
 if __name__ == "__main__":
     if len(sys.argv) >= 3 and sys.argv[1] == "--uygula":
+        # Set depoda yoksa (CI temiz checkout) önce üret
+        if not os.path.isfile(os.path.join(CIKTI, sys.argv[2], "icon.png")):
+            uret(sys.argv[2])
         uygula(sys.argv[2])
     else:
         for v in VARYANTLAR:
