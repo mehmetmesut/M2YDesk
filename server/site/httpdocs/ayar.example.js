@@ -2,12 +2,12 @@
 window.M2Y_AYAR = {
   sunucu: "rustdesk.mehmetmesut.com",
   anahtar: "ACIK_ANAHTAR_BURAYA=",
-  surum: "1.4.9",
+  surum: "1.0.0",
   guncelleme: "01.01.2026",
   dosyalar: {
-    windows_qs: "M2YDesk-QS-1.4.9-x86_64.exe",
-    windows: "M2YDesk-1.4.9-x86_64.exe",
-    windows_install: "M2YDesk-1.4.9-x86_64-install.exe",
+    windows_qs: "M2YDesk-QS-1.0.0-x86_64.exe",
+    windows: "M2YDesk-1.0.0-x86_64.exe",
+    windows_install: "M2YDesk-1.0.0-x86_64-install.exe",
     windows_msi: "",
     macos_apple: "",
     macos_intel: "",

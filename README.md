@@ -8,7 +8,7 @@
 | **M2YDesk QS** | aynı kaynak, `incoming` yapılandırması | Yalnızca ID + şifre gösteren mini destek istemcisi |
 | Sunucu (hbbs/hbbr) ve indirme sayfası | [`server/`](server/README.md) | Docker kurulumu, yedekleme, `rustdesk.mehmetmesut.com` sayfası |
 
-Kaynak: RustDesk 1.4.9 (`6c57829`), tek commit olarak içe aktarıldı. Üst kaynak README: [`docs/README.upstream.md`](docs/README.upstream.md).
+Sürüm: **M2YDesk 1.0.0** (taban: RustDesk 1.4.9, `6c57829`, tek commit olarak içe aktarıldı). Üst kaynak README: [`docs/README.upstream.md`](docs/README.upstream.md).
 
 Lisans: AGPL-3.0 (üst kaynakla aynı; dağıtılan istemcilerin kaynağı bu depodur).
 
