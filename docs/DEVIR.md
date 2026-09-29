@@ -46,3 +46,8 @@ M2YDesk: RustDesk 1.4.9 tabanlı, kendi sunucuda barındırılan uzaktan destek 
 - **indir/ dosyaları**: depo özel olduğundan release dosyaları sunucuya otomatik inemiyor; Plesk yükleme aracı ~10 MB ile sınırlı (exe'ler ~23 MB). Çözüm: depoyu public yapmak ya da sunucuda `GITHUB_TOKEN` ortam değişkeniyle `istemci-hazirla.sh` çalıştırmak (PAT ayrıca istenecek).
 - Eski `m2y-test` 1.4.9 dosyaları anahtarsız derlendi; bu sunucuya bağlanamaz, sayfaya konmadı.
 - **Bulut oturumundan istenen iş**: "QS" = "Hızlı Destek". `index.html`'de etiketler yerelde değişti (push edildi); ürün/istemci arayüzündeki adlandırma da gözden geçirilmeli. `kurulum.sh` Docker'ı kendisi kurmuyor; Ubuntu 22.04'te `apt install docker.io docker-compose-v2` yeterli.
+
+## Yeni plan (29.09.2026)
+- Pro özelliklerinin kendi çözümümüzle karşılanması planı: [`yonetim-katmani-plani.md`](yonetim-katmani-plani.md). Sıra: Aşama 0 (1.0.0 derleme + dosyalar + ilk bağlantı testi) → 1 (hesap/API sunucusu) → 2/3 (güncelleme, üye/üye olmayan sınırları).
+- **Bulut oturumundan istenen iş (Aşama 2/3 istemci kodu):** güncelleme denetimini `desk.mehmetmesut.com/guncelleme/surum.json`'a yönlendirme + sessiz güncelleme; girişsiz kullanıcı için relay `:21127`, 5 dk oturum kesme, 2 dk bekleme; girişli kullanıcı için sınırsız. Ayrıntı planda.
+- Derleme #4 `Cargo.lock` uyuşmazlığıyla düştü (portable-packer 1.4.9→1.0.0), düzeltildi (`2b9dcd4`), run #5 çalışıyor.
