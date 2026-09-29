@@ -95,3 +95,7 @@ Görev 1–8'in kod doğrulamalı planı: [`bulut-uygulama-plani.md`](bulut-uygu
 - Sunucu dosyaları (bulut yazdı): `server/docker-compose.yml` (`api`, `hbbr2` profilleri), `server/plesk-nginx.conf.example`, `server/scripts/relay-siniri.sh`. Kurulum/Google adımları: [`hesap-ve-google-girisi.md`](hesap-ve-google-girisi.md).
 - **Yerel oturumdan istenen iş (sırayla):** (1) `docker compose --profile api up -d`, nginx yönergeleri, admin parolası; (2) kullanıcı Google OAuth istemcisini kurar, sırları YALNIZCA panele girer; (3) `curl .../api/login-options`; (4) 1.0.1'de giriş + adres defteri + cihaz listesi uçtan uca; (5) `--profile limit` + relay-siniri.sh (**önce kullanıcı onayı**); (6) ancak sonra 1.0.2'yi dağıt.
 - Doğrulanmadı: `RUSTDESK_API_*` değişken adları, hbbr `-p` bayrağı, OIDC callback yolu, panelde OIDC ile ilk kullanıcıyı admin yapma.
+
+## Yerel oturum için hazırlık (29.09.2026)
+- Tam devam promptu: [`YEREL-DEVAM-PROMPTU.md`](YEREL-DEVAM-PROMPTU.md). Yardımcı betikler: `server/scripts/api-kur.sh`, `dogrula.sh`.
+- Android derlemesi: run #7 `get_sysinfo`'da `out` değişkeni `mut` değildi (`a512820` ile düzeltildi), 3. deneme (run #8) kuyrukta; Windows/Linux etkilenmedi.
