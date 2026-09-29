@@ -4,7 +4,7 @@ Amaç: RustDesk Server Pro'da lisansla gelen özellikleri, yalnızca kendi danı
 
 ## Kararlar (kullanıcıdan)
 - Üye olan: sınırsız süre ve sınırsız eş zamanlı bağlantı.
-- Üye olmayan: toplamda en fazla **5 eş zamanlı** oturum; her oturum **5 dk**, kopunca **2 dk** bekleme.
+- Üye olmayan (oturum açmamış) kullanıcı: toplamda en fazla **5 eş zamanlı** oturum; her oturum **5 dk**, kopunca **2 dk** bekleme. Amaç, programı keşfedenleri üyeliğe teşvik etmek. Kural, kullanıcı adı+parola veya Google ile oturum açmamış herkese uygulanır.
 - Ürün yalnızca kullanıcının kendi danışmanlık verdiği kişi/kurumlar için kullanılır.
 
 ## Hedef özellikler ve karşılıkları
@@ -52,5 +52,5 @@ Aşama 0 → 1 → (2, 3 paralel) → 4 → 5. Aşama 3'ün istemci kısmı ve A
 ## Açık sorular
 1. Aday API sunucusu lisansı ve OIDC/LDAP kapsamı (Aşama 1'de netleşir).
 2. Web istemcisi için açık kaynak seçenek var mı.
-3. Üye olmayan sınırının kaynağı: giriş yapmamış kullanıcı = üye olmayan; danışanlar mı yoksa teknisyenler mi hedef? (Sınır bağlantıyı **başlatan** tarafa uygulanır.)
+3. KARAR: LDAP şart değil. Kayıt ve giriş: e-posta+parola ve Google (OIDC); 2FA (TOTP) isteğe bağlı. Amaç kolaylık ve üyeliğe teşvik. LDAP/Entra ID, kurumsal talep gelirse OIDC üzerine eklenir.
 4. Apple geliştirici hesabı alınacak mı.
