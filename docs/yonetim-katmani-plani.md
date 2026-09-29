@@ -20,6 +20,16 @@ Amaç: RustDesk Server Pro'da lisansla gelen özellikleri, yalnızca kendi danı
 | 7 | Yeni sürümü cihazlara gönderme (otomatik güncelleme) | Fork'ta güncelleme denetimini `https://desk.mehmetmesut.com/guncelleme/surum.json` adresine çevir; Windows kurulum sürümünde sessiz güncelleme; imza/sağlama toplamı kontrolü | İstemci kodu + site | Orta |
 | 8 | iOS | Resmî RustDesk iOS uygulaması özel sunucu + API adresi + anahtarla çalışır. Kendi iOS derlemesi Apple geliştirici hesabı (TestFlight) gerektirir; **başlangıçta resmî uygulama + QR ile ayar** | Site (QR var) | Düşük |
 | 9 | Üye olmayana 5 eş zamanlı + 5 dk / 2 dk kuralı | İki relay (üye: 21117 sınırsız, üye olmayan: 21127) + `ALWAYS_USE_RELAY=Y` + iptables `connlimit` (5 oturum ≈ 10 TCP); süre/bekleme kuralı istemcide | Sunucu + istemci | Orta |
+| 10 | **Süper admin**: `mehmetmesut@gmail.com` ile Google girişi yapan kişi (yapımcı) tüm cihazları görür: RustDesk ID, IP, MAC adresi, bilgisayar adı, oturum (Windows kullanıcı) adı, işletim sistemi, sürüm, son görülme; cihazlara **takma ad** verip adres defterine ekler | Google OIDC'de e-posta eşleşmesi ile otomatik `süper admin` rolü. Cihaz envanteri: istemci açılışta ve düzenli aralıkla API'ye sistem bilgisi gönderir (kimlik, ana bilgisayar adı, kullanıcı, OS, sürüm); **MAC adresi stok istemcide gönderilmez, fork'ta eklenecek**; IP'yi sunucu görür. Takma ad + adres defteri: API sunucusunun adres defteri/etiket modeli | API + istemci kodu | Orta |
+
+**Süper admin kuralları (Aşama 1'e dahil):**
+- Rol atama yalnızca doğrulanmış Google e-postası (`email_verified=true`) `mehmetmesut@gmail.com` ise otomatik yapılır; başka hiçbir e-postaya süper admin verilmez. Panelden rol yükseltme yalnızca süper admin yapabilir.
+- Yedek giriş: yönetici hesabı e-posta+parola olarak da tohumlanır (bcrypt), Google erişilemezse kullanılır. Bu hesap silinemez/pasife alınamaz (`isProtected`).
+- **Hızlı Destek'te cihaz raporlama:** QS'te hesap/ayar kapalı (`disable-account`). Envanterin QS cihazlarını da içermesi için QS'e yalnızca salt "sistem bilgisi gönder" işlevi gömülür (giriş yok, kullanıcı arayüzü değişmez). Bu, danışana **açıkça bildirilmelidir** (aşağıdaki KVKK notu).
+- Denetim: süper adminin cihaz listesini görüntülemesi ve takma ad değişiklikleri denetim günlüğüne yazılır.
+
+## KVKK / gizlilik notu (yeni)
+IP, MAC adresi, bilgisayar ve oturum adı **kişisel veri** sayılabilir. Danışanlar için: (1) programda ve indirme sayfasında kısa aydınlatma metni (hangi veri, ne amaçla, ne kadar saklanır, kim görür), (2) amaç yalnızca destek ve güvenlik, (3) saklama süresi tanımı ve silme yolu, (4) erişim yalnızca süper admin/yetkili üyeler. Ekran içeriği sunucuda kaydedilmez. Metin ayrıca bir hukuk danışmanıyla gözden geçirilmelidir.
 
 ## Aşamalar
 
