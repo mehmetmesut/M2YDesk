@@ -44,3 +44,55 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+  # ---- İsteğe bağlı: `docker compose --profile api up -d` / `--profile limit up -d` ----
+
+  # Üye olmayan kullanıcılar için ikinci relay (:21127). İstemci girişsizken buraya yönelir;
+  # 5 eşzamanlı oturum sınırı güvenlik duvarında uygulanır (scripts/relay-siniri.sh).
+  # DOĞRULA: `docker logs hbbr2` çıktısında "Listening on tcp :21127" görünmeli.
+  hbbr2:
+    container_name: hbbr2
+    profiles: ["limit"]
+    image: rustdesk/rustdesk-server:${RUSTDESK_SURUM:-latest}
+    command: hbbr -p 21127 -k _
+    volumes:
+      - ./data:/root
+    network_mode: host
+    environment:
+      - TZ=${TZ:-Europe/Istanbul}
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Hesap / Google girişi / cihaz envanteri / adres defteri API'si (lejianwen/rustdesk-api, MIT).
+  # Yalnızca yerel makineye bağlanır; dışarıya Plesk nginx ters vekili açar (plesk-nginx.conf.example).
+  # DOĞRULA: ortam değişkeni adları imajın README'sine göre (docs/hesap-ve-google-girisi.md).
+  api:
+    container_name: m2y-api
+    profiles: ["api"]
+    image: lejianwen/rustdesk-api:${API_SURUM:-latest}
+    environment:
+      - TZ=${TZ:-Europe/Istanbul}
+      - RUSTDESK_API_LANG=tr
+      - RUSTDESK_API_RUSTDESK_ID_SERVER=${ALAN_ADI}:21116
+      - RUSTDESK_API_RUSTDESK_RELAY_SERVER=${ALAN_ADI}:21117
+      - RUSTDESK_API_RUSTDESK_API_SERVER=https://${ALAN_ADI}
+      - RUSTDESK_API_RUSTDESK_KEY_FILE=/data/id_ed25519.pub
+      # Herkese açık kayıt kapalı; kullanıcılar Google girişiyle oluşur
+      - RUSTDESK_API_APP_REGISTER=false
+      - RUSTDESK_API_APP_WEB_CLIENT=0
+    ports:
+      - "127.0.0.1:21114:21114"
+    volumes:
+      # Açık anahtar salt okunur (özel anahtar bu kapsayıcıya bağlanmaz)
+      - ./data/id_ed25519.pub:/data/id_ed25519.pub:ro
+      - ./data/api:/app/data
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

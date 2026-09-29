@@ -89,3 +89,9 @@ Görev 1–8'in kod doğrulamalı planı: [`bulut-uygulama-plani.md`](bulut-uygu
 - **Yerel oturumdan istenen iş:** `GITHUB_TOKEN=... sudo -E bash scripts/istemci-hazirla.sh` (v1.0.1; `indir/`, `ayar.js`, `guncelleme/surum.json`, `engel.json`); sonra gerçek Windows cihazda 1.0.0 → 1.0.1 güncelleme testi + onay ekranı (Hızlı Destek 280 px) + bağlantı testi.
 - `m2y-nonmember-limit=N` (kapalı) ve API sunucusu yok: cihaz bilgisi onayı çıkar ama sunucuda görünen bir şey olmaz.
 - Karar (kullanıcı): Google girişinin 2FA'sı yeterli; `rustdesk-api` fork'lanmayacak (MAC ileride ayrı ince servis). İmzalama (Windows/Apple/Android) Secret'lar eklenince `m2y-build.yml`'ye eklenecek; şimdilik imzasız.
+
+## Hesap + Google girişi (29.09.2026) — hazırlık tamam, sunucu kurulumu yerelde
+- İstemci: `m2ydesk.json` → hesap/adres defteri açık, `m2y-nonmember-limit=Y`. **Yeni derleme gerekli (1.0.2), kullanıcı onayı bekleniyor.**
+- Sunucu dosyaları (bulut yazdı): `server/docker-compose.yml` (`api`, `hbbr2` profilleri), `server/plesk-nginx.conf.example`, `server/scripts/relay-siniri.sh`. Kurulum/Google adımları: [`hesap-ve-google-girisi.md`](hesap-ve-google-girisi.md).
+- **Yerel oturumdan istenen iş (sırayla):** (1) `docker compose --profile api up -d`, nginx yönergeleri, admin parolası; (2) kullanıcı Google OAuth istemcisini kurar, sırları YALNIZCA panele girer; (3) `curl .../api/login-options`; (4) 1.0.1'de giriş + adres defteri + cihaz listesi uçtan uca; (5) `--profile limit` + relay-siniri.sh (**önce kullanıcı onayı**); (6) ancak sonra 1.0.2'yi dağıt.
+- Doğrulanmadı: `RUSTDESK_API_*` değişken adları, hbbr `-p` bayrağı, OIDC callback yolu, panelde OIDC ile ilk kullanıcıyı admin yapma.

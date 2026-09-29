@@ -1,7 +1,5 @@
 {
   "app-name": "M2YDesk",
-  "disable-account": "Y",
-  "disable-ab": "Y",
   "override-settings": {
     "custom-rendezvous-server": "${M2Y_SERVER_HOST}",
     "relay-server": "${M2Y_SERVER_HOST}",
@@ -12,7 +10,7 @@
     "enable-check-update": "Y",
     "hide-server-settings": "Y",
     "hide-powered-by-me": "Y",
-    "m2y-nonmember-limit": "N"
+    "m2y-nonmember-limit": "Y"
   },
   "default-settings": {
     "lang": "tr",
