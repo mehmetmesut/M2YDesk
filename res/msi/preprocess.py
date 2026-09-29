@@ -32,7 +32,7 @@ g_arpsystemcomponent = {
     },
     "HelpLink": {
         "msi": "ARPHELPLINK",
-        "v": "https://rustdesk.mehmetmesut.com",
+        "v": "https://desk.mehmetmesut.com",
     },
     "ReadMe": {
         "msi": "ARPREADME",

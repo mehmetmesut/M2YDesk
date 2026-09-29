@@ -122,7 +122,7 @@ const CHARS: &[char] = &[
 
 // M2YDesk: en düşük öncelikli yedek; asıl adres res/m2y/*.json override-settings ile gelir.
 // Hiçbir koşulda rustdesk.com genel sunucularına düşülmez.
-pub const RENDEZVOUS_SERVERS: &[&str] = &["rustdesk.mehmetmesut.com"];
+pub const RENDEZVOUS_SERVERS: &[&str] = &["desk.mehmetmesut.com"];
 pub const RS_PUB_KEY: &str = "OeVuKk5nlHiXp+APNn0Y3pC1Iwpwn44JGqrQCsWqmBw=";
 
 pub const RENDEZVOUS_PORT: i32 = 21116;

@@ -1,6 +1,6 @@
 // Örnek ayar dosyası. Gerçek ayar.js dosyasını scripts/istemci-hazirla.sh üretir.
 window.M2Y_AYAR = {
-  sunucu: "rustdesk.mehmetmesut.com",
+  sunucu: "desk.mehmetmesut.com",
   anahtar: "ACIK_ANAHTAR_BURAYA=",
   surum: "1.0.0",
   guncelleme: "01.01.2026",

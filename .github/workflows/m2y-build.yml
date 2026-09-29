@@ -61,7 +61,7 @@ env:
   # Android imzalama anahtarı yoksa (boş) debug imzalı yol kullanılır (üst kaynakla aynı mantık).
   ANDROID_SIGNING_KEY: "${{ secrets.ANDROID_SIGNING_KEY }}"
   # M2YDesk gömülü sunucu yapılandırması (derleme zamanında res/m2y/*.json içine doldurulur).
-  M2Y_SERVER_HOST: ${{ vars.M2Y_SERVER_HOST || 'rustdesk.mehmetmesut.com' }}
+  M2Y_SERVER_HOST: ${{ vars.M2Y_SERVER_HOST || 'desk.mehmetmesut.com' }}
   M2Y_SERVER_KEY: ${{ vars.M2Y_SERVER_KEY }}
 
 jobs:

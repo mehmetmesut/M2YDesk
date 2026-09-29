@@ -2094,7 +2094,7 @@ const M2Y_EMBEDDED_CONFIG: &str = include_str!("../res/m2y/m2ydesk.json");
 // (CI: repository variables). Anahtar gizli değildir; hbbs'nin id_ed25519.pub içeriğidir.
 const M2Y_SERVER_HOST: &str = match option_env!("M2Y_SERVER_HOST") {
     Some(v) => v,
-    None => "rustdesk.mehmetmesut.com",
+    None => "desk.mehmetmesut.com",
 };
 const M2Y_SERVER_KEY: &str = match option_env!("M2Y_SERVER_KEY") {
     Some(v) => v,

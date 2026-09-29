@@ -7,7 +7,7 @@
 # Kullanım:
 #   sudo bash scripts/istemci-hazirla.sh                     # en son release
 #   M2Y_SURUM=1.4.9 sudo bash scripts/istemci-hazirla.sh      # belirli etiket
-#   SITE_DIZINI=/var/www/vhosts/mehmetmesut.com/rustdesk.mehmetmesut.com sudo bash scripts/istemci-hazirla.sh
+#   SITE_DIZINI=/var/www/vhosts/mehmetmesut.com/desk.mehmetmesut.com sudo bash scripts/istemci-hazirla.sh
 #   GITHUB_TOKEN=ghp_... (depo ÖZEL ise zorunlu; herkese açık depoda gerekmez)
 #
 # Çıktı: $SITE_DIZINI/indir/  ve  $SITE_DIZINI/ayar.js

@@ -1,4 +1,4 @@
-# rustdesk.mehmetmesut.com - indirme sayfası Apache ayarları (Plesk)
+# desk.mehmetmesut.com - indirme sayfası Apache ayarları (Plesk)
 
 # HTTPS'e yönlendir
 RewriteEngine On

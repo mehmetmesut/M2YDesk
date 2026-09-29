@@ -1,6 +1,6 @@
 # M2YDesk Geliştirme Planı
 
-Taban: RustDesk 1.4.9 (`6c57829`). Hedef: `rustdesk.mehmetmesut.com` üzerinden çalışan, tek kaynaktan üretilen iki ürün.
+Taban: RustDesk 1.4.9 (`6c57829`). Hedef: `desk.mehmetmesut.com` üzerinden çalışan, tek kaynaktan üretilen iki ürün.
 
 | Ürün | İç ad (`APP_NAME`) | Görünen ad | Amaç |
 |---|---|---|---|

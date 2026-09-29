@@ -2,12 +2,12 @@
 
 TeamViewer, AnyDesk ve Splashtop'a açık kaynaklı alternatif. Uzaktan erişim trafiği sizin sunucunuz üzerinden geçer.
 
-- **Sunucu:** `rustdesk.mehmetmesut.com`
+- **Sunucu:** `desk.mehmetmesut.com`
 - **Sürüm:** RustDesk Server OSS (hbbs + hbbr), Docker
 
 ## Hızlı kurulum
 
-1. **DNS:** Plesk > Web siteleri ve alan adları > `mehmetmesut.com` > DNS Ayarları bölümünde `rustdesk` için sunucu IP'sine bir **A kaydı** ekleyin.
+1. **DNS:** Plesk > Web siteleri ve alan adları > `mehmetmesut.com` > DNS Ayarları bölümünde `desk` için sunucu IP'sine bir **A kaydı** ekleyin.
    Bu kayıt Cloudflare kullanıyorsanız proxy **kapalı** (gri bulut) olmalıdır.
 2. **Docker:** Plesk > Araçlar ve Ayarlar > Güncellemeler ve Yükseltmeler > **Docker** bileşenini kurun.
 3. **Sunucuya kurulum (SSH):**
@@ -25,12 +25,12 @@ TeamViewer, AnyDesk ve Splashtop'a açık kaynaklı alternatif. Uzaktan erişim 
 `site/httpdocs/` klasörü, danışanların tek tıkla önceden yapılandırılmış istemciyi indirdiği sayfadır.
 İstemci dosya adında sunucu ve açık anahtar taşır (`rustdesk-host=…,key=….exe`); danışan hiçbir ayar girmez.
 
-1. Plesk'te `rustdesk.mehmetmesut.com` alt alan adını oluşturun, Let's Encrypt SSL alın.
+1. Plesk'te `desk.mehmetmesut.com` alt alan adını oluşturun (Web siteleri ve alan adları → Alt alan adı ekle → `desk`), Let's Encrypt SSL alın.
 2. `site/httpdocs/` içeriğini alt alan adının `httpdocs` klasörüne yükleyin (SFTP veya `cp`).
 3. İstemcileri indirip yapılandırın (her sürüm güncellemesinde tekrar çalıştırın):
    ```bash
    cd /opt/m2ydesk/server
-   SITE_DIZINI=/var/www/vhosts/mehmetmesut.com/rustdesk.mehmetmesut.com \
+   SITE_DIZINI=/var/www/vhosts/mehmetmesut.com/desk.mehmetmesut.com \
    RUSTDESK_ISTEMCI_SURUM=1.4.9 sudo bash scripts/istemci-hazirla.sh
    ```
 4. Danışan akışı: sayfaya girer → dosyayı indirip çalıştırır → ekrandaki **ID + şifreyi** size iletir → siz kendi RustDesk istemcinizden bağlanırsınız.

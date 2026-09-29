@@ -12,7 +12,7 @@ Yer tutucular derleme zamanında ortam değişkenlerinden doldurulur:
 
 | Yer tutucu | Ortam değişkeni | Varsayılan |
 |---|---|---|
-| `${M2Y_SERVER_HOST}` | `M2Y_SERVER_HOST` | `rustdesk.mehmetmesut.com` |
+| `${M2Y_SERVER_HOST}` | `M2Y_SERVER_HOST` | `desk.mehmetmesut.com` |
 | `${M2Y_SERVER_KEY}` | `M2Y_SERVER_KEY` | boş (uyarı loglanır) |
 
 `M2Y_SERVER_KEY`, sunucudaki `server/data/id_ed25519.pub` içeriğidir (açık anahtar, gizli değildir).
