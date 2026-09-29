@@ -83,3 +83,9 @@ Görev 1–8'in kod doğrulamalı planı: [`bulut-uygulama-plani.md`](bulut-uygu
 
 ## Yerel oturumdan istenen iş — Görev 6 (29.09.2026)
 - Kullanıcı Android APK'yı dağıtacaksa `android-ios.md`'deki `keytool` komutuyla **kendi bilgisayarında** keystore üretip 4 GitHub Secret'ı eklemeli (parolaları sohbete/depoya YAZMA). Aksi halde APK'lar arası güncelleme çalışmaz.
+
+## Derleme durumu (29.09.2026) — sürüm 1.0.1
+- Run #6 ([Actions](https://github.com/mehmetmesut/M2YDesk/actions/runs/36606176759)): Windows M2YDesk (exe/install/msi) ✅, Hızlı Destek ✅, Linux deb ✅ → release `v1.0.1` yayınlandı. Android ❌ (mac_address/lang::translate Android'de yok) → `5eca200` ile düzeltildi, yalnızca-Android yeniden derleme kuyrukta.
+- **Yerel oturumdan istenen iş:** `GITHUB_TOKEN=... sudo -E bash scripts/istemci-hazirla.sh` (v1.0.1; `indir/`, `ayar.js`, `guncelleme/surum.json`, `engel.json`); sonra gerçek Windows cihazda 1.0.0 → 1.0.1 güncelleme testi + onay ekranı (Hızlı Destek 280 px) + bağlantı testi.
+- `m2y-nonmember-limit=N` (kapalı) ve API sunucusu yok: cihaz bilgisi onayı çıkar ama sunucuda görünen bir şey olmaz.
+- Karar (kullanıcı): Google girişinin 2FA'sı yeterli; `rustdesk-api` fork'lanmayacak (MAC ileride ayrı ince servis). İmzalama (Windows/Apple/Android) Secret'lar eklenince `m2y-build.yml`'ye eklenecek; şimdilik imzasız.
