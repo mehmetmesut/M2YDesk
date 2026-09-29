@@ -99,3 +99,8 @@ Görev 1–8'in kod doğrulamalı planı: [`bulut-uygulama-plani.md`](bulut-uygu
 ## Yerel oturum için hazırlık (29.09.2026)
 - Tam devam promptu: [`YEREL-DEVAM-PROMPTU.md`](YEREL-DEVAM-PROMPTU.md). Yardımcı betikler: `server/scripts/api-kur.sh`, `dogrula.sh`.
 - Android derlemesi: run #7 `get_sysinfo`'da `out` değişkeni `mut` değildi (`a512820` ile düzeltildi), 3. deneme (run #8) kuyrukta; Windows/Linux etkilenmedi.
+
+## Yerel oturum notu (29.09.2026, akşam) — sıradaki işler
+- **Yöntem düzeltmesi:** Sunucuda `/opt/m2ydesk` git klonu DEĞİL (dosyalar elle yazıldı). `git pull`/`istemci-hazirla.sh` yerine PAT'sız yol: `server/` → `scp` (data/ ve .env'e dokunulmaz); release dosyaları Chrome ile indirilip `scp`; `ayar.js`, `guncelleme/surum.json`, `engel.json` SHA-256 ile elle üretilir.
+- **Yeni iş — site sadeleştirme (kullanıcı isteği):** `server/site/httpdocs/index.html` gereksiz/hatalı/mükerrer bilgilerden arındırılıp sadeleştirilecek; platformlar: Windows (Hızlı Destek), Windows (Kurulum), macOS, Linux, Android, iOS. Doğru içerik (KVKK onay kutusu, QR, SmartScreen/Gatekeeper uyarıları) korunur. Taslak kullanıcı onayına sunulacak. (Bulut bu dosyada değişiklik yapacaksa önce DEVIR'e yazsın, çakışma olmasın.)
+- Sıra: site sadeleştirme → Y1 (1.0.1 yayını) → Y2 (API, onaylı) → Y3 (hbbr2, onaylı) → Y4–Y6. Henüz hiçbiri başlamadı.
