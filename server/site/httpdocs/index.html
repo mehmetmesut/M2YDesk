@@ -22,7 +22,7 @@
     --cam:rgba(255,255,255,.58); --cam-cerceve:rgba(255,255,255,.75); --cam-ic:rgba(255,255,255,.9);
     --golge:0 10px 40px rgba(15,23,42,.10), 0 1px 0 rgba(255,255,255,.8) inset;
     --blob1:#9fc6ff; --blob2:#b8f0e4; --blob3:#e2d4ff;
-    --uyari-bg:rgba(255,247,237,.7); --uyari-k:rgba(251,146,60,.5);
+    --uyari-bg:rgba(255,247,237,.7); --uyari-k:rgba(251,146,60,.5); --uyari-metin:#b3261e;
     --pasif:rgba(148,163,184,.35);
   }
   @media (prefers-color-scheme:dark){
@@ -32,7 +32,7 @@
       --cam:rgba(30,41,59,.55); --cam-cerceve:rgba(255,255,255,.12); --cam-ic:rgba(255,255,255,.08);
       --golge:0 10px 40px rgba(0,0,0,.45), 0 1px 0 rgba(255,255,255,.08) inset;
       --blob1:#1e4fa3; --blob2:#0f6b5c; --blob3:#4b2f9e;
-      --uyari-bg:rgba(69,45,20,.55); --uyari-k:rgba(217,119,6,.5);
+      --uyari-bg:rgba(69,45,20,.55); --uyari-k:rgba(217,119,6,.5); --uyari-metin:#ffb4a9;
       --pasif:rgba(100,116,139,.35);
     }
   }
@@ -117,6 +117,15 @@
   .kopyala{background:none;border:1px solid var(--vurgu);color:var(--vurgu);border-radius:999px;padding:4px 12px;cursor:pointer;font-size:.85rem}
   .uyari{background:var(--uyari-bg);border:1px solid var(--uyari-k);border-radius:18px;padding:14px 18px;font-size:.92rem;text-wrap:pretty;color:var(--metin);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
   .kucuk{color:var(--ikincil);font-size:.86rem}
+
+  /* KVKK aydınlatma + onay (indirme öncesi) */
+  .onay{width:100%;text-align:left;display:grid;gap:8px}
+  .onay label{display:flex;gap:10px;align-items:flex-start;font-size:.92rem;cursor:pointer;text-wrap:pretty}
+  .onay input{flex:none;width:20px;height:20px;margin-top:2px;accent-color:var(--vurgu);cursor:pointer}
+  .onay-not{font-size:.86rem;color:var(--uyari-metin,#b3261e);min-height:1.2em;text-align:center}
+  .onay details p{font-size:.88rem;color:var(--ikincil)}
+  .onay details ul{margin:6px 0 0;padding-left:18px;color:var(--ikincil);font-size:.88rem}
+  .kilitli{opacity:.55}
   footer{text-align:center;padding:12px 16px 28px;font-size:.86rem;color:var(--ikincil)}
   footer a{color:var(--vurgu);text-decoration:none}
 </style>
@@ -136,6 +145,24 @@
 
   <section class="cam birincil" aria-labelledby="indir-baslik">
     <h2 id="indir-baslik" class="kucuk" style="margin:0;font-weight:500">Destek almak için cihazınıza önerilen</h2>
+    <div class="onay">
+      <label for="onay-kutu"><input type="checkbox" id="onay-kutu"><span>Kişisel verilerimin (cihaz kimliği, IP ve MAC adresi, cihaz/kullanıcı adı, işletim sistemi, bağlantı zamanları) uzaktan destek amacıyla işlenmesine ilişkin aydınlatma metnini okudum ve <strong>açık rıza</strong> veriyorum.</span></label>
+      <details>
+        <summary>KVKK Aydınlatma Metni</summary>
+        <p><strong>Veri sorumlusu:</strong> M2YDesk hizmet sağlayıcısı (Mehmet Mesut YILMAZ). İletişim: <a href="https://mehmetmesut.com">mehmetmesut.com</a></p>
+        <p><strong>İşlenen veriler:</strong></p>
+        <ul>
+          <li>Cihaz kimliği (ID), cihaz UUID'si, IP adresi, MAC adresi</li>
+          <li>Bilgisayar adı, oturum açmış kullanıcı adı, işletim sistemi ve sürüm bilgisi</li>
+          <li>Çevrimiçi durumu, bağlantı kurma/sonlandırma zamanları</li>
+        </ul>
+        <p><strong>Amaç:</strong> uzaktan destek hizmetinin sunulması, cihazın destek verenle eşleştirilmesi, hizmetin kötüye kullanımının ve güvenlik ihlallerinin önlenmesi.</p>
+        <p><strong>Hukuki sebep:</strong> açık rıza (KVKK m.5/1) ve meşru menfaat (güvenlik). Ekran görüntüsü ve klavye içeriği kaydedilmez; bağlantı uçtan uca şifrelidir.</p>
+        <p><strong>Aktarım ve saklama:</strong> veriler yurt dışına veya üçüncü taraflara aktarılmaz; yalnızca hizmet sağlayıcının kendi sunucusunda tutulur. Saklama süresi hizmet ilişkisi süresince ve yasal yükümlülükler kadardır.</p>
+        <p><strong>Haklarınız (KVKK m.11):</strong> verilerinize erişme, düzeltme, silme, işlenmesine itiraz etme ve rızanızı geri çekme hakkına sahipsiniz. Başvuru için yukarıdaki iletişim adresini kullanabilirsiniz. Rıza vermeseniz de yazılımı kullanabilirsiniz; bu durumda cihaz bilgileriniz sunucuya gönderilmez (yazılım ilk açılışta ayrıca sorar).</p>
+      </details>
+    </div>
+    <div class="onay-not" id="onay-not" role="status" aria-live="polite"></div>
     <a class="btn-ana pasif" id="btn-ana" href="#">
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <span id="btn-ana-metin">Hazırlanıyor…</span>
@@ -251,6 +278,29 @@
   // Mobil için QR: RustDesk "QR tara" bu biçimi bekler
   var qrIcerik = 'config=' + JSON.stringify({ host: a.sunucu, relay: '', api: '', key: a.anahtar });
   if (window.QRCode) new QRCode(document.getElementById('qr'), { text: qrIcerik, width: 176, height: 176, correctLevel: QRCode.CorrectLevel.M });
+
+
+  // KVKK onayı: onay verilmeden yazılım dosyaları indirilemez
+  var onay = document.getElementById('onay-kutu'), onayNot = document.getElementById('onay-not');
+  try { onay.checked = localStorage.getItem('m2y-onay') === '1'; } catch (e) {}
+  function kilit() {
+    document.querySelectorAll('.btn-ana,.hap').forEach(function (el) { el.classList.toggle('kilitli', !onay.checked); });
+    if (onay.checked) onayNot.textContent = '';
+  }
+  onay.addEventListener('change', function () {
+    try { localStorage.setItem('m2y-onay', onay.checked ? '1' : '0'); } catch (e) {}
+    kilit();
+  });
+  document.addEventListener('click', function (ev) {
+    var el = ev.target.closest && ev.target.closest('.btn-ana,.hap');
+    if (!el || onay.checked) return;
+    var h = el.getAttribute('href') || '';
+    if (h.indexOf('indir/') !== 0) return; // yalnızca kendi dosyalarımız (App Store bağlantısı hariç)
+    ev.preventDefault();
+    onayNot.textContent = 'İndirmek için önce yukarıdaki onay kutusunu işaretleyin.';
+    onay.focus();
+  }, true);
+  kilit();
 
   document.getElementById('kopyala').addEventListener('click', function () {
     var b = this; navigator.clipboard.writeText(a.anahtar).then(function () { b.textContent = 'Kopyalandı'; });
