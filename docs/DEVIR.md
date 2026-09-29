@@ -20,7 +20,7 @@ M2YDesk: RustDesk 1.4.9 tabanlı, kendi sunucuda barındırılan uzaktan destek 
 | **İndirme sayfası yayında** | ✅ https://desk.mehmetmesut.com (docroot `/var/www/vhosts/mehmetmesut.com/desk.mehmetmesut.com`). `ayar.js` 1.0.0 adlarıyla; **4 dosya `indir/` altında, SHA-256 release ile doğrulandı, siteden indirilebiliyor** (Android/macOS/Linux yok). Mobilde taşma yok, `/indir/` 403. "QS" etiketi sayfada "Hızlı Destek" oldu |
 | GitHub variable `M2Y_SERVER_KEY` | ✅ eklendi (açık anahtar) |
 | 1.0.0 derlemesi (anahtar gömülü) | ✅ run #5 başarılı (release `v1.0.0`; #4 `Cargo.lock` uyuşmazlığıyla düşmüştü, `2b9dcd4`). Hızlı Destek ayar girmeden `desk.mehmetmesut.com:21116`'ya kayıt oldu (sunucu günlüğünde görüldü) |
-| İki cihaz arası gerçek bağlantı testi | ⏳ yapılmadı (ID+şifre ile) |
+| İki cihaz arası gerçek bağlantı testi | ✅ 29.09.2026 kullanıcı doğruladı: ID+şifre ile bağlantı kuruldu, sorun yok |
 | Yönetim katmanı (hesap/API, günlük, sınırlar, süper admin, canlı panel, engelleme) | 📋 plan hazır: `docs/yonetim-katmani-plani.md`; kodlanmadı |
 | Android/Linux/macOS derlemeleri, Liquid Glass Flutter teması, kod imzalama | ⏳ sonraki tur |
 
