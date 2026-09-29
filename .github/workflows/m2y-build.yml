@@ -211,6 +211,8 @@ jobs:
 
       - name: Apply M2Y icon set (${{ matrix.variant }})
         shell: bash
+        env:
+          PYTHONIOENCODING: utf-8
         run: |
           pip3 install pillow
           python3 res/m2y/icons/uret.py --uygula ${{ matrix.variant }}

@@ -11,6 +11,11 @@ Gereksinim: pip install pillow
 import os, shutil, sys
 from PIL import Image, ImageDraw, ImageFilter
 
+# Windows konsolu (cp1252) Türkçe karakterleri yazdıramaz; çıktıyı UTF-8'e sabitle
+for _akis in (sys.stdout, sys.stderr):
+    if hasattr(_akis, "reconfigure"):
+        _akis.reconfigure(encoding="utf-8", errors="replace")
+
 KOK = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 CIKTI = os.path.join(KOK, "res", "m2y", "icons")
 
