@@ -22,7 +22,7 @@ basari() { echo -e "\e[32m[TAMAM]\e[0m $*"; }
 uyari()  { echo -e "\e[33m[UYARI]\e[0m $*"; }
 hata()   { echo -e "\e[31m[HATA]\e[0m $*" >&2; exit 1; }
 
-DEPO="${M2Y_DEPO:-mehmetmesut/RustDesk}"
+DEPO="${M2Y_DEPO:-mehmetmesut/M2YDesk}"
 API="https://api.github.com/repos/$DEPO/releases"
 
 # 1) Sunucu ayarları ve AÇIK anahtar (mobil QR ve elle giriş için)

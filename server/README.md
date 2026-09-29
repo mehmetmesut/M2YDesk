@@ -12,7 +12,7 @@ TeamViewer, AnyDesk ve Splashtop'a açık kaynaklı alternatif. Uzaktan erişim 
 2. **Docker:** Plesk > Araçlar ve Ayarlar > Güncellemeler ve Yükseltmeler > **Docker** bileşenini kurun.
 3. **Sunucuya kurulum (SSH):**
    ```bash
-   sudo git clone https://github.com/mehmetmesut/RustDesk.git /opt/m2ydesk
+   sudo git clone https://github.com/mehmetmesut/M2YDesk.git /opt/m2ydesk
    cd /opt/m2ydesk/server
    sudo bash scripts/kurulum.sh
    ```

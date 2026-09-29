@@ -36,7 +36,7 @@ g_arpsystemcomponent = {
     },
     "ReadMe": {
         "msi": "ARPREADME",
-        "v": "https://github.com/mehmetmesut/RustDesk",
+        "v": "https://github.com/mehmetmesut/M2YDesk",
     },
 }
 
