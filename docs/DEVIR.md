@@ -52,6 +52,9 @@ M2YDesk: RustDesk 1.4.9 tabanlı, kendi sunucuda barındırılan uzaktan destek 
 ## Depo adı (29.09.2026)
 `mehmetmesut/RustDesk` → **`mehmetmesut/M2YDesk`** olarak yeniden adlandırıldı (özel, dal aynı). Eski adres GitHub'da yönlendirilir; yeni klonlar `https://github.com/mehmetmesut/M2YDesk.git` kullanmalı, Actions adresleri `/mehmetmesut/M2YDesk/actions/...` olur.
 
+## Bulut uygulama planı (29.09.2026, onay bekliyor)
+Görev 1–8'in kod doğrulamalı planı: [`bulut-uygulama-plani.md`](bulut-uygulama-plani.md). Yerel oturumdan istenecek işler planın §2'sinde (ikinci hbbr `:21127`, `guncelleme/` dizini, güncelleme testi, API sunucusu). Onay gelmeden kod yazılmayacak.
+
 ## Yeni plan (29.09.2026)
 - Pro özelliklerinin kendi çözümümüzle karşılanması planı: [`yonetim-katmani-plani.md`](yonetim-katmani-plani.md). Sıra: Aşama 0 (1.0.0 derleme + dosyalar + ilk bağlantı testi) → 1 (hesap/API sunucusu) → 2/3 (güncelleme, üye/üye olmayan sınırları).
 - **Bulut oturumundan istenen iş (Aşama 2/3 istemci kodu):** güncelleme denetimini `desk.mehmetmesut.com/guncelleme/surum.json`'a yönlendirme + sessiz güncelleme; girişsiz kullanıcı için relay `:21127`, 5 dk oturum kesme, 2 dk bekleme; girişli kullanıcı için sınırsız. Ayrıntı planda.
