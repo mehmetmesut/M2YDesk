@@ -6,7 +6,7 @@
 | Dosya | Varyant | Cargo özelliği |
 |---|---|---|
 | `m2ydesk.json` | **M2YDesk** — tam istemci | (varsayılan) |
-| `m2ydesk-qs.json` | **M2YDesk QS** — yalnızca gelen bağlantı, ID + şifre | `m2y_qs` |
+| `m2ydesk-qs.json` | **M2YDesk Hızlı Destek** (kod adı QS) — yalnızca gelen bağlantı, ID + şifre | `m2y_qs` |
 
 Yer tutucular derleme zamanında ortam değişkenlerinden doldurulur:
 

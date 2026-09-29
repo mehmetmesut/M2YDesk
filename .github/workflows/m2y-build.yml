@@ -1,6 +1,6 @@
 name: M2YDesk build
 
-# M2YDesk / M2YDesk QS derleme hattı. Üst kaynaktaki flutter-build.yml'in Windows (flutter),
+# M2YDesk / M2YDesk Hızlı Destek derleme hattı. Üst kaynaktaki flutter-build.yml'in Windows (flutter),
 # Android (aarch64), Linux (x86_64 deb) ve macOS (aarch64 dmg) işlerinden uyarlanmıştır.
 # Imzalama, notarization, rustdesk.com'a yükleme, rpm/arch/appimage/flatpak, Sciter, iOS ve web
 # adımları bilerek çıkarılmıştır. Çıktılar her iş sonunda artifact olarak yüklenir; "release" işi
@@ -14,7 +14,7 @@ on:
         type: string
         default: "m2y-test"
       build_windows:
-        description: "Windows (M2YDesk + M2YDesk QS) derle"
+        description: "Windows (M2YDesk + M2YDesk Hızlı Destek) derle"
         type: boolean
         default: true
       build_android:
@@ -217,13 +217,13 @@ jobs:
           pip3 install pillow
           python3 res/m2y/icons/uret.py --uygula ${{ matrix.variant }}
 
-      - name: Apply QS file metadata
+      - name: Apply Hızlı Destek (QS) file metadata
         # Runner.rc ve winres metaverisi statik olarak M2YDesk değerlerini taşır; QS için ikili adı/görünen ad eşitlenir.
         if: matrix.variant == 'qs'
         shell: bash
         run: |
-          sed -i 's/"M2YDesk\.exe"/"M2YDeskQS.exe"/; s/"InternalName", "M2YDesk"/"InternalName", "M2YDeskQS"/; s/"ProductName", "M2YDesk"/"ProductName", "M2YDesk QS"/; s/"FileDescription", "M2YDesk Uzaktan Erişim"/"FileDescription", "M2YDesk QS Uzaktan Destek"/' flutter/windows/runner/Runner.rc
-          sed -i 's/^OriginalFilename = "M2YDesk\.exe"/OriginalFilename = "M2YDeskQS.exe"/; s/^ProductName = "M2YDesk"/ProductName = "M2YDesk QS"/; s/^FileDescription = "M2YDesk Uzaktan Erişim"/FileDescription = "M2YDesk QS Uzaktan Destek"/' Cargo.toml libs/portable/Cargo.toml
+          sed -i 's/"M2YDesk\.exe"/"M2YDeskQS.exe"/; s/"InternalName", "M2YDesk"/"InternalName", "M2YDeskQS"/; s/"ProductName", "M2YDesk"/"ProductName", "M2YDesk Hızlı Destek"/; s/"FileDescription", "M2YDesk Uzaktan Erişim"/"FileDescription", "M2YDesk Hızlı Destek"/' flutter/windows/runner/Runner.rc
+          sed -i 's/^OriginalFilename = "M2YDesk\.exe"/OriginalFilename = "M2YDeskQS.exe"/; s/^ProductName = "M2YDesk"/ProductName = "M2YDesk Hızlı Destek"/; s/^FileDescription = "M2YDesk Uzaktan Erişim"/FileDescription = "M2YDesk Hızlı Destek"/' Cargo.toml libs/portable/Cargo.toml
           grep -n "M2YDesk" flutter/windows/runner/Runner.rc | head; grep -n "^OriginalFilename\|^ProductName" Cargo.toml libs/portable/Cargo.toml
 
       - name: Build rustdesk

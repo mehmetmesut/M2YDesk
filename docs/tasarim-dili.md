@@ -31,7 +31,7 @@
 4. Uzun cümleler yalnızca açıklama paragraflarında; `text-wrap: pretty` / Flutter `TextAlign.start`.
 5. Türkçe karakter ve uzun çeviriler için her metin 360 px genişlikte test edilir (web: Playwright; Flutter: 360 px pencere).
 
-## M2YDesk QS (mini istemci) penceresi
+## M2YDesk Hızlı Destek (mini istemci) penceresi
 
 - Boyut: **360 × 440** sabit, yeniden boyutlandırılamaz, her zaman ortada açılır.
 - İçerik: logo + "Bağlantıya hazır" durumu · **ID** (büyük, 9 haneli, boşluklu: `123 456 789`) · **Şifre** (görünür, kopyala) · bağlantı durumu satırı · altta ince metin: "Bu bilgileri yalnızca danışmanınızla paylaşın".

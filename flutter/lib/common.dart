@@ -3036,8 +3036,14 @@ int versionCmp(String v1, String v2) {
   return bind.versionToNumber(v: v1) - bind.versionToNumber(v: v2);
 }
 
-String getWindowName({WindowType? overrideType}) {
+// M2YDesk: iç ad boşluksuz (M2YDeskQS); arayüzde "M2YDesk Hızlı Destek" gösterilir.
+String get displayAppName {
   final name = bind.mainGetAppNameSync();
+  return name == 'M2YDeskQS' ? 'M2YDesk Hızlı Destek' : name;
+}
+
+String getWindowName({WindowType? overrideType}) {
+  final name = displayAppName;
   switch (overrideType ?? kWindowType) {
     case WindowType.Main:
       return name;

@@ -5,7 +5,7 @@ Taban: RustDesk 1.4.9 (`6c57829`). Hedef: `desk.mehmetmesut.com` üzerinden çal
 | Ürün | İç ad (`APP_NAME`) | Görünen ad | Amaç |
 |---|---|---|---|
 | **A** | `M2YDesk` | M2YDesk | Danışmanın ve kurumların kullandığı tam istemci (kurulabilir + taşınabilir) |
-| **B** | `M2YDeskQS` | M2YDesk QS | Danışanın çalıştırdığı, yalnızca ID + şifre gösteren, gelen bağlantı kabul eden mini istemci |
+| **B** | `M2YDeskQS` | M2YDesk Hızlı Destek | Danışanın çalıştırdığı, yalnızca ID + şifre gösteren, gelen bağlantı kabul eden mini istemci |
 
 ## 1. Keşif bulgularına dayalı kararlar
 
