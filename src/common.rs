@@ -1015,6 +1015,58 @@ pub async fn do_check_software_update() -> hbb_common::ResultType<()> {
     Ok(())
 }
 
+static M2Y_BLOCK_CACHE: std::sync::Mutex<Option<(std::time::Instant, hbb_common::m2y::BlockList)>> =
+    std::sync::Mutex::new(None);
+
+/// `engel.json` (SHA-256 özetleri) önbellekli okunur; ağ hatasında engel uygulanmaz (kullanılabilirlik önceliği).
+async fn m2y_block_list() -> Option<hbb_common::m2y::BlockList> {
+    const TTL: std::time::Duration = std::time::Duration::from_secs(600);
+    if let Some((t, l)) = M2Y_BLOCK_CACHE.lock().unwrap().as_ref() {
+        if t.elapsed() < TTL {
+            return Some(l.clone());
+        }
+    }
+    let url = hbb_common::m2y::block_list_url();
+    let client = crate::hbbs_http::create_http_client_async_with_url(&url).await;
+    let resp = client
+        .get(&url)
+        .timeout(std::time::Duration::from_secs(5))
+        .send()
+        .await
+        .ok()?;
+    if !resp.status().is_success() {
+        return None;
+    }
+    let list: hbb_common::m2y::BlockList = serde_json::from_slice(&resp.bytes().await.ok()?).ok()?;
+    *M2Y_BLOCK_CACHE.lock().unwrap() = Some((std::time::Instant::now(), list.clone()));
+    Some(list)
+}
+
+/// Giden bağlantıdan önce çağrılır. `Some(mesaj)` dönerse bağlantı kurulmaz.
+/// 1) Üye olmayan kullanıcı için 2 dk bekleme, 2) engellenmiş cihaz (ID / UUID / MAC).
+pub async fn m2y_connect_gate() -> Option<String> {
+    if hbb_common::m2y::nonmember_limited() {
+        let secs = hbb_common::m2y::remaining_block_secs();
+        if secs > 0 {
+            return Some(format!(
+                "{} ({} sn)",
+                crate::lang::translate("m2y-nonmember-wait".to_owned()),
+                secs
+            ));
+        }
+    }
+    let list = m2y_block_list().await?;
+    let mac = hbb_common::mac_address::get_mac_address()
+        .ok()
+        .flatten()
+        .map(|m| m.to_string())
+        .unwrap_or_default();
+    if list.is_blocked(&Config::get_id(), &encode64(hbb_common::get_uuid()), &mac) {
+        return Some(crate::lang::translate("m2y-blocked".to_owned()));
+    }
+    None
+}
+
 /// `surum.json` içindeki `dosyalar` anahtarı (platform + varyant).
 pub fn m2y_update_file_key() -> &'static str {
     #[cfg(target_os = "windows")]

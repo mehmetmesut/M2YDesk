@@ -845,6 +845,9 @@ impl Client {
         token: &str,
         conn_type: ConnType,
     ) -> ResultType<Stream> {
+        // M2YDesk: üye olmayan kullanıcı ikinci relay'e (:21127) yönlendirilir. Karşı taraf adresi
+        // RequestRelay içinden aldığından iki uç aynı relay'de buluşur.
+        let relay_server = hbb_common::m2y::relay_for_session(&relay_server);
         let mut succeed = false;
         let mut uuid = "".to_owned();
         let mut ipv4 = true;

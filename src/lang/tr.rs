@@ -765,5 +765,11 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("All monitors", "Tüm monitörler"),
         ("#{} monitor", "Monitör {}"),
         ("conn-e2ee-unavailable-tip", "Uçtan uca şifreleme doğrulanamadı.\nUzak cihaz hâlâ kuruluyor olabilir. Daha sonra tekrar deneyin.\nBu sorun devam ederse sunucu güvenilir olmayabilir.\nYine de devam edilsin mi?"),
+        ("Session limit", "Oturum sınırı"),
+        ("Access denied", "Erişim engellendi"),
+        ("m2y-nonmember-warn", "Üye olmayan oturum süresi 30 saniye içinde dolacak. Sınırsız kullanım için giriş yapın."),
+        ("m2y-nonmember-expired", "Üye olmayan oturum süresi (5 dk) doldu. 2 dakika sonra tekrar bağlanabilirsiniz. Sınırsız kullanım için giriş yapın."),
+        ("m2y-nonmember-wait", "Üye olmayan kullanıcılar için bekleme süresi devam ediyor. Lütfen bekleyin veya giriş yapın."),
+        ("m2y-blocked", "Bu cihazın erişimi engellendi. Yanlışlık olduğunu düşünüyorsanız yöneticiyle iletişime geçin."),
     ].iter().cloned().collect();
 }

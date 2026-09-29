@@ -169,6 +169,13 @@ impl<T: InvokeUiSession> Remote<T> {
             ConnType::default()
         };
 
+        // M2YDesk: üye olmayan kullanıcı beklemesi ve engellenmiş cihaz denetimi
+        if let Some(msg) = crate::common::m2y_connect_gate().await {
+            self.handler.msgbox("error", "Access denied", &msg, "");
+            self.handle_disconnected(round);
+            return;
+        }
+
         match Client::start(
             &self.handler.get_id(),
             key,
@@ -236,6 +243,9 @@ impl<T: InvokeUiSession> Remote<T> {
 
                 let _keep_it = client::hc_connection(feedback, rendezvous_server, token).await;
                 let mut last_recv_time = Instant::now();
+                // M2YDesk: üye olmayan oturum süresi (5 dk) sayacı
+                let m2y_started = Instant::now();
+                let mut m2y_warned = false;
 
                 loop {
                     tokio::select! {
@@ -296,6 +306,30 @@ impl<T: InvokeUiSession> Remote<T> {
                             }
                         }
                         _ = status_timer.tick() => {
+                            if hbb_common::m2y::nonmember_limited() {
+                                match hbb_common::m2y::session_state(m2y_started.elapsed()) {
+                                    hbb_common::m2y::SessionState::Expired => {
+                                        hbb_common::m2y::start_block();
+                                        self.handler.msgbox(
+                                            "error",
+                                            "Session limit",
+                                            &crate::lang::translate("m2y-nonmember-expired".to_owned()),
+                                            "",
+                                        );
+                                        break;
+                                    }
+                                    hbb_common::m2y::SessionState::Warn if !m2y_warned => {
+                                        m2y_warned = true;
+                                        self.handler.msgbox(
+                                            "custom-nocancel",
+                                            "Session limit",
+                                            &crate::lang::translate("m2y-nonmember-warn".to_owned()),
+                                            "",
+                                        );
+                                    }
+                                    _ => {}
+                                }
+                            }
                             if self.handler.is_restarting_remote_device()
                                 && last_recv_time.elapsed() >= RESTART_REMOTE_DEVICE_NO_DATA_TIMEOUT
                             {

@@ -279,6 +279,12 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("wayland-soft-keyboard-input-label", "Soft keyboard input"),
         ("wayland-keyboard-input-reset-choice-tip", "Reset keyboard input choice"),
         ("remember-wayland-keyboard-choice-tip", "Don't ask again for this remote computer"),
-        ("conn-e2ee-unavailable-tip", "Could not verify end-to-end encryption.\nThe remote device may still be setting up. Try again later.\nIf this keeps happening, the server may be untrusted.\nContinue anyway?")
+        ("conn-e2ee-unavailable-tip", "Could not verify end-to-end encryption.\nThe remote device may still be setting up. Try again later.\nIf this keeps happening, the server may be untrusted.\nContinue anyway?"),
+        ("Session limit", "Session limit"),
+        ("Access denied", "Access denied"),
+        ("m2y-nonmember-warn", "Guest session ends in 30 seconds. Sign in for unlimited use."),
+        ("m2y-nonmember-expired", "Guest session limit (5 min) reached. You can reconnect in 2 minutes. Sign in for unlimited use."),
+        ("m2y-nonmember-wait", "Guest cooldown in progress. Please wait or sign in."),
+        ("m2y-blocked", "This device has been blocked. Contact the administrator if you think this is a mistake."),
     ].iter().cloned().collect();
 }

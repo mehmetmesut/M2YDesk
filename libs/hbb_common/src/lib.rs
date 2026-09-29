@@ -1,3 +1,4 @@
+pub mod m2y;
 pub mod compress;
 pub mod platform;
 pub mod protos;
