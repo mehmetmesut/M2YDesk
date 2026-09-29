@@ -12,14 +12,14 @@ M2YDesk: RustDesk 1.4.9 tabanlı, kendi sunucuda barındırılan uzaktan destek 
 ## Durum (güncel)
 | İş | Durum |
 |---|---|
-| Sunucu altyapısı (`server/`: docker-compose hbbs/hbbr, kurulum/yedekleme betikleri, indirme sayfası) | ✅ hazır, **sunucuya kurulmadı** |
+| Sunucu altyapısı (`server/`: docker-compose hbbs/hbbr) | ✅ **sunucuda çalışıyor** (`/opt/m2ydesk/server`, Docker, hbbs+hbbr `-k _`; eski systemd RustDesk servisleri ve birim dosyaları kaldırıldı). TCP 21115-21119 dışarıdan erişilebilir. Depo özel olduğundan `kurulum.sh` yerine eşdeğer komutlar elle uygulandı |
 | İstemci kaynağı, markalama, gömülü yapılandırma (`res/m2y/*.json`), ikonlar | ✅ |
 | GitHub Actions `m2y-build.yml` — Windows desk+qs, MSI | ✅ ilk derleme geçti (release `m2y-test`, eski adlı 1.4.9 dosyalarıyla) |
 | Alt alan adı `desk.mehmetmesut.com` + DNS A kaydı | ✅ yayında |
-| **Let's Encrypt SSL** | ⏳ Plesk formunda yalnızca ana alan adı işaretli olmalı (www ve joker KAPALI); www/joker TXT/NXDOMAIN hatası verdi |
-| **Sunucuda hbbs/hbbr kurulumu** | ⏳ bekliyor |
-| GitHub variable `M2Y_SERVER_KEY` | ⏳ sunucu kurulunca `server/data/id_ed25519.pub` içeriği |
-| 1.0.0 derlemesi (anahtar gömülü) | ⏳ anahtardan sonra |
+| **Let's Encrypt SSL** | ✅ yalnızca ana alan adı, 28.12.2026'ya kadar, otomatik yenilenir |
+| **İndirme sayfası yayında** | ✅ https://desk.mehmetmesut.com (docroot `/var/www/vhosts/mehmetmesut.com/desk.mehmetmesut.com`). `ayar.js` 1.0.0 adlarıyla; **`indir/` boş, 1.0.0 derlemesi bitince dosyalar konacak**. Mobilde taşma yok, `/indir/` 403. "QS" etiketi sayfada "Hızlı Destek" oldu |
+| GitHub variable `M2Y_SERVER_KEY` | ✅ eklendi (açık anahtar) |
+| 1.0.0 derlemesi (anahtar gömülü) | ⏳ Actions run #4 (`v1.0.0`) çalışıyor, ~65 dk |
 | Android/Linux/macOS derlemeleri, Liquid Glass Flutter teması, kod imzalama | ⏳ sonraki tur |
 
 ## Yerel oturumda sırayla yapılacaklar
@@ -41,3 +41,8 @@ M2YDesk: RustDesk 1.4.9 tabanlı, kendi sunucuda barındırılan uzaktan destek 
 - Windows derlemesi ~65 dk; vcpkg adımı ~21 dk.
 - İmzasız exe: SmartScreen uyarısı beklenir.
 - Gizli bilgi (PAT, root şifresi, özel anahtar `id_ed25519`) ASLA depoya/sohbete yazılmaz.
+
+## Sorunlar / açık işler (yerel oturum, 29.09.2026)
+- **indir/ dosyaları**: depo özel olduğundan release dosyaları sunucuya otomatik inemiyor; Plesk yükleme aracı ~10 MB ile sınırlı (exe'ler ~23 MB). Çözüm: depoyu public yapmak ya da sunucuda `GITHUB_TOKEN` ortam değişkeniyle `istemci-hazirla.sh` çalıştırmak (PAT ayrıca istenecek).
+- Eski `m2y-test` 1.4.9 dosyaları anahtarsız derlendi; bu sunucuya bağlanamaz, sayfaya konmadı.
+- **Bulut oturumundan istenen iş**: "QS" = "Hızlı Destek". `index.html`'de etiketler yerelde değişti (push edildi); ürün/istemci arayüzündeki adlandırma da gözden geçirilmeli. `kurulum.sh` Docker'ı kendisi kurmuyor; Ubuntu 22.04'te `apt install docker.io docker-compose-v2` yeterli.
