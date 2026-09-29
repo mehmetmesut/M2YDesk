@@ -17,9 +17,11 @@ M2YDesk: RustDesk 1.4.9 tabanlı, kendi sunucuda barındırılan uzaktan destek 
 | GitHub Actions `m2y-build.yml` — Windows desk+qs, MSI | ✅ ilk derleme geçti (release `m2y-test`, eski adlı 1.4.9 dosyalarıyla) |
 | Alt alan adı `desk.mehmetmesut.com` + DNS A kaydı | ✅ yayında |
 | **Let's Encrypt SSL** | ✅ yalnızca ana alan adı, 28.12.2026'ya kadar, otomatik yenilenir |
-| **İndirme sayfası yayında** | ✅ https://desk.mehmetmesut.com (docroot `/var/www/vhosts/mehmetmesut.com/desk.mehmetmesut.com`). `ayar.js` 1.0.0 adlarıyla; **`indir/` boş, 1.0.0 derlemesi bitince dosyalar konacak**. Mobilde taşma yok, `/indir/` 403. "QS" etiketi sayfada "Hızlı Destek" oldu |
+| **İndirme sayfası yayında** | ✅ https://desk.mehmetmesut.com (docroot `/var/www/vhosts/mehmetmesut.com/desk.mehmetmesut.com`). `ayar.js` 1.0.0 adlarıyla; **4 dosya `indir/` altında, SHA-256 release ile doğrulandı, siteden indirilebiliyor** (Android/macOS/Linux yok). Mobilde taşma yok, `/indir/` 403. "QS" etiketi sayfada "Hızlı Destek" oldu |
 | GitHub variable `M2Y_SERVER_KEY` | ✅ eklendi (açık anahtar) |
-| 1.0.0 derlemesi (anahtar gömülü) | ⏳ Actions run #4 (`v1.0.0`) çalışıyor, ~65 dk |
+| 1.0.0 derlemesi (anahtar gömülü) | ✅ run #5 başarılı (release `v1.0.0`; #4 `Cargo.lock` uyuşmazlığıyla düşmüştü, `2b9dcd4`). Hızlı Destek ayar girmeden `desk.mehmetmesut.com:21116`'ya kayıt oldu (sunucu günlüğünde görüldü) |
+| İki cihaz arası gerçek bağlantı testi | ⏳ yapılmadı (ID+şifre ile) |
+| Yönetim katmanı (hesap/API, günlük, sınırlar, süper admin, canlı panel, engelleme) | 📋 plan hazır: `docs/yonetim-katmani-plani.md`; kodlanmadı |
 | Android/Linux/macOS derlemeleri, Liquid Glass Flutter teması, kod imzalama | ⏳ sonraki tur |
 
 ## Yerel oturumda sırayla yapılacaklar
