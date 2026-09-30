@@ -17,6 +17,9 @@ services:
     network_mode: host
     environment:
       - TZ=${TZ:-Europe/Istanbul}
+      # Tüm oturumlar relay (hbbr) üzerinden: mobil/CGNAT ağlarda doğrudan bağlantı
+      # "Eş tarafından sıfırlandı" ile kopuyordu (30.09.2026). Üye olmayan sınırı da bunu gerektirir.
+      - ALWAYS_USE_RELAY=Y
     depends_on:
       - hbbr
     restart: unless-stopped
