@@ -11,7 +11,7 @@
     "enable-check-update": "Y",
     "hide-server-settings": "Y",
     "hide-powered-by-me": "Y",
-    "m2y-nonmember-limit": "Y"
+    "m2y-nonmember-limit": "N"
   },
   "default-settings": {
     "lang": "tr",

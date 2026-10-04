@@ -29,7 +29,7 @@
 - E-posta içeriği (Türkçe, sade): "M2YDesk doğrulama kodunuz: 123456 — 10 dakika geçerlidir. Bu isteği siz yapmadıysanız dikkate almayın." + footer kredisi.
 
 ## Sonuçlar ve riskler (dürüst not)
-1. **Üye olmayan kuralları (5 dk / 2 dk, 5 eşzamanlı) fiilen devre dışı kalır:** giriş zorunlu olunca herkes üye olur. Kuralın amacı (üyeliğe teşvik) zaten zorunlulukla karşılanmış olur. ❓ Kullanıcı: kurallar kaldırılsın mı, yoksa ileride "onaylanmamış üye" gibi bir ara statüye mi uygulansın?
+1. **Üye olmayan kuralları (5 dk / 2 dk, 5 eşzamanlı) KALDIRILDI** (kullanıcı kararı 04.10.2026): giriş zorunlu, herkes üye. `m2y-nonmember-limit=N`; hbbr2/relay-siniri kurulmayacak.
 2. **Sunucu erişilemezse kimse ilk girişi yapamaz** → destek alamaz. Öneri: daha önce oturum açmış cihazda token önbellekte geçerli kalır (çevrimdışı tolerans, ör. 30 gün); yalnızca ilk giriş sunucu ister.
 3. **E-posta teslimi:** kod spam'e düşerse danışan bağlanamaz → SPF/DKIM şart; ekranda "spam klasörünü kontrol edin" notu.
 4. **KVKK:** e-posta kişisel veridir; aydınlatma metni + açık rıza; saklama süresi ve silme talebi panelde.

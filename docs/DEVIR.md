@@ -144,3 +144,8 @@ Görev 1–8'in kod doğrulamalı planı: [`bulut-uygulama-plani.md`](bulut-uygu
 - Tam tasarım, sunucu uçları, güvenlik (10 dk, hash, 5 deneme, hız sınırı), SMTP ve riskler: [`eposta-kod-girisi.md`](eposta-kod-girisi.md).
 - Bu karar önceki "Hızlı Destek'te hesap yok" kararını **değiştirir**; üye olmayan 5 dk/2 dk kuralları fiilen devre dışı kalır (❓ kullanıcıya soruldu).
 - Yerel oturum işi: SMTP hesabı (Plesk posta) + SPF/DKIM/DMARC kontrolü, servis kurulumu (parolayı kullanıcı `.env`'e girer).
+
+## KARAR — Üye olmayan kuralları kaldırıldı (kullanıcı, 04.10.2026)
+- Oturum zorunlu → herkes üye. 5 dk / 2 dk ve 5 eşzamanlı oturum kuralı **kaldırıldı**: `res/m2y/m2ydesk.json` `m2y-nonmember-limit` = `N` (Hızlı Destek'te anahtar yok = kapalı; `limits_enabled()` yalnızca "Y" ile çalışır).
+- **Y3 iptal:** ikinci relay `hbbr2` (:21127) ve `relay-siniri.sh` kurulmayacak. `ALWAYS_USE_RELAY=Y` kalır (CGNAT sorunu için gerekli). `engel.json` engel listesi kalır.
+- Bulut oturumundan istenen iş (düşük öncelik): `m2y.rs` içindeki süre/bekleme/:21127 kodu ve `io_loop`/`client.rs` bağlantıları ölü kod oldu; e-posta girişi işi sırasında temizlenebilir (engel listesi kodu korunmalı). `server/docker-compose.yml` `limit` profili ve `relay-siniri.sh` belgelerde "kullanılmıyor" diye işaretlensin veya kaldırılsın.

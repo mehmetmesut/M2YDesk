@@ -1,5 +1,7 @@
 # Üye olmayan kullanıcı kuralları (Görev 3)
 
+> **KALDIRILDI (kullanıcı kararı, 04.10.2026):** Oturum açma zorunlu olduğundan herkes üye sayılır; 5 dk / 2 dk ve 5 eşzamanlı oturum kuralları kaldırıldı. `m2y-nonmember-limit` = `N` (her iki üründe). İkinci relay `hbbr2` (:21127) ve `relay-siniri.sh` **kurulmayacak**. `engel.json` engel listesi bu karardan bağımsızdır ve kalır. Aşağıdaki metin tarihsel kayıttır.
+
 Kod: `libs/hbb_common/src/m2y.rs` (saf mantık + testler), bağlantılar `src/client/io_loop.rs`, `src/client.rs`, `src/common.rs::m2y_connect_gate`.
 
 | Kural | Uygulama |
