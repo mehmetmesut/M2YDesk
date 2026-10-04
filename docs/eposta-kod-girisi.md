@@ -17,7 +17,7 @@
 4. Ekran 3 (sabit parola yoksa): 6 hane rakam ×2 → `set_permanent_password`; Hızlı Destek'te `verification-method=use-both`, "Sürekli erişime izin ver" varsayılan açık.
 5. Ana ekran. Çıkış yapılırsa 1'e döner.
 - Bilinen hesap altyapısı (`/api/login`, `user_info`) yeniden kullanılır; yeni giriş türü yalnızca kod tabanlı.
-- Tam M2YDesk'te Google ile giriş **ek seçenek** olarak aynı ekranda kalabilir (❓ kullanıcı onayı); e-posta+kod birincil.
+- **KARAR:** **Her iki programda** (tam M2YDesk ve Hızlı Destek) giriş ekranında **Google ile giriş** ek seçenek olarak bulunur (mevcut OIDC akışı: `/api/oidc/auth`, tarayıcıda Google onayı); e-posta+kod birincil. Hızlı Destek'te `disable-account` kaldırılmadan yalnızca giriş ekranı açılır (ayarlar yine kapalı); 280 px pencereye sığmalı.
 
 ## Sunucu (yeni ince servis veya API eki)
 - Uçlar: `POST /api/m2y/kod-gonder {email}` → her zaman 200 (hesap var/yok sızdırmaz); `POST /api/m2y/kod-dogrula {email, kod}` → `access_token` + `user` (rustdesk-api kullanıcısıyla eşleşmiş/oluşturulmuş).
@@ -30,7 +30,8 @@
 
 ## Sonuçlar ve riskler (dürüst not)
 1. **Üye olmayan kuralları (5 dk / 2 dk, 5 eşzamanlı) KALDIRILDI** (kullanıcı kararı 04.10.2026): giriş zorunlu, herkes üye. `m2y-nonmember-limit=N`; hbbr2/relay-siniri kurulmayacak.
-2. **Sunucu erişilemezse kimse ilk girişi yapamaz** → destek alamaz. Öneri: daha önce oturum açmış cihazda token önbellekte geçerli kalır (çevrimdışı tolerans, ör. 30 gün); yalnızca ilk giriş sunucu ister.
+2. **KARAR — çevrimdışı tolerans 7 gün:** Oturum açmış cihaz sunucuya ulaşamasa da oturum **son başarılı sunucu doğrulamasından itibaren 7 gün** geçerli kalır (`m2y-last-auth-ok`, Unix sn, yerel yapılandırma; her başarılı heartbeat/token doğrulamasında güncellenir). 7 günü aşınca oturum geçersiz sayılır (token silinir), giriş ekranı açılır. Sunucu token'ı açıkça reddederse (401) süre beklenmeden oturum kapanır. İlk giriş her zaman sunucu ister.
+3. **KARAR — e-posta hatırlanır:** Oturum düşse de son kullanılan e-posta yerel yapılandırmada kalır (`m2y-last-email`). Giriş ekranı açılınca alan **dolu** gelir ve birincil düğme **"Doğrulama kodu gönder"** olur (tek tıkla kod isteğine teşvik; yanında "Başka e-posta kullan"). Çıkışta da e-posta hatırlanır; kullanıcı "Bu cihazdan e-postamı unut" ile silebilir (KVKK).
 3. **E-posta teslimi:** kod spam'e düşerse danışan bağlanamaz → SPF/DKIM şart; ekranda "spam klasörünü kontrol edin" notu.
 4. **KVKK:** e-posta kişisel veridir; aydınlatma metni + açık rıza; saklama süresi ve silme talebi panelde.
 5. Kaynak açık olduğundan değiştirilmiş istemci giriş ekranını atlayabilir; asıl zorlama sunucuda olmalı (ör. hbbs/relay'de token doğrulaması — ileri aşama). Şimdilik istemci tarafı zorlama + API'de cihaz kaydı.
