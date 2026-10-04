@@ -215,3 +215,10 @@ Bulut için kalanlar: e-posta+kod giriş ekranı (istemci), sabit parola ilk aç
 - **Hizmet sorunu kök neden:** 7009/7000, kurulum betiğinin geçici `--import-config` hizmetinden (bilinçli, zararsız). Açılışta başlamama nedeni kesin değil (Defender taraması / hizmet yok). Değişiklikler (`windows.rs`, `core_main.rs`, `flutter_ffi.rs`, `connection_page.dart`): hizmet **Otomatik (Gecikmeli)** + hata kurtarma (5/10/30 sn yeniden başlat) + etkileşimli kullanıcıya yalnız **başlatma (RP)** izni (SDDL incelendi: durdurma/silme yok); açılışta bir kez sessiz başlatma denemesi (UAC yok, en çok 15 sn), başarısızsa "Servisi başlat" görünür. 1.0.0 kurulumlarında eski izinler → bağlantı bir kez görünür.
 - **Hızlı Destek otomatik başlatma:** `HKCU\...\Run` (her açılışta exe yoluna eşitlenir; `m2y-autostart=N` kaldırır). Pencere açık başlar (gizli başlatma argümanı yok). Belge: `hizmet-ve-otomatik-baslatma.md`.
 - Derleme riski: `windows-service` 0.6 ve `winreg` çağrıları, `update_me` format! argümanı.
+
+## API entegrasyon araştırması (yerel ajan, 04.10.2026 gece) — `api-entegrasyon-arastirma.md`
+- rustdesk-api'de **SMTP / e-posta kodu girişi / "kullanıcı adına belirteç" ucu YOK**; istemcinin `email_check`/`email_code` diyaloğu hazır ama sunucu karşılığı yok → **öneri: rustdesk-api fork + yalıtılmış `m2y` Go paketi** (~3 gün yalnız e-posta kodu; tüm kalemler ~15–16 gün).
+- OIDC: kullanıcı otomatik oluşur, `email_verified` bakılmaz (yama gerek); e-postayla otomatik admin ayarı yok; `isProtected` yok.
+- Denetim: `/api/audit/conn` (new/close) saklanıyor ama e-posta/kuruluş/not yok ve uçlar **kimliksiz** (sahtelenebilir).
+- Yetki belirteci: `LoginRequest`'te boş alan yok → `message.proto`'ya `bytes m2y_auth = 100` (geriye uyumlu); öneri: **hedef cihaza bağlı, ≤5 dk ömürlü** belirteç.
+- Upstream ~1 yıldır durağan → fork bakımı bizde. Kararlar bekliyor: fork açılması (özel depo), belirteç biçimi, Vue panel fork'u.
