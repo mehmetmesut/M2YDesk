@@ -126,3 +126,7 @@ Görev 1–8'in kod doğrulamalı planı: [`bulut-uygulama-plani.md`](bulut-uygu
 - Numara koda gömülü değil: gömülü yapılandırmada üst düzey `m2y-whatsapp` (HARD_SETTINGS, `bind.mainGetHardOption`); boşsa düğme gizlenir. İki üründe de `905307302002`.
 - Mesaj biçimi: başlık + "ID:" ve "Parola:" etiketlerinin altında değer **kendi satırında, boşluksuz** (çift dokunuşla tek başına seçilip kopyalanır). Parola "-" (yalnızca kalıcı parola modu) ise eklenmez.
 - Doğrulama: yerelde Dart/Flutter yok → bir sonraki Actions derlemesinde (kullanıcı onayıyla) derlenip Hızlı Destek 280 px pencerede görünüm kontrol edilecek.
+
+## Derleme kuralı (kullanıcı, 04.10.2026)
+- **Ara derleme yok.** Tüm geliştirmeler (WhatsApp düğmesi ✅ kod, hizmet otomatik başlatma, üyelik kartı, sabit parola kararı) bitince **tek bir "gerçek doğrulama derlemesi"** (1.0.2) yapılacak. Bulut oturumu kodunu bitirince DEVIR'e "derlemeye hazır" yazsın; derlemeyi yerel oturum kullanıcı onayıyla başlatır.
+- Yerelde Flutter 3.24.5 kuruldu (`C:\tools\flutter`): WhatsApp kodu `dart analyze` → hata yok; `dart format` → yeni satırlar uyumlu (dosyanın eski satırları zaten biçimsiz, dokunulmadı).
