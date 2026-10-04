@@ -35,6 +35,8 @@ class OnlineStatusWidget extends StatefulWidget {
 class _OnlineStatusWidgetState extends State<OnlineStatusWidget> {
   final _svcStopped = Get.find<RxBool>(tag: 'stop-service');
   final _svcIsUsingPublicServer = true.obs;
+  // M2YDesk: açılıştaki sessiz hizmet başlatma denemesi başarısız olduysa true.
+  final _m2ySvcStartFailed = false.obs;
   Timer? _updateTimer;
 
   double get em => 14.0;
@@ -67,7 +69,7 @@ class _OnlineStatusWidgetState extends State<OnlineStatusWidget> {
   Widget build(BuildContext context) {
     final isIncomingOnly = bind.isIncomingOnly();
     startServiceWidget() => Offstage(
-          offstage: !_svcStopped.value,
+          offstage: !(_svcStopped.value || _m2ySvcStartFailed.value),
           child: InkWell(
                   onTap: () async {
                     await start_service(true);
@@ -118,6 +120,7 @@ class _OnlineStatusWidgetState extends State<OnlineStatusWidget> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(4),
                 color: _svcStopped.value ||
+                        _m2ySvcStartFailed.value ||
                         stateGlobal.svcStatus.value == SvcStatus.connecting
                     ? kColorWarn
                     : (stateGlobal.svcStatus.value == SvcStatus.ready
@@ -156,7 +159,7 @@ class _OnlineStatusWidgetState extends State<OnlineStatusWidget> {
   _buildConnStatusMsg() {
     widget.onSvcStatusChanged?.call();
     return Text(
-      _svcStopped.value
+      _svcStopped.value || _m2ySvcStartFailed.value
           ? translate("Service is not running")
           : stateGlobal.svcStatus.value == SvcStatus.connecting
               ? translate("connecting_status")
@@ -181,6 +184,8 @@ class _OnlineStatusWidgetState extends State<OnlineStatusWidget> {
       stateGlobal.svcStatus.value = SvcStatus.notReady;
     }
     _svcIsUsingPublicServer.value = await bind.mainIsUsingPublicServer();
+    _m2ySvcStartFailed.value =
+        await bind.mainGetCommon(key: 'm2y-service-autostart-failed') == 'true';
     try {
       stateGlobal.videoConnCount.value = status['video_conn_count'] as int;
     } catch (_) {}

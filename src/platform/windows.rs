@@ -3407,6 +3407,7 @@ taskkill /F /IM {app_name}.exe{filter}
 {copy_exe}
 {rename_exe}
 {remove_meta_toml}
+{m2y_tuning}
 {restore_service_cmd}
 {uninstall_printer_cmd}
 {install_printer_cmd}
@@ -3416,6 +3417,9 @@ taskkill /F /IM {app_name}.exe{filter}
         copy_exe = copy_exe_cmd(&src_exe, &exe, &path)?,
         rename_exe = rename_exe_cmd(&src_exe, &path)?,
         remove_meta_toml = remove_meta_toml_cmd(is_msi.unwrap_or(true), &path),
+        // M2YDesk: güncellemede de mevcut hizmete gecikmeli başlangıç/kurtarma/başlatma izni.
+        // Hizmet yoksa (kullanıcı durdurmuş) sc hata verir, betik devam eder.
+        m2y_tuning = m2y_service_tuning_cmds(&app_name),
         sleep = if debug { "timeout 300" } else { "" },
     );
 
@@ -3714,10 +3718,112 @@ if exist \"%PROGRAMDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\{ap
     } else {
         format!("
 sc create {app_name} binpath= \"\\\"{exe}\\\" --service\" start= auto DisplayName= \"{app_name} Service\"
+{tuning}
 sc start {app_name}
 ",
-    app_name = crate::get_app_name())
+    app_name = crate::get_app_name(),
+    tuning = m2y_service_tuning_cmds(&crate::get_app_name()))
     }
+}
+
+// M2YDesk: Otomatik (Gecikmeli) başlangıç, hata kurtarma (3 kez yeniden başlat) ve
+// etkileşimli kullanıcıya (IU) yalnızca BAŞLATMA (RP) izni; arayüz hizmeti yönetici izni
+// istemeden başlatabilsin diye (m2y_try_start_service_on_launch). Durdurma/silme izni verilmez;
+// diğer girdiler `sc create` varsayılan güvenlik tanımlayıcısıyla aynıdır.
+fn m2y_service_tuning_cmds(app_name: &str) -> String {
+    format!("
+sc config {app_name} start= delayed-auto
+sc failure {app_name} reset= 86400 actions= restart/5000/restart/10000/restart/30000
+sc sdset {app_name} D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWRPLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)S:(AU;FA;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;WD)
+")
+}
+
+// M2YDesk: açılıştaki sessiz hizmet başlatma denemesi başarısız olduysa true.
+static M2Y_SERVICE_AUTOSTART_FAILED: std::sync::atomic::AtomicBool =
+    std::sync::atomic::AtomicBool::new(false);
+
+#[inline]
+pub fn m2y_service_autostart_failed() -> bool {
+    M2Y_SERVICE_AUTOSTART_FAILED.load(Ordering::Relaxed)
+}
+
+/// M2YDesk: kurulu sürümde hizmet çalışmıyorsa ve kullanıcı bilinçli durdurmadıysa
+/// (`stop-service` != "Y") ana pencere açılışında hizmeti BİR KEZ, yönetici izni istemeden
+/// başlatmayı dener. Arayüzün kendi sunucusunu başlatmasından önce çağrılır; böylece hizmetin
+/// başlattığı `--server` ile IPC çakışması olmaz. Tekrar deneme yoktur; başarısızsa arayüz
+/// "Servisi başlat" bağlantısını gösterir. Arka plan iş parçacığında çağrılmalıdır (bloklar).
+pub fn m2y_try_start_service_on_launch() {
+    if config::is_outgoing_only()
+        || !is_installed()
+        || !is_cur_exe_the_installed()
+        || Config::get_option("stop-service") == "Y"
+        || is_self_service_running()
+    {
+        return;
+    }
+    log::info!("M2YDesk: hizmet çalışmıyor, sessizce başlatılıyor");
+    if let Err(e) = m2y_start_self_service() {
+        log::error!("M2YDesk: hizmet başlatılamadı: {}", e);
+        M2Y_SERVICE_AUTOSTART_FAILED.store(true, Ordering::Relaxed);
+        return;
+    }
+    // Hizmet kullanıcı oturumunda `--server` başlatır; IPC hazır olana dek kısa süre bekle.
+    for _ in 0..15 {
+        if ipc::get_config("id").is_ok() {
+            log::info!("M2YDesk: hizmet başlatıldı, sunucu hazır");
+            return;
+        }
+        std::thread::sleep(Duration::from_secs(1));
+    }
+    log::warn!("M2YDesk: hizmet başlatıldı ama sunucu 15 sn içinde hazır olmadı");
+}
+
+fn m2y_start_self_service() -> ResultType<()> {
+    use windows_service::{
+        service::ServiceAccess,
+        service_manager::{ServiceManager, ServiceManagerAccess},
+    };
+    let manager = ServiceManager::local_computer(None::<&str>, ServiceManagerAccess::CONNECT)?;
+    let service = manager.open_service(crate::get_app_name(), ServiceAccess::START)?;
+    service.start::<&str>(&[])?;
+    Ok(())
+}
+
+/// M2YDesk Hızlı Destek: Windows kullanıcı oturumu açılışında otomatik başlatma.
+/// `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` altına uygulama adıyla mevcut exe
+/// yolunu yazar (exe taşındıysa her açılışta düzelir); `m2y-autostart` = "N" ise değeri siler.
+/// Yönetici izni gerektirmez. NOT: Run kaydı yalnızca kullanıcı oturum AÇTIĞINDA çalışır;
+/// kilit/giriş ekranında (oturum açılmadan) erişim için hizmet gerekir (tam M2YDesk kurulumu).
+#[cfg(feature = "m2y_qs")]
+pub fn m2y_sync_autostart() {
+    if !config::is_incoming_only() {
+        return;
+    }
+    if let Err(e) = m2y_sync_autostart_() {
+        log::error!("M2YDesk: otomatik başlatma kaydı güncellenemedi: {}", e);
+    }
+}
+
+#[cfg(feature = "m2y_qs")]
+fn m2y_sync_autostart_() -> ResultType<()> {
+    const RUN_KEY: &str = "Software\\Microsoft\\Windows\\CurrentVersion\\Run";
+    let (run, _) = RegKey::predef(HKEY_CURRENT_USER).create_subkey(RUN_KEY)?;
+    let name = crate::get_app_name();
+    if config::LocalConfig::get_option("m2y-autostart") == "N" {
+        match run.delete_value(&name) {
+            Ok(()) => log::info!("M2YDesk: otomatik başlatma kaydı kaldırıldı"),
+            Err(e) if e.kind() == io::ErrorKind::NotFound => {}
+            Err(e) => return Err(e.into()),
+        }
+        return Ok(());
+    }
+    let value = format!("\"{}\"", std::env::current_exe()?.to_string_lossy());
+    let current: Option<String> = run.get_value(&name).ok();
+    if current.as_deref() != Some(value.as_str()) {
+        run.set_value(&name, &value)?;
+        log::info!("M2YDesk: otomatik başlatma kaydı güncellendi");
+    }
+    Ok(())
 }
 
 fn run_after_run_cmds(silent: bool) {

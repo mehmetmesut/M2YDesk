@@ -209,3 +209,9 @@ Tam tasarım: [`guvenlik-ve-destek-ozellikleri.md`](guvenlik-ve-destek-ozellikle
 2. **Bağlantı çerçevesi "Danışmanınız bağlı" + "Bağlantıyı kes" → "Emin misiniz?"** (bağlantı yöneticisi / cm penceresi).
 3. **Araştırma:** `lejianwen/rustdesk-api` ile e-posta+kod girişi ve imzalı yetki belirteci nasıl entegre edilir (kaynak kod incelemesi; belge `docs/api-entegrasyon-arastirma.md`).
 Bulut için kalanlar: e-posta+kod giriş ekranı (istemci), sabit parola ilk açılış akışı, üyelik kartı, yetkili hesap doğrulaması (istemci), "Destek iste", oturum kaydı/rapor.
+
+## Tamamlandı (yerel ajanlar, 04.10.2026 gece) — derlenmedi, 1.0.2 doğrulama derlemesinde denetlenecek
+- **Bağlantı göstergesi** (`server_page.dart`): danışanın cm penceresinde kırmızı şerit "Danışmanınız bağlı — <ad>" + "Bağlantıyı kes" → onay (Vazgeç solda, Evet kes sağda; Enter/Esc=Vazgeç); eski Disconnect da onaylı. Ekran kenarı çerçevesi YOK (yerel katmanlı pencere gerekir; sonraki tur). Belge: `baglanti-gostergesi.md`.
+- **Hizmet sorunu kök neden:** 7009/7000, kurulum betiğinin geçici `--import-config` hizmetinden (bilinçli, zararsız). Açılışta başlamama nedeni kesin değil (Defender taraması / hizmet yok). Değişiklikler (`windows.rs`, `core_main.rs`, `flutter_ffi.rs`, `connection_page.dart`): hizmet **Otomatik (Gecikmeli)** + hata kurtarma (5/10/30 sn yeniden başlat) + etkileşimli kullanıcıya yalnız **başlatma (RP)** izni (SDDL incelendi: durdurma/silme yok); açılışta bir kez sessiz başlatma denemesi (UAC yok, en çok 15 sn), başarısızsa "Servisi başlat" görünür. 1.0.0 kurulumlarında eski izinler → bağlantı bir kez görünür.
+- **Hızlı Destek otomatik başlatma:** `HKCU\...\Run` (her açılışta exe yoluna eşitlenir; `m2y-autostart=N` kaldırır). Pencere açık başlar (gizli başlatma argümanı yok). Belge: `hizmet-ve-otomatik-baslatma.md`.
+- Derleme riski: `windows-service` 0.6 ve `winreg` çağrıları, `update_me` format! argümanı.

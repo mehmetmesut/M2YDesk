@@ -196,8 +196,15 @@ pub fn core_main() -> Option<Vec<String>> {
         {
             crate::platform::try_remove_temp_update_files();
             hbb_common::config::PeerConfig::preload_peers();
+            #[cfg(feature = "m2y_qs")]
+            crate::platform::windows::m2y_sync_autostart();
         }
-        std::thread::spawn(move || crate::start_server(false, no_server));
+        std::thread::spawn(move || {
+            // M2YDesk: hizmet kapalıysa arayüz kendi sunucusunu açmadan önce bir kez başlatmayı dene.
+            #[cfg(windows)]
+            crate::platform::windows::m2y_try_start_service_on_launch();
+            crate::start_server(false, no_server)
+        });
     } else {
         #[cfg(any(target_os = "linux", target_os = "macos"))]
         // Root CLI management commands must talk to the user `--server` main IPC.

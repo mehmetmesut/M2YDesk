@@ -2844,6 +2844,11 @@ pub fn main_get_common(key: String) -> String {
         return ui_interface::is_permanent_password_set().to_string();
     } else if key == "local-permanent-password-set" {
         return ui_interface::is_local_permanent_password_set().to_string();
+    } else if key == "m2y-service-autostart-failed" {
+        #[cfg(target_os = "windows")]
+        return crate::platform::windows::m2y_service_autostart_failed().to_string();
+        #[cfg(not(target_os = "windows"))]
+        return false.to_string();
     } else {
         if key.starts_with("download-data-") {
             let id = key.replace("download-data-", "");
