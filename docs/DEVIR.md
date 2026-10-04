@@ -166,3 +166,9 @@ Tam tasarım: [`guvenlik-ve-destek-ozellikleri.md`](guvenlik-ve-destek-ozellikle
 6. **"Destek iste"** düğmesi + bildirim ("X kuruluşundan Ayşe destek bekliyor") + panelden tek tıkla bağlan; WhatsApp düğmesi kalır.
 7. **Oturum kaydı + aylık Excel/PDF rapor** (kim, ne zaman, süre, not).
 8. **Görünür bağlantı çerçevesi** "Danışmanınız bağlı" + "Bağlantıyı kes" → "Emin misiniz?" onayı.
+
+## Yerel oturum üstlendi (04.10.2026) — bulut bu işleri YAPMASIN
+- **İmzalı surum.json/engel.json (Ed25519)** — istemci doğrulaması + `server/scripts/imzala.py` + CI değişkeni `M2Y_UPDATE_PUBKEYS` (yerel, ajanla).
+- **Sunucu izleme/alarm** — `server/scripts/izleme.sh` + systemd timer; bildirim: e-posta + **ntfy** (CallMeBot yerine: ücretsiz, açık kaynak, hesap gerektirmez; gizli konu adı `.env.izleme`'de).
+- **İndirme sayfası sadeleştirme** — `server/site/httpdocs/index.html` (6 platform).
+- **Gönderen posta:** `m2ydesk@mehmetmesut.com` — kurulum betiği sunucuda `/root/m2y-posta-kur.sh` (parola rastgele, ekrana yazılmaz, `/opt/m2ydesk/server/.env.smtp` 600); **kullanıcı kendisi çalıştıracak**. DNS: SPF/DKIM(`default`)/DMARC(`p=quarantine`) mevcut, 587 açık.
