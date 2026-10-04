@@ -149,6 +149,55 @@ pub fn block_list_url() -> String {
     format!("https://{}/guncelleme/engel.json", crate::m2y_update_host())
 }
 
+/// `surum.json` / `engel.json` imzası için gömülü Ed25519 açık anahtarları
+/// (derleme zamanı `M2Y_UPDATE_PUBKEYS`, virgülle ayrılmış base64 32 bayt; birden çok = anahtar döndürme).
+pub fn update_pubkeys() -> &'static str {
+    match option_env!("M2Y_UPDATE_PUBKEYS") {
+        Some(v) => v,
+        None => "",
+    }
+}
+
+/// Ayrık imza dosyasının adresi (`<url>.sig`).
+pub fn sig_url(url: &str) -> String {
+    format!("{url}.sig")
+}
+
+/// `data` ham baytları üzerindeki ayrık Ed25519 imzasını (`sig_b64`, base64) `pubkeys`
+/// (virgülle ayrılmış base64 açık anahtarlar) içinden herhangi biriyle doğrular.
+/// Anahtar yok, imza/anahtar bozuk veya eşleşme yoksa `false` (güvenli varsayılan).
+pub fn verify_detached(data: &[u8], sig_b64: &str, pubkeys: &str) -> bool {
+    use sodiumoxide::{base64, crypto::sign};
+    use std::convert::TryFrom;
+    let sig = match base64::decode(sig_b64.trim(), base64::Variant::Original)
+        .ok()
+        .and_then(|b| sign::Signature::try_from(b.as_slice()).ok())
+    {
+        Some(sig) => sig,
+        None => return false,
+    };
+    pubkeys
+        .split(',')
+        .map(str::trim)
+        .filter(|k| !k.is_empty())
+        .filter_map(|k| base64::decode(k, base64::Variant::Original).ok())
+        .filter_map(|b| sign::PublicKey::from_slice(&b))
+        .any(|pk| sign::verify_detached(&sig, data, &pk))
+}
+
+/// Gömülü anahtarlarla doğrular; başarısızlıkta uyarı günlüğe yazılır (`what`: dosya adı).
+pub fn verify_signed(what: &str, data: &[u8], sig_b64: &str) -> bool {
+    if update_pubkeys().trim().is_empty() {
+        log::warn!("M2YDesk: M2Y_UPDATE_PUBKEYS derlemeye gömülmedi; {what} reddedildi");
+        return false;
+    }
+    let ok = verify_detached(data, sig_b64, update_pubkeys());
+    if !ok {
+        log::warn!("M2YDesk: {what} imzası doğrulanamadı; dosya reddedildi");
+    }
+    ok
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -197,5 +246,39 @@ mod tests {
         // boş değer asla eşleşmez
         assert!(!BlockList { id: vec![hash_value("")], ..Default::default() }.is_blocked("", "", ""));
         assert!(!BlockList::default().is_blocked("1", "2", "3"));
+    }
+
+    fn signed(data: &[u8]) -> (String, String) {
+        use sodiumoxide::{base64, crypto::sign};
+        let (pk, sk) = sign::gen_keypair();
+        let sig = sign::sign_detached(data, &sk);
+        (
+            base64::encode(&pk.0, base64::Variant::Original),
+            base64::encode(sig.to_bytes(), base64::Variant::Original),
+        )
+    }
+
+    #[test]
+    fn detached_signature() {
+        let data = br#"{"version":"1.0.2"}"#;
+        let (pk, sig) = signed(data);
+        let (other_pk, _) = signed(data);
+        // geçerli imza (tek anahtar, döndürme listesi, sondaki satır sonu)
+        assert!(verify_detached(data, &sig, &pk));
+        assert!(verify_detached(data, &format!("{sig}\n"), &format!("{other_pk}, {pk}")));
+        // bozuk veri
+        assert!(!verify_detached(br#"{"version":"9.9.9"}"#, &sig, &pk));
+        // yanlış anahtar
+        assert!(!verify_detached(data, &sig, &other_pk));
+        // boş anahtar listesi
+        assert!(!verify_detached(data, &sig, ""));
+        assert!(!verify_detached(data, &sig, " , "));
+        // bozuk base64 (imza ve anahtar)
+        assert!(!verify_detached(data, "!!not-base64!!", &pk));
+        assert!(!verify_detached(data, "", &pk));
+        assert!(!verify_detached(data, &sig, "!!not-base64!!"));
+        // geçerli base64 ama yanlış uzunluk
+        assert!(!verify_detached(data, "AAAA", &pk));
+        assert!(!verify_detached(data, &sig, "AAAA"));
     }
 }

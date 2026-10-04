@@ -955,6 +955,8 @@ pub fn check_software_update() {
 #[tokio::main(flavor = "current_thread")]
 pub async fn do_check_software_update() -> hbb_common::ResultType<()> {
     let url = hbb_common::m2y_update_url();
+    // Önce ayrık imza (`surum.json.sig`) indirilir; doğrulanmayan bildirim kullanılmaz.
+    let sig = m2y_fetch_sig(&url).await;
     let proxy_conf = Config::get_socks();
     let tls_url = get_url_for_tls(&url, &proxy_conf);
     let tls_type = get_cached_tls_type(tls_url);
@@ -982,6 +984,14 @@ pub async fn do_check_software_update() -> hbb_common::ResultType<()> {
         hbb_common::bail!("surum.json: {}", latest_release_response.status());
     }
     let bytes = latest_release_response.bytes().await?;
+    let sig_ok = sig.map_or(false, |s| {
+        hbb_common::m2y::verify_signed("surum.json", &bytes, &s)
+    });
+    if !sig_ok {
+        *M2Y_UPDATE_FILE.lock().unwrap() = None;
+        *SOFTWARE_UPDATE_URL.lock().unwrap() = "".to_string();
+        hbb_common::bail!("surum.json: imza yok veya geçersiz; güncelleme yapılmaz");
+    }
     let info: hbb_common::M2yUpdateInfo = serde_json::from_slice(&bytes)?;
     let latest_release_version = info.version.trim().trim_start_matches('v').to_owned();
     if latest_release_version.is_empty() {
@@ -1051,7 +1061,8 @@ pub fn m2y_tr(key: &str) -> String {
 static M2Y_BLOCK_CACHE: std::sync::Mutex<Option<(std::time::Instant, hbb_common::m2y::BlockList)>> =
     std::sync::Mutex::new(None);
 
-/// `engel.json` (SHA-256 özetleri) önbellekli okunur; ağ hatasında engel uygulanmaz (kullanılabilirlik önceliği).
+/// `engel.json` (SHA-256 özetleri) önbellekli okunur; Ed25519 imzası (`engel.json.sig`) zorunludur.
+/// Ağ veya imza hatasında engel uygulanmaz (kullanılabilirlik önceliği).
 async fn m2y_block_list() -> Option<hbb_common::m2y::BlockList> {
     const TTL: std::time::Duration = std::time::Duration::from_secs(600);
     if let Some((t, l)) = M2Y_BLOCK_CACHE.lock().unwrap().as_ref() {
@@ -1059,7 +1070,10 @@ async fn m2y_block_list() -> Option<hbb_common::m2y::BlockList> {
             return Some(l.clone());
         }
     }
+    // Süresi dolmuş önbellek, yeni liste imzayla doğrulanmadan bir daha kullanılmaz.
+    *M2Y_BLOCK_CACHE.lock().unwrap() = None;
     let url = hbb_common::m2y::block_list_url();
+    let sig = m2y_fetch_sig(&url).await?;
     let client = crate::hbbs_http::create_http_client_async_with_url(&url).await;
     let resp = client
         .get(&url)
@@ -1070,9 +1084,42 @@ async fn m2y_block_list() -> Option<hbb_common::m2y::BlockList> {
     if !resp.status().is_success() {
         return None;
     }
-    let list: hbb_common::m2y::BlockList = serde_json::from_slice(&resp.bytes().await.ok()?).ok()?;
+    let bytes = resp.bytes().await.ok()?;
+    if !hbb_common::m2y::verify_signed("engel.json", &bytes, &sig) {
+        return None;
+    }
+    let list: hbb_common::m2y::BlockList = serde_json::from_slice(&bytes).ok()?;
     *M2Y_BLOCK_CACHE.lock().unwrap() = Some((std::time::Instant::now(), list.clone()));
     Some(list)
+}
+
+/// `<url>.sig` ayrık Ed25519 imzasını (base64 metin) indirir; alınamazsa uyarı yazar ve `None` döner.
+async fn m2y_fetch_sig(url: &str) -> Option<String> {
+    let sig_url = hbb_common::m2y::sig_url(url);
+    let client = crate::hbbs_http::create_http_client_async_with_url(&sig_url).await;
+    let resp = match client
+        .get(&sig_url)
+        .timeout(std::time::Duration::from_secs(5))
+        .send()
+        .await
+    {
+        Ok(resp) => resp,
+        Err(e) => {
+            log::warn!("M2YDesk: {} alınamadı: {}", sig_url, e);
+            return None;
+        }
+    };
+    if !resp.status().is_success() {
+        log::warn!("M2YDesk: {} alınamadı: {}", sig_url, resp.status());
+        return None;
+    }
+    match resp.text().await {
+        Ok(text) => Some(text),
+        Err(e) => {
+            log::warn!("M2YDesk: {} okunamadı: {}", sig_url, e);
+            None
+        }
+    }
 }
 
 /// Giden bağlantıdan önce çağrılır. `Some(mesaj)` dönerse bağlantı kurulmaz.

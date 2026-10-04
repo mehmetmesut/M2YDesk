@@ -19,4 +19,4 @@ Kod: `libs/hbb_common/src/m2y.rs` (saf mantık + testler), bağlantılar `src/cl
 - **İstemci kaynağı açık**: değiştirilmiş istemci sayaçları/bekleme kaydını atlatabilir; süre kuralı bir *kullanım politikası*dır, güvenlik sınırı değil. Bekleme kaydı yerel dosyada (silinirse sıfırlanır). Gerçek zorlama sunucu tarafında olmalı.
 - **Relay portu**: RustDesk'te relay adresini iki akış belirler: (a) denetleyen taraf `RequestRelay` ile seçer → :21127 çalışır; (b) karşı taraf (`get_relay_server`, kendi `relay-server` seçeneği) seçip `RelayResponse` ile bildirir → :21117 kalır. Hangisinin kullanıldığı hbbs davranışına bağlı ve **doğrulanmadı**; yerel oturum günlüklerle doğrulayacak. (b) çıkarsa 21127 yönlendirmesi etkisiz kalır (sistem yine çalışır).
 - Doğrudan (P2P) bağlantılar relay'den geçmez; sunucu tarafı 5 eşzamanlı oturum sınırı bunları göremez.
-- `engel.json` kimlik doğrulamasızdır (HTTPS'e güvenir); yalnızca kötüye kullanımı caydırır.
+- `engel.json` Ed25519 ile imzalıdır (`engel.json.sig`, bkz. `docs/guncelleme.md` "İmza"); imza yok/geçersizse engel uygulanmaz. Yalnızca kötüye kullanımı caydırır.

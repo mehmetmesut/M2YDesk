@@ -172,3 +172,8 @@ Tam tasarım: [`guvenlik-ve-destek-ozellikleri.md`](guvenlik-ve-destek-ozellikle
 - **Sunucu izleme/alarm** — `server/scripts/izleme.sh` + systemd timer; bildirim: e-posta + **ntfy** (CallMeBot yerine: ücretsiz, açık kaynak, hesap gerektirmez; gizli konu adı `.env.izleme`'de).
 - **İndirme sayfası sadeleştirme** — `server/site/httpdocs/index.html` (6 platform).
 - **Gönderen posta:** `m2ydesk@mehmetmesut.com` — kurulum betiği sunucuda `/root/m2y-posta-kur.sh` (parola rastgele, ekrana yazılmaz, `/opt/m2ydesk/server/.env.smtp` 600); **kullanıcı kendisi çalıştıracak**. DNS: SPF/DKIM(`default`)/DMARC(`p=quarantine`) mevcut, 587 açık.
+
+## Tamamlandı (yerel, 04.10.2026) — imzalı güncelleme, izleme, site
+- **İmzalı `surum.json`/`engel.json`** (Ed25519, ayrık `.sig`): `hbb_common::m2y::verify_detached`/`verify_signed` (+birim testi), `src/common.rs` `.sig` indirip doğrular (imzasız/bozuksa güncelleme yok, engel listesi uygulanmaz), `build.rs` + `m2y-build.yml` `M2Y_UPDATE_PUBKEYS`, `server/scripts/imzala.py` (anahtar-uret/imzala/dogrula; PyNaCl ile çapraz doğrulandı). **Rust derlenmedi** → 1.0.2 doğrulama derlemesinde kontrol. Kullanıcı işi: anahtar çifti üret (kendi PC'si), açık anahtarı `M2Y_UPDATE_PUBKEYS` Variable'ına ekle; her yayında `.sig` üret. Bilinen sınır: imzada zaman damgası yok (eski imzalı dosya yeniden sunulabilir).
+- **İzleme:** `server/scripts/izleme.sh` + `izleme-kur.sh` sunucuya kopyalandı (LF), elle bir kez çalıştırıldı: 8 denetimin hepsi OK. Zamanlayıcıyı **kullanıcı** kuracak (ntfy konu adı yalnızca onun terminalinde görünsün). `.gitattributes`: `*.sh eol=lf`.
+- **Site:** `index.html` sadeleştirildi (6 platform, KVKK kutusu korunarak, tekrarlar/hatalar kaldırıldı); depoda, **yayın kullanıcı onayı bekliyor**.

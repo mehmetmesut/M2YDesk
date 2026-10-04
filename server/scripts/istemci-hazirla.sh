@@ -12,6 +12,8 @@
 #
 # Çıktı: $SITE_DIZINI/indir/, $SITE_DIZINI/ayar.js ve $SITE_DIZINI/guncelleme/surum.json
 #         (istemcilerin güncelleme denetimi; dosya adresi + SHA-256 içerir)
+#         surum.json/engel.json İMZASIZ üretilir; .sig dosyaları kullanıcı bilgisayarında
+#         scripts/imzala.py ile üretilip ayrıca yüklenir (docs/guncelleme.md "İmza").
 
 set -euo pipefail
 
@@ -152,9 +154,18 @@ else
 fi
 # Engel listesi yoksa boş oluştur (SHA-256 özetleri: id / uuid / mac)
 [[ -f "$GUNCELLEME_DIZINI/engel.json" ]] || echo '{"id":[],"uuid":[],"mac":[]}' > "$GUNCELLEME_DIZINI/engel.json"
+# İmza: istemciler .sig olmadan (veya eski .sig ile) dosyayı REDDEDER. İmzalama sunucuda YAPILMAZ:
+# dosyayı kendi bilgisayarınıza alın, scripts/imzala.py ile imzalayıp .sig'i buraya yükleyin (docs/guncelleme.md "İmza").
+for f in surum.json engel.json; do
+    if [[ ! -f "$GUNCELLEME_DIZINI/$f.sig" ]]; then
+        uyari "guncelleme/$f.sig yok — imzalanmadan yayınlama: istemciler reddeder (güncelleme/engel listesi çalışmaz)."
+    elif [[ "$GUNCELLEME_DIZINI/$f" -nt "$GUNCELLEME_DIZINI/$f.sig" ]]; then
+        uyari "guncelleme/$f.sig, $f dosyasından eski — yeniden imzalayın; aksi hâlde istemciler reddeder."
+    fi
+done
 
 chmod 755 "$INDIR_DIZINI" "$GUNCELLEME_DIZINI"
-chmod 644 "$INDIR_DIZINI"/* "$SITE_DIZINI/ayar.js" "$GUNCELLEME_DIZINI"/*.json 2>/dev/null || true
+chmod 644 "$INDIR_DIZINI"/* "$SITE_DIZINI/ayar.js" "$GUNCELLEME_DIZINI"/*.json "$GUNCELLEME_DIZINI"/*.sig 2>/dev/null || true
 
 echo
 basari "İstemciler hazır: $INDIR_DIZINI"

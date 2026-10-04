@@ -96,4 +96,9 @@ fn main() {
     println!("cargo:rerun-if-changed=res/m2y/m2ydesk-qs.json");
     println!("cargo:rerun-if-env-changed=M2Y_SERVER_HOST");
     println!("cargo:rerun-if-env-changed=M2Y_SERVER_KEY");
+    // Güncelleme/engel listesi imza açık anahtarları (hbb_common::m2y, option_env!)
+    println!("cargo:rerun-if-env-changed=M2Y_UPDATE_PUBKEYS");
+    if std::env::var("M2Y_UPDATE_PUBKEYS").map_or(true, |v| v.trim().is_empty()) {
+        println!("cargo:warning=M2Y_UPDATE_PUBKEYS boş: surum.json/engel.json imzası doğrulanamaz; güncelleme yapılmaz, engel listesi uygulanmaz");
+    }
 }

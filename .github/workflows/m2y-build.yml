@@ -63,6 +63,8 @@ env:
   # M2YDesk gömülü sunucu yapılandırması (derleme zamanında res/m2y/*.json içine doldurulur).
   M2Y_SERVER_HOST: ${{ vars.M2Y_SERVER_HOST || 'desk.mehmetmesut.com' }}
   M2Y_SERVER_KEY: ${{ vars.M2Y_SERVER_KEY }}
+  # surum.json/engel.json Ed25519 imza açık anahtarları (virgülle ayrılmış base64; docs/guncelleme.md "İmza").
+  M2Y_UPDATE_PUBKEYS: ${{ vars.M2Y_UPDATE_PUBKEYS }}
 
 jobs:
   # flutter-build.yml satır 56-57
@@ -207,6 +209,9 @@ jobs:
             echo "::warning::M2Y_SERVER_KEY repository variable tanımlı değil; istemciler -k anahtarlı sunucuya bağlanamaz (test derlemesi için sorun değil)."
           else
             echo "M2Y_SERVER_KEY tanımlı (${#M2Y_SERVER_KEY} karakter), host=${M2Y_SERVER_HOST}"
+          fi
+          if [ -z "${M2Y_UPDATE_PUBKEYS}" ]; then
+            echo "::warning::M2Y_UPDATE_PUBKEYS repository variable tanımlı değil; istemciler imzalı surum.json/engel.json doğrulayamaz (güncelleme yapılmaz, engel listesi uygulanmaz)."
           fi
 
       - name: Apply M2Y icon set (${{ matrix.variant }})
@@ -700,6 +705,7 @@ jobs:
             --env "M2Y_BINARY_NAME=m2ydesk"
             --env "M2Y_SERVER_HOST=${{ env.M2Y_SERVER_HOST }}"
             --env "M2Y_SERVER_KEY=${{ env.M2Y_SERVER_KEY }}"
+            --env "M2Y_UPDATE_PUBKEYS=${{ env.M2Y_UPDATE_PUBKEYS }}"
           shell: /bin/bash
           install: |
             apt-get update -y
