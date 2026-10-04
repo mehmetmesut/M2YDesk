@@ -352,6 +352,8 @@ Widget buildConnectionCard(Client client) {
       crossAxisAlignment: CrossAxisAlignment.start,
       key: ValueKey(client.id),
       children: [
+        if (client.authorized && !client.disconnected)
+          _M2yConnectionBanner(client: client),
         _CmHeader(client: client),
         client.type_() == ClientType.file ||
                 client.type_() == ClientType.portForward ||
@@ -368,6 +370,73 @@ Widget buildConnectionCard(Client client) {
       ],
     ).paddingSymmetric(vertical: 4.0, horizontal: 8.0),
   );
+}
+
+// M2YDesk: Türkçe sabit metin. Bağlantı sürerken sabit, belirgin gösterge şeridi.
+class _M2yConnectionBanner extends StatelessWidget {
+  final Client client;
+
+  const _M2yConnectionBanner({Key? key, required this.client})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 6.0, left: 5.0, right: 5.0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+      decoration: BoxDecoration(
+        color: const Color(0xffd32f2f),
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.screen_share_rounded, color: Colors.white, size: 18),
+          const SizedBox(width: 8.0),
+          Expanded(
+            child: Text(
+              'Danışmanınız bağlı — ${client.name.isEmpty ? client.peerId : client.name}',
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 8.0),
+          TextButton(
+            style: TextButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: const Color(0xffd32f2f),
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              minimumSize: const Size(0, 28),
+            ),
+            onPressed: () => checkClickTime(
+                client.id, () => m2yConfirmAndDisconnect(client)),
+            child: const Text('Bağlantıyı kes'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// M2YDesk: Türkçe sabit metin. Onaylı bağlantı kesme; Enter ve Esc = Vazgeç.
+Future<void> m2yConfirmAndDisconnect(Client client) async {
+  final res = await gFFI.dialogManager.show<bool>((setState, close, context) {
+    return CustomAlertDialog(
+      title: const Text('Bağlantıyı kes'),
+      content: const Text('Bağlantıyı kesmek istediğinize emin misiniz?'),
+      actions: [
+        dialogButton('Vazgeç', onPressed: () => close(false), isOutline: true),
+        dialogButton('Evet, kes', onPressed: () => close(true)),
+      ],
+      onSubmit: () => close(false),
+      onCancel: () => close(false),
+    );
+  });
+  if (res == true) {
+    bind.cmCloseConnection(connId: client.id);
+  }
 }
 
 class _AppIcon extends StatelessWidget {
@@ -1024,7 +1093,7 @@ class _CmControlPanel extends StatelessWidget {
             Expanded(
               child: buildButton(context,
                   color: Colors.redAccent,
-                  onClick: handleDisconnect,
+                  onClick: () => m2yConfirmAndDisconnect(client),
                   text: 'Disconnect',
                   icon: Icon(
                     Icons.link_off_rounded,
