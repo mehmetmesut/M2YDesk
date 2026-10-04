@@ -1,1 +1,4 @@
 * text=auto
+
+# Kabuk betikleri sunucuda çalışır: daima LF
+*.sh text eol=lf
