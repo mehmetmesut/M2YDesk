@@ -124,5 +124,5 @@ Görev 1–8'in kod doğrulamalı planı: [`bulut-uygulama-plani.md`](bulut-uygu
 ## Yeni özellik: WhatsApp ile ID/parola gönderme (04.10.2026, yerel oturum yazdı — derlenmedi)
 - Sol panelde parola bölümünün altında "WhatsApp ile gönder" düğmesi (`desktop_home_page.dart::buildWhatsAppShare`). Tıklanınca `https://wa.me/<numara>?text=M2YDesk uzaktan destek / ID / Parola` tarayıcıda/WhatsApp'ta açılır; gönderimi kullanıcı kendisi onaylar (otomatik gönderim yok).
 - Numara koda gömülü değil: gömülü yapılandırmada üst düzey `m2y-whatsapp` (HARD_SETTINGS, `bind.mainGetHardOption`); boşsa düğme gizlenir. İki üründe de `905307302002`.
-- Parola "-" (yalnızca kalıcı parola modu) ise mesaja parola eklenmez.
+- Mesaj biçimi: başlık + "ID:" ve "Parola:" etiketlerinin altında değer **kendi satırında, boşluksuz** (çift dokunuşla tek başına seçilip kopyalanır). Parola "-" (yalnızca kalıcı parola modu) ise eklenmez.
 - Doğrulama: yerelde Dart/Flutter yok → bir sonraki Actions derlemesinde (kullanıcı onayıyla) derlenip Hızlı Destek 280 px pencerede görünüm kontrol edilecek.

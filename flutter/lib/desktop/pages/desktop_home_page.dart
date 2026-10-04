@@ -304,12 +304,17 @@ class _DesktopHomePageState extends State<DesktopHomePage>
 
   Future<void> _m2ySendViaWhatsApp(String phone) async {
     final model = gFFI.serverModel;
-    final id = model.serverId.text.trim();
+    // Değerler kendi satırında ve boşluksuz: WhatsApp'ta çift dokunuşla
+    // yalnızca değer seçilir, kopyalanıp doğrudan bağlantı alanına yapıştırılır.
+    final id = model.serverId.text.replaceAll(RegExp(r'\s'), '');
     final password = model.serverPasswd.text.trim();
+    final hasPassword = password.isNotEmpty && password != '-';
     final lines = <String>[
-      'M2YDesk uzaktan destek',
-      'ID: $id',
-      if (password.isNotEmpty && password != '-') 'Parola: $password',
+      '*M2YDesk uzaktan destek*',
+      '',
+      'ID:',
+      id,
+      if (hasPassword) ...['', 'Parola:', password],
     ];
     final uri = Uri.https('wa.me', '/$phone', {'text': lines.join('\n')});
     final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
