@@ -130,3 +130,11 @@ Görev 1–8'in kod doğrulamalı planı: [`bulut-uygulama-plani.md`](bulut-uygu
 ## Derleme kuralı (kullanıcı, 04.10.2026)
 - **Ara derleme yok.** Tüm geliştirmeler (WhatsApp düğmesi ✅ kod, hizmet otomatik başlatma, üyelik kartı, sabit parola kararı) bitince **tek bir "gerçek doğrulama derlemesi"** (1.0.2) yapılacak. Bulut oturumu kodunu bitirince DEVIR'e "derlemeye hazır" yazsın; derlemeyi yerel oturum kullanıcı onayıyla başlatır.
 - Yerelde Flutter 3.24.5 kuruldu (`C:\tools\flutter`): WhatsApp kodu `dart analyze` → hata yok; `dart format` → yeni satırlar uyumlu (dosyanın eski satırları zaten biçimsiz, dokunulmadı).
+
+## KARAR — Hızlı Destek'te sürekli erişim (sabit parola) (kullanıcı, 04.10.2026) — bulut oturumundan istenen iş
+- **İlk açılışta** (onay ekranlarıyla birlikte, kapatılamaz adım) danışandan **6 haneli, yalnızca rakam** sabit parola belirlemesi istenir; parola iki kez girilir (doğrulama). "Sürekli erişime izin ver" **varsayılan AÇIK**.
+- Ekranda açık bilgilendirme: "Bu parolayla danışmanınız siz bilgisayar başında olmasanız da bağlanabilir. İstediğiniz an kapatabilir veya değiştirebilirsiniz."
+- Sonradan değiştirilebilir: Hızlı Destek'te `disable-settings` olduğundan **ana pencerede küçük bir menü/simge** (ör. parola satırındaki kalem) → "Sabit parolayı değiştir" ve "Sürekli erişimi kapat/aç". Kapalıyken yalnızca tek kullanımlık parola çalışır.
+- Uygulama: `m2ydesk-qs.json` `verification-method` → `use-both` (geçici + kalıcı); parola `set_permanent_password` ile; doğrulama `^[0-9]{6}$` (reddedilen girdi temizlenmez, hata gösterilir). Parola sohbete/günlüğe yazılmaz.
+- WhatsApp mesajı: sürekli erişim açıkken mesaja **sabit parola eklenmez** (yalnızca ID; danışman parolayı ilk kurulumda bir kez öğrenir) → ❓ kullanıcıya sorulacak; şimdilik tek kullanımlık parola eklenmeye devam eder.
+- Güvenlik notu (yerel oturum): 6 rakam = 1.000.000 olasılık; RustDesk'in başarısız giriş sınırının (`LOGIN_FAILURES`) bu sürümde etkin olduğu doğrulansın, gerekirse 3 hatada 1 dk kilit. Varsayılan açık gözetimsiz erişim KVKK aydınlatma metnine eklenecek.
