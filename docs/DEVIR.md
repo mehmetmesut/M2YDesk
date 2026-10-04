@@ -203,3 +203,9 @@ Tam tasarım: [`guvenlik-ve-destek-ozellikleri.md`](guvenlik-ve-destek-ozellikle
 ## Y1 hazırlığı — tarayıcısız yayın (yerel, 04.10.2026 gece)
 - Chrome eklentisi yanıt vermediği ve depo özel olduğu için kalıcı yol: **sunucu release dosyalarını kendisi indirir.** Kullanıcı GitHub'da yalnızca `mehmetmesut/M2YDesk` için **Contents: Read-only** fine-grained belirteç oluşturur ve Plesk SSH Terminali'nde `bash /opt/m2ydesk/server/scripts/github-belirtec-kaydet.sh` ile girer (`read -s`, doğrulanır, `/opt/m2ydesk/server/.env.github` 600; ekrana/günlüğe yazılmaz). `istemci-hazirla.sh` ortamda yoksa bu dosyadan okur; ürettiği dosyaların sahipliğini siteyle eşitler. `.env.github` gece yedeğine dahil.
 - Sonra (yerel oturum): `SITE_DIZINI=/var/www/vhosts/mehmetmesut.com/desk.mehmetmesut.com M2Y_SURUM=v1.0.1 bash scripts/istemci-hazirla.sh` → `surum.json`/`engel.json` PC'ye alınıp denetlenir, `imzala.py` ile imzalanır, `.sig` yüklenir.
+
+## Yerel oturum üstlendi (04.10.2026 gece, ajanlarla) — bulut bu işleri YAPMASIN
+1. **Hizmet otomatik başlatma + Hızlı Destek Windows açılışında başlatma** (`src/platform/windows.rs`, `desktop_home_page.dart` hizmet/başlangıç kısmı).
+2. **Bağlantı çerçevesi "Danışmanınız bağlı" + "Bağlantıyı kes" → "Emin misiniz?"** (bağlantı yöneticisi / cm penceresi).
+3. **Araştırma:** `lejianwen/rustdesk-api` ile e-posta+kod girişi ve imzalı yetki belirteci nasıl entegre edilir (kaynak kod incelemesi; belge `docs/api-entegrasyon-arastirma.md`).
+Bulut için kalanlar: e-posta+kod giriş ekranı (istemci), sabit parola ilk açılış akışı, üyelik kartı, yetkili hesap doğrulaması (istemci), "Destek iste", oturum kaydı/rapor.
