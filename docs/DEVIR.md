@@ -199,3 +199,7 @@ Tam tasarım: [`guvenlik-ve-destek-ozellikleri.md`](guvenlik-ve-destek-ozellikle
 - İlk yedek alındı: `/opt/m2ydesk/server/yedekler/rustdesk-yedek-20261004-231850.tar.gz` (11 dosya). Cron: her gece **03:15** (`/var/log/m2y-yedek.log`), 30 gün saklama.
 - ⚠️ Yedekler aynı sunucuda; sunucu dışı kopya henüz yok (öneri: Plesk Yedekleme Yöneticisi → harici depolama veya kullanıcının şifreli Drive'ı).
 - `dogrula.sh`: iptal edilen hbbr2/21127 denetimi çıkarıldı, API portu 21114 eklendi. Kalan 2 ✘: `surum.json`, `engel.json` (Y1 ile imzalı üretilecek).
+
+## Y1 hazırlığı — tarayıcısız yayın (yerel, 04.10.2026 gece)
+- Chrome eklentisi yanıt vermediği ve depo özel olduğu için kalıcı yol: **sunucu release dosyalarını kendisi indirir.** Kullanıcı GitHub'da yalnızca `mehmetmesut/M2YDesk` için **Contents: Read-only** fine-grained belirteç oluşturur ve Plesk SSH Terminali'nde `bash /opt/m2ydesk/server/scripts/github-belirtec-kaydet.sh` ile girer (`read -s`, doğrulanır, `/opt/m2ydesk/server/.env.github` 600; ekrana/günlüğe yazılmaz). `istemci-hazirla.sh` ortamda yoksa bu dosyadan okur; ürettiği dosyaların sahipliğini siteyle eşitler. `.env.github` gece yedeğine dahil.
+- Sonra (yerel oturum): `SITE_DIZINI=/var/www/vhosts/mehmetmesut.com/desk.mehmetmesut.com M2Y_SURUM=v1.0.1 bash scripts/istemci-hazirla.sh` → `surum.json`/`engel.json` PC'ye alınıp denetlenir, `imzala.py` ile imzalanır, `.sig` yüklenir.

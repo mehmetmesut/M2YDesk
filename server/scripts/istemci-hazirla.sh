@@ -39,7 +39,11 @@ SITE_DIZINI="${SITE_DIZINI:-$PROJE_DIZINI/site/httpdocs}"
 INDIR_DIZINI="$SITE_DIZINI/indir"
 mkdir -p "$INDIR_DIZINI"
 
-# 2) GitHub API başlıkları (özel depo için token)
+# 2) GitHub API başlıkları (özel depo için token). Ortamda yoksa .env.github (600) dosyasından okunur;
+#    dosyayı kullanıcı scripts/github-belirtec-kaydet.sh ile kendisi oluşturur (belirteç ekrana yazılmaz).
+if [[ -z "${GITHUB_TOKEN:-}" && -r .env.github ]]; then
+    GITHUB_TOKEN="$(grep -E '^GITHUB_TOKEN=' .env.github | cut -d= -f2-)"
+fi
 BASLIK=(-H "Accept: application/vnd.github+json")
 [[ -n "${GITHUB_TOKEN:-}" ]] && BASLIK+=(-H "Authorization: Bearer $GITHUB_TOKEN")
 
@@ -166,6 +170,10 @@ done
 
 chmod 755 "$INDIR_DIZINI" "$GUNCELLEME_DIZINI"
 chmod 644 "$INDIR_DIZINI"/* "$SITE_DIZINI/ayar.js" "$GUNCELLEME_DIZINI"/*.json "$GUNCELLEME_DIZINI"/*.sig 2>/dev/null || true
+# Plesk: üretilen dosyalar sitenin diğer dosyalarıyla aynı sahipte olsun (Dosya Yöneticisi'nden düzenlenebilsin)
+if [[ -f "$SITE_DIZINI/index.html" ]]; then
+    chown -R --reference="$SITE_DIZINI/index.html" "$INDIR_DIZINI" "$GUNCELLEME_DIZINI" "$SITE_DIZINI/ayar.js" 2>/dev/null || true
+fi
 
 echo
 basari "İstemciler hazır: $INDIR_DIZINI"
