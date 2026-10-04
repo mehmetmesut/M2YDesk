@@ -92,6 +92,7 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       buildTip(context),
       if (!isOutgoingOnly) buildIDBoard(context),
       if (!isOutgoingOnly) buildPasswordBoard(context),
+      if (!isOutgoingOnly) buildWhatsAppShare(context),
       FutureBuilder<Widget>(
         future: Future.value(
             Obx(() => buildHelpCards(stateGlobal.updateUrl.value))),
@@ -278,6 +279,43 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       ),
       onHover: (value) => hover.value = value,
     );
+  }
+
+  // M2YDesk: ID ve parolayı danışmana WhatsApp ile gönderme. Numara gömülü
+  // yapılandırmadan gelir (`m2y-whatsapp`); boşsa düğme gösterilmez.
+  Widget buildWhatsAppShare(BuildContext context) {
+    final phone = bind
+        .mainGetHardOption(key: 'm2y-whatsapp')
+        .replaceAll(RegExp(r'[^0-9]'), '');
+    if (phone.isEmpty) return const Offstage();
+    return Container(
+      margin: const EdgeInsets.only(left: 20, right: 16, bottom: 8),
+      alignment: Alignment.centerLeft,
+      child: Tooltip(
+        message: 'ID ve parolayı danışmana WhatsApp ile gönder',
+        child: OutlinedButton.icon(
+          onPressed: () => _m2ySendViaWhatsApp(phone),
+          icon: const Icon(Icons.chat, color: Color(0xFF25D366), size: 20),
+          label: const Text('WhatsApp ile gönder'),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _m2ySendViaWhatsApp(String phone) async {
+    final model = gFFI.serverModel;
+    final id = model.serverId.text.trim();
+    final password = model.serverPasswd.text.trim();
+    final lines = <String>[
+      'M2YDesk uzaktan destek',
+      'ID: $id',
+      if (password.isNotEmpty && password != '-') 'Parola: $password',
+    ];
+    final uri = Uri.https('wa.me', '/$phone', {'text': lines.join('\n')});
+    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!opened) {
+      showToast('WhatsApp açılamadı');
+    }
   }
 
   buildPasswordBoard(BuildContext context) {

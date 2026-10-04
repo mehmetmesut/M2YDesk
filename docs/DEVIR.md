@@ -120,3 +120,9 @@ Görev 1–8'in kod doğrulamalı planı: [`bulut-uygulama-plani.md`](bulut-uygu
 ## Yeni istekler (04.10.2026) — bulut oturumundan istenen iş
 - **Üyelik ekranı:** sol gezinme çubuğunun (sol panel "Sizin Masaüstünüz") **altında** üyelik kartı: girişsizken "Üye ol / Giriş yap" (e-posta+parola ve Google), girişliyken ad/e-posta + "Üye: sınırsız" rozeti ve çıkış. Mevcut Ayarlar → Hesap akışını yeniden kullansın (API: `/api/login-options`, `/api/oidc/auth`, `/api/login`). Yalnızca tam istemci (Hızlı Destek'te yok).
 - **Sabit (kalıcı) parola:** Tam istemcide zaten var (sol paneldeki kalem simgesi → kalıcı parola; `verification-method` varsayılan `use-both`). Kullanıcı karşı tarafa (danışan) tekrar tekrar parola sormadan bağlanabilmek istiyor → **Hızlı Destek'te** `verification-method` `use-temporary-password` sabit. Öneri: Hızlı Destek'e danışanın **kendi belirleyeceği** isteğe bağlı sabit parola ("Sürekli erişime izin ver" + parola + açık rıza metni, istediği an kaldırma), varsayılan kapalı. Kullanıcı kararı bekleniyor (gözetimsiz erişim = güvenlik/KVKK).
+
+## Yeni özellik: WhatsApp ile ID/parola gönderme (04.10.2026, yerel oturum yazdı — derlenmedi)
+- Sol panelde parola bölümünün altında "WhatsApp ile gönder" düğmesi (`desktop_home_page.dart::buildWhatsAppShare`). Tıklanınca `https://wa.me/<numara>?text=M2YDesk uzaktan destek / ID / Parola` tarayıcıda/WhatsApp'ta açılır; gönderimi kullanıcı kendisi onaylar (otomatik gönderim yok).
+- Numara koda gömülü değil: gömülü yapılandırmada üst düzey `m2y-whatsapp` (HARD_SETTINGS, `bind.mainGetHardOption`); boşsa düğme gizlenir. İki üründe de `905307302002`.
+- Parola "-" (yalnızca kalıcı parola modu) ise mesaja parola eklenmez.
+- Doğrulama: yerelde Dart/Flutter yok → bir sonraki Actions derlemesinde (kullanıcı onayıyla) derlenip Hızlı Destek 280 px pencerede görünüm kontrol edilecek.
