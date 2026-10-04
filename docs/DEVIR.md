@@ -138,3 +138,9 @@ Görev 1–8'in kod doğrulamalı planı: [`bulut-uygulama-plani.md`](bulut-uygu
 - Uygulama: `m2ydesk-qs.json` `verification-method` → `use-both` (geçici + kalıcı); parola `set_permanent_password` ile; doğrulama `^[0-9]{6}$` (reddedilen girdi temizlenmez, hata gösterilir). Parola sohbete/günlüğe yazılmaz.
 - WhatsApp mesajı: sürekli erişim açıkken mesaja **sabit parola eklenmez** (yalnızca ID; danışman parolayı ilk kurulumda bir kez öğrenir) → ❓ kullanıcıya sorulacak; şimdilik tek kullanımlık parola eklenmeye devam eder.
 - Güvenlik notu (yerel oturum, kod incelendi): 6 rakam = 1.000.000 olasılık. Mevcut koruma `src/server/connection.rs` `LOGIN_FAILURES`: aynı IP'den 1 dk'da >6 hatada 1 dk bekletme, toplam >30 hatada "Too many wrong attempts" (IP başına, süreç yeniden başlayana kadar). ❓ `ALWAYS_USE_RELAY=Y` sonrası tüm bağlantılar relay'den geldiği için `self.ip` relay (sunucu) IP'si olabilir → sayaçlar herkes için ortak olur, bir saldırgan meşru danışmanı da kilitleyebilir. Bulut: relay'de gerçek karşı taraf IP'sinin kullanıldığını doğrula, değilse sayaç anahtarına peer ID ekle. Varsayılan açık gözetimsiz erişim KVKK aydınlatma metnine eklenecek.
+
+## KARAR — Zorunlu e-posta + kod ile oturum açma (kullanıcı, 04.10.2026) — bulut oturumundan istenen iş
+- **Her iki programda** (Hızlı Destek + M2YDesk) açılışta e-posta → e-postaya gelen eşsiz kod → oturum açıldı → sabit parola (6 hane rakam, atlanamaz). **Zorunlu:** oturum yoksa her açılışta sorulur, kod doğrulanmadan ID/parola gösterilmez, bağlantı yok.
+- Tam tasarım, sunucu uçları, güvenlik (10 dk, hash, 5 deneme, hız sınırı), SMTP ve riskler: [`eposta-kod-girisi.md`](eposta-kod-girisi.md).
+- Bu karar önceki "Hızlı Destek'te hesap yok" kararını **değiştirir**; üye olmayan 5 dk/2 dk kuralları fiilen devre dışı kalır (❓ kullanıcıya soruldu).
+- Yerel oturum işi: SMTP hesabı (Plesk posta) + SPF/DKIM/DMARC kontrolü, servis kurulumu (parolayı kullanıcı `.env`'e girer).
