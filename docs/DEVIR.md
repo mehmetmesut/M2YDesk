@@ -151,7 +151,7 @@ Görev 1–8'in kod doğrulamalı planı: [`bulut-uygulama-plani.md`](bulut-uygu
 - Bulut oturumundan istenen iş (düşük öncelik): `m2y.rs` içindeki süre/bekleme/:21127 kodu ve `io_loop`/`client.rs` bağlantıları ölü kod oldu; e-posta girişi işi sırasında temizlenebilir (engel listesi kodu korunmalı). `server/docker-compose.yml` `limit` profili ve `relay-siniri.sh` belgelerde "kullanılmıyor" diye işaretlensin veya kaldırılsın.
 
 ## KARAR — Oturum ayrıntıları (kullanıcı, 04.10.2026) — bulut oturumundan istenen iş
-- **Çevrimdışı tolerans 7 gün:** sunucuya 1 hafta ulaşılamazsa oturum geçersiz (token silinir, giriş ekranı); 401'de hemen kapanır.
+- **Çevrimdışı tolerans 7 gün (kayan):** cihaz sunucuya **her ulaştığında 7 günlük süre sıfırlanır**; 7 gün kesintisiz ulaşılamazsa oturum geçersiz (token silinir, giriş ekranı); 401'de hemen kapanır.
 - **E-posta hatırlanır:** `m2y-last-email`; giriş ekranında dolu gelir, birincil düğme "Doğrulama kodu gönder" (teşvik); "Bu cihazdan e-postamı unut" seçeneği.
 - **Google ile giriş her iki programda** (M2YDesk + Hızlı Destek) ek seçenek; e-posta+kod birincil.
 - Ayrıntı: `eposta-kod-girisi.md` (Kararlar/İstemci akışı, Sonuçlar 2–3).
