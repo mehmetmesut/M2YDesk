@@ -155,3 +155,14 @@ Görev 1–8'in kod doğrulamalı planı: [`bulut-uygulama-plani.md`](bulut-uygu
 - **E-posta hatırlanır:** `m2y-last-email`; giriş ekranında dolu gelir, birincil düğme "Doğrulama kodu gönder" (teşvik); "Bu cihazdan e-postamı unut" seçeneği.
 - **Google ile giriş her iki programda** (M2YDesk + Hızlı Destek) ek seçenek; e-posta+kod birincil.
 - Ayrıntı: `eposta-kod-girisi.md` (Kararlar/İstemci akışı, Sonuçlar 2–3).
+
+## KARARLAR — Güvenlik ve destek özellikleri (kullanıcı, 04.10.2026) — bulut + yerel oturum işi
+Tam tasarım: [`guvenlik-ve-destek-ozellikleri.md`](guvenlik-ve-destek-ozellikleri.md). Özet:
+1. Hızlı Destek: sürekli erişim açıkken **Windows açılışında otomatik başlatma** (tepsi).
+2. **Yalnızca yetkili hesaplardan bağlantı:** `mehmetmesut@gmail.com`, `mehmetmesut.yilmaz@antalya.edu.tr` + panelden eklenecek danışmanlar; API'nin verdiği Ed25519 imzalı kısa ömürlü belirteçle doğrulama (istemciye açık anahtar gömülü).
+3. **Sunucu izleme ve alarm** (hbbs/hbbr/API/HTTPS/SSL<14 gün/disk/trafik) → e-posta + WhatsApp (CallMeBot; anahtarı kullanıcı `.env`'e girer). Yerel oturum işi.
+4. **SmartScreen:** ücretsiz kesin yol yok Türkiye'den bireysel olarak; en iyi ücretsiz yol Hızlı Destek'i **Microsoft Store (MSIX)** ile yayınlamak; SignPath ücretsiz ama depo açık + yayıncı "SignPath Foundation"; Azure Artifact Signing TR'ye kapalı. Kısa vade: her sürümde WDSI gönderimi.
+5. **İmzalı `surum.json`/`engel.json`** (Ed25519; imza CI/kullanıcı bilgisayarında, sunucuda değil).
+6. **"Destek iste"** düğmesi + bildirim ("X kuruluşundan Ayşe destek bekliyor") + panelden tek tıkla bağlan; WhatsApp düğmesi kalır.
+7. **Oturum kaydı + aylık Excel/PDF rapor** (kim, ne zaman, süre, not).
+8. **Görünür bağlantı çerçevesi** "Danışmanınız bağlı" + "Bağlantıyı kes" → "Emin misiniz?" onayı.
