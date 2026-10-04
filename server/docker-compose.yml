@@ -79,7 +79,13 @@ services:
     image: lejianwen/rustdesk-api:${API_SURUM:-latest}
     environment:
       - TZ=${TZ:-Europe/Istanbul}
-      - RUSTDESK_API_LANG=tr
+      # README (04.10.2026 doğrulandı): desteklenen diller en / zh-CN
+      - RUSTDESK_API_LANG=en
+      # nginx (Plesk) ters vekili yerelden gelir → gerçek istemci IP'si X-Forwarded-For'dan okunur
+      - RUSTDESK_API_GIN_TRUST_PROXY=127.0.0.1
+      # Kaba kuvvet: 3 hatada CAPTCHA, 5 hatada IP yasağı
+      - RUSTDESK_API_APP_CAPTCHA_THRESHOLD=3
+      - RUSTDESK_API_APP_BAN_THRESHOLD=5
       - RUSTDESK_API_RUSTDESK_ID_SERVER=${ALAN_ADI}:21116
       - RUSTDESK_API_RUSTDESK_RELAY_SERVER=${ALAN_ADI}:21117
       - RUSTDESK_API_RUSTDESK_API_SERVER=https://${ALAN_ADI}

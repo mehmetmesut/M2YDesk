@@ -1,7 +1,7 @@
-# Plesk → Web siteleri ve alan adları → desk.mehmetmesut.com → Apache ve nginx Ayarları
-# → "Ek nginx yönergeleri" kutusuna yapıştırın (HTTPS için). Sonra "Tamam".
-# Gerekli: docker compose --profile api up -d  (API 127.0.0.1:21114'te dinler)
-
+# Plesk ek nginx yönergeleri. Sunucuda uygulanan hali: /var/www/vhosts/system/desk.mehmetmesut.com/conf/vhost_nginx.conf
+# (Plesk 18.0.80 CLI bu alanı ayarlayamıyor; dosya yazılıp: /usr/local/psa/admin/bin/httpdmng --reconfigure-domain desk.mehmetmesut.com)
+# /_admin/ yalnızca izinli IPlere açık (ev/iş). IP değişirse buradan güncelleyin.
+# M2YDesk hesap API'si (lejianwen/rustdesk-api, 127.0.0.1:21114) — 04.10.2026
 location ^~ /api/ {
     proxy_pass http://127.0.0.1:21114;
     proxy_set_header Host $host;
@@ -11,10 +11,11 @@ location ^~ /api/ {
     proxy_read_timeout 60s;
 }
 
-# Yönetim paneli: yalnızca kendi IP adresinize izin verin (aşağıdaki IP'yi değiştirin) ya da bu bloğu kaldırın.
+# Yönetim paneli: yalnızca ev ve iş IP'leri
 location ^~ /_admin/ {
-    # allow 203.0.113.10;
-    # deny all;
+    allow 88.232.174.141;
+    allow 185.33.62.141;
+    deny all;
     proxy_pass http://127.0.0.1:21114;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;

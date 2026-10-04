@@ -186,3 +186,10 @@ Tam tasarım: [`guvenlik-ve-destek-ozellikleri.md`](guvenlik-ve-destek-ozellikle
 - **Gönderen posta `m2ydesk@mehmetmesut.com` kuruldu** (kullanıcı Plesk SSH Terminali'nden `/root/m2y-posta-kur.sh` çalıştırdı). SMTP ayarları `/opt/m2ydesk/server/.env.smtp` (600; parola rastgele, hiç gösterilmedi). Gmail'e teslim doğrulandı (`status=sent 250 OK`). E-posta+kod girişi bu SMTP'yi kullanacak.
 - **İzleme zamanlayıcısı aktif** (`m2y-izleme.timer`, 5 dk). Test alarmları hem **ntfy** hem **e-posta** ile teslim edildi. ntfy konusu sunucuda `.env.izleme`'de (kullanıcıya iletildi).
 - **SSH sertleştirme** (kullanıcı `/root/m2y-guvenlik.sh` çalıştırdı): root yalnızca anahtarla (`PermitRootLogin prohibit-password`, drop-in `/etc/ssh/sshd_config.d/99-m2y-sertlestirme.conf`), `MaxAuthTries 3`, `LoginGraceTime 30`; fail2ban 3 hata → 24 sa (pencere 1 sa); `62.238.13.104` (Hetzner/Helsinki, yalnız başarısız deneme) kalıcı engelli; kullanıcının ev (88.232.174.141) ve iş (185.33.62.141) IP'leri güvenilir listede. Diğer site kullanıcılarının SFTP parola girişine dokunulmadı. Geri alma: `bash /root/m2y-guvenlik.sh geri-al`.
+
+## Y2 — Hesap API'si canlıda (yerel, 04.10.2026 gece)
+- `m2y-api` (lejianwen/rustdesk-api) Docker'da `127.0.0.1:21114`, veri `/opt/m2ydesk/server/data/api`. README ile değişken adları **doğrulandı**; düzeltmeler: `LANG=en` (tr desteklenmiyor), `GIN_TRUST_PROXY=127.0.0.1`, `CAPTCHA_THRESHOLD=3`, `BAN_THRESHOLD=5`.
+- Plesk nginx: `/var/www/vhosts/system/desk.mehmetmesut.com/conf/vhost_nginx.conf` (+`httpdmng --reconfigure-domain`, `nginx -t` OK). Dışarıdan `GET /api/login-options` → 200; `/_admin/` yalnızca ev+iş IP'leri (başka IP → 403 doğrulandı).
+- OIDC geri dönüş adresi (README): `https://desk.mehmetmesut.com/api/oidc/callback`.
+- **Kullanıcı işi:** ilk admin parolasını kendisi okuyup değiştirsin (`docker logs m2y-api 2>&1 | grep -i password` — sohbete yapıştırmasın); Google OAuth istemcisini kurup Client ID/Secret'ı yalnızca panele girsin.
+- `izleme.sh` m2y-api kapsayıcısını ve 21114'ü artık otomatik denetler (kapsayıcı var).
