@@ -23,9 +23,17 @@ cd "$PROJE_DIZINI"
 docker compose down >/dev/null 2>&1 || true
 
 mkdir -p "$VERI_DIZINI"
-tar -xzf "$YEDEK" -C "$VERI_DIZINI"
+# Yeni yedekler proje köküne göre (data/..., .env*, docker-compose.yml); eski yedekler doğrudan data/ içeriği
+if tar -tzf "$YEDEK" | grep -q '^data/id_ed25519$'; then
+    tar -xzf "$YEDEK" -C "$PROJE_DIZINI"
+else
+    tar -xzf "$YEDEK" -C "$VERI_DIZINI"
+fi
 chmod 700 "$VERI_DIZINI"
 chmod 600 "$VERI_DIZINI/id_ed25519"
+for f in .env.smtp .env.izleme; do [[ -f "$f" ]] && chmod 600 "$f"; done
 
 docker compose up -d
+# Hesap API'si yedekte varsa onu da başlat
+[[ -d "$VERI_DIZINI/api" ]] && docker compose --profile api up -d api
 echo "[TAMAM] Geri yükleme tamamlandı. Anahtar: $(cat "$VERI_DIZINI/id_ed25519.pub")"

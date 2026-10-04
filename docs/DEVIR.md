@@ -193,3 +193,9 @@ Tam tasarım: [`guvenlik-ve-destek-ozellikleri.md`](guvenlik-ve-destek-ozellikle
 - OIDC geri dönüş adresi (README): `https://desk.mehmetmesut.com/api/oidc/callback`.
 - **Kullanıcı işi:** ilk admin parolasını kendisi okuyup değiştirsin (`docker logs m2y-api 2>&1 | grep -i password` — sohbete yapıştırmasın); Google OAuth istemcisini kurup Client ID/Secret'ı yalnızca panele girsin.
 - `izleme.sh` m2y-api kapsayıcısını ve 21114'ü artık otomatik denetler (kapsayıcı var).
+
+## Y6 — Yedekleme (yerel, 04.10.2026 gece)
+- `yedekleme.sh` genişletildi: artık **hesap API veritabanı** (`data/api/rustdeskapi.db`) ve `.env`, `.env.smtp`, `.env.izleme`, `docker-compose.yml` de yedekleniyor (sırlar içerir → arşiv 600). Tutarlılık için hbbs + m2y-api birkaç saniye durdurulup başlatılıyor (relay oturumları etkilenmez). Arşiv yolları proje köküne göre (`data/...`); `geri-yukleme.sh` hem yeni hem eski yapıyı açar, API'yi de başlatır.
+- İlk yedek alındı: `/opt/m2ydesk/server/yedekler/rustdesk-yedek-20261004-231850.tar.gz` (11 dosya). Cron: her gece **03:15** (`/var/log/m2y-yedek.log`), 30 gün saklama.
+- ⚠️ Yedekler aynı sunucuda; sunucu dışı kopya henüz yok (öneri: Plesk Yedekleme Yöneticisi → harici depolama veya kullanıcının şifreli Drive'ı).
+- `dogrula.sh`: iptal edilen hbbr2/21127 denetimi çıkarıldı, API portu 21114 eklendi. Kalan 2 ✘: `surum.json`, `engel.json` (Y1 ile imzalı üretilecek).

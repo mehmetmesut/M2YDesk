@@ -6,10 +6,11 @@ ALAN="$(grep -E '^ALAN_ADI=' .env 2>/dev/null | cut -d= -f2)"; ALAN="${ALAN:-des
 ok(){ echo -e "\e[32m✔\e[0m $*"; }; kotu(){ echo -e "\e[31m✘\e[0m $*"; }
 chk(){ if eval "$2" >/dev/null 2>&1; then ok "$1"; else kotu "$1"; fi; }
 
-for c in hbbs hbbr hbbr2 m2y-api; do
+# hbbr2 (:21127) iptal edildi (04.10.2026, üye olmayan kuralları kaldırıldı)
+for c in hbbs hbbr m2y-api; do
   if docker ps --format '{{.Names}}' 2>/dev/null | grep -qx "$c"; then ok "kapsayıcı çalışıyor: $c"; else echo "· kapsayıcı yok/kapalı: $c"; fi
 done
-for p in 21115 21116 21117 21118 21119 21127; do
+for p in 21115 21116 21117 21118 21119 21114; do
   chk "TCP $p yerelde dinliyor" "ss -ltn | grep -q ':$p '"
 done
 chk "UDP 21116" "ss -lun | grep -q ':21116 '"

@@ -41,8 +41,17 @@ if [[ -n "$COMPOSE" ]] && (cd "$PROJE_DIZINI" && $COMPOSE ps --status running 2>
 fi
 
 # Anahtarlar + veritabanı (varsa) sıkıştırılır
-tar -czf "$DOSYA" -C "$VERI_DIZINI" \
-    $(cd "$VERI_DIZINI" && ls id_ed25519 id_ed25519.pub db_v2.sqlite3 db_v2.sqlite3-wal db_v2.sqlite3-shm 2>/dev/null)
+# Hesap API'si (kullanıcılar, adres defteri, günlükler; SQLite) tutarlı kopya için kısa süre durdurulur
+if [[ -n "$COMPOSE" ]] && docker ps --format '{{.Names}}' | grep -qx m2y-api; then
+    bilgi "m2y-api geçici olarak durduruluyor..."
+    docker stop m2y-api >/dev/null
+    trap '(cd "$PROJE_DIZINI" && $COMPOSE start hbbs >/dev/null 2>&1); docker start m2y-api >/dev/null 2>&1; bilgi "Hizmetler yeniden başlatıldı."' EXIT
+fi
+
+# data/ (anahtarlar, hbbs ve API veritabanları) + yapılandırma dosyaları (.env*, compose). Sırlar içerir → 600.
+tar -czf "$DOSYA" -C "$PROJE_DIZINI" \
+    $(cd "$PROJE_DIZINI" && ls -d data/id_ed25519 data/id_ed25519.pub data/db_v2.sqlite3 data/db_v2.sqlite3-wal \
+        data/db_v2.sqlite3-shm data/api .env .env.smtp .env.izleme docker-compose.yml 2>/dev/null)
 chmod 600 "$DOSYA"
 bilgi "Yedek oluşturuldu: $DOSYA ($(du -h "$DOSYA" | cut -f1))"
 
