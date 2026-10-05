@@ -267,3 +267,6 @@ Tüm geliştirme **yerel oturumda** sürer. Daha önce "bulut oturumundan istene
 - Destek talebi bildirimi: e-posta (admin+yetkili) + ntfy (`M2Y_NTFY_URL`, izleme konusuyla aynı; `.env.m2yapi`'ye eklendi).
 - Uçtan uca (sabit hesapla): giriş, profil, talep (e-posta `status=sent` + ntfy "…destek bekliyor"), talepler, oturum başlangıç/bitiş/not, xlsx (PK) ve pdf (%PDF-) rapor → hepsi 200. Test talebi #1 kapatıldı; test oturumu raporda "TEST notu" ile görünür.
 - **İstemci tarafı (sıradaki):** denetleyici oturum başında/sonunda `/api/m2y/oturum` çağırsın + bitişte not penceresi; Hızlı Destek'te "Destek iste" düğmesi (`/api/m2y/talep`); panelde talepler/rapor ekranı (Vue fork yok → şimdilik `/api/m2y/rapor` doğrudan indirme).
+
+## KARAR — Zorunlu güncelleme (kullanıcı, 05.10.2026) — sırada (ajan F bitince)
+Danışanlara güncelleme bildirimi + güncel sürümü yükleme zorunluluğu. Tasarım: `guncelleme.md` → "Zorunlu güncelleme" (imzalı `surum.json` `asgari_surum`, engelleyici pencere, kurulu sürümde sessiz güncelleme, taşınabilir/QS'te kendini değiştirme, API `/api/m2y/yetki`'de sürüm denetimi).
