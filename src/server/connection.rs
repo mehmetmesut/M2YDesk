@@ -2527,6 +2527,34 @@ impl Connection {
             if self.authorized {
                 return true;
             }
+            // M2YDesk: yalnızca yetkili hesaplar (imzalı, hedefe bağlı belirteç); parola denetiminden önce.
+            if hbb_common::m2y::require_auth() {
+                let (failure, res) = self.check_failure(0).await;
+                if !res {
+                    return true;
+                }
+                match hbb_common::m2y::verify_m2y_auth_now(&lr.m2y_auth, &Config::get_id()) {
+                    Ok(email) => {
+                        log::info!(
+                            "M2YDesk: yetki belirteci geçerli: {} (ip={})",
+                            hbb_common::m2y::mask_email(&email),
+                            self.ip
+                        );
+                    }
+                    Err(reason) => {
+                        log::warn!(
+                            "M2YDesk: yetki belirteci reddedildi: {} (ip={}, id={})",
+                            reason,
+                            self.ip,
+                            lr.my_id
+                        );
+                        self.update_failure_with_scope(failure, false, 0, FailureScope::Default);
+                        self.send_login_error(hbb_common::m2y::AUTH_REJECTED).await;
+                        sleep(1.).await;
+                        return false;
+                    }
+                }
+            }
             self.reset_session_scope_for_login();
             match lr.union {
                 Some(login_request::Union::FileTransfer(ft)) => {

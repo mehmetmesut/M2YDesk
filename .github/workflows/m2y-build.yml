@@ -65,6 +65,8 @@ env:
   M2Y_SERVER_KEY: ${{ vars.M2Y_SERVER_KEY }}
   # surum.json/engel.json Ed25519 imza açık anahtarları (virgülle ayrılmış base64; docs/guncelleme.md "İmza").
   M2Y_UPDATE_PUBKEYS: ${{ vars.M2Y_UPDATE_PUBKEYS }}
+  # Yetkili hesap belirteci (m2y_auth) Ed25519 açık anahtarları (virgülle ayrılmış base64; docs/yetki-belirteci.md).
+  M2Y_AUTH_PUBKEYS: ${{ vars.M2Y_AUTH_PUBKEYS }}
 
 jobs:
   # flutter-build.yml satır 56-57
@@ -212,6 +214,9 @@ jobs:
           fi
           if [ -z "${M2Y_UPDATE_PUBKEYS}" ]; then
             echo "::warning::M2Y_UPDATE_PUBKEYS repository variable tanımlı değil; istemciler imzalı surum.json/engel.json doğrulayamaz (güncelleme yapılmaz, engel listesi uygulanmaz)."
+          fi
+          if [ -z "${M2Y_AUTH_PUBKEYS}" ]; then
+            echo "::warning::M2Y_AUTH_PUBKEYS repository variable tanımlı değil; m2y-require-auth açık istemciler TÜM gelen bağlantıları reddeder."
           fi
 
       - name: Apply M2Y icon set (${{ matrix.variant }})
@@ -706,6 +711,7 @@ jobs:
             --env "M2Y_SERVER_HOST=${{ env.M2Y_SERVER_HOST }}"
             --env "M2Y_SERVER_KEY=${{ env.M2Y_SERVER_KEY }}"
             --env "M2Y_UPDATE_PUBKEYS=${{ env.M2Y_UPDATE_PUBKEYS }}"
+            --env "M2Y_AUTH_PUBKEYS=${{ env.M2Y_AUTH_PUBKEYS }}"
           shell: /bin/bash
           install: |
             apt-get update -y

@@ -88,6 +88,8 @@ message LoginRequest {
   string my_platform = 13;
   bytes hwid = 14;
   string avatar = 17;
+  // M2YDesk: yetkili hesap belirteci (m2y-api /api/m2y/yetki); stok istemciler yok sayar.
+  bytes m2y_auth = 100;
 }
 
 message Terminal {
