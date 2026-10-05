@@ -228,3 +228,7 @@ Bulut için kalanlar: e-posta+kod giriş ekranı (istemci), sabit parola ilk aç
 - **Belirteç kararı:** yetkili hesap belirteci **hedef cihaza bağlı, 5 dk ömürlü**, Ed25519 imzalı (`proto`'ya `bytes m2y_auth = 100`; istemci tarafı bulut/sonraki aşama).
 - **Aşama 1 (yerel, Opus ajanı, sürüyor):** e-posta+kod girişi (`/api/m2y/kod-gonder`, `/api/m2y/kod-dogrula`, SMTP ortam değişkenleri, HMAC'li kod, hız sınırları), `M2Y_ADMIN_EMAILS` ile otomatik ve korumalı admin, OIDC `email_verified` zorunluluğu, `/api/m2y/yetki` belirteç ucu. Derleme/test sunucuda geçici `golang:1.23` kapsayıcısında.
 - Sonraki aşamalar: Destek iste (talep tablosu + bildirim), oturum kaydı/rapor (kimlikli audit, not, Excel/PDF), MAC alanı, Vue panel ekranları; istemci: e-posta+kod ekranı, `m2y_auth` doğrulaması.
+
+## KALDIĞIMIZ YER (05.10.2026 sabah, kullanıcı bilgisayarı kapattı)
+- m2y-api Aşama 1 ajanı **yarıda kaldı**. Ara kayıt: `mehmetmesut/m2y-api` dalı **`m2y-asama1-wip`** (`bf3a45f`, derlenmemiş/test edilmemiş olabilir; `main` değişmedi). Yeni oturumda: dalı incele → eksikleri tamamla → sunucuda `golang:1.23` ile `go build/vet/test` → `main`'e birleştir → sunucuda API'yi güncelle. Sunucuda `/root/m2y-api-derleme` geçici klasörü kalmış olabilir (sil).
+- ruskdesk deposunda push edilmemiş iş yok.
