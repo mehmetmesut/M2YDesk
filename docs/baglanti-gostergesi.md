@@ -8,7 +8,7 @@ Dosya: `flutter/lib/desktop/pages/server_page.dart` (bağlantı yöneticisi / "c
 - Metinler Türkçe sabit (`translate()` anahtarı eklenmedi).
 
 ## Kapsam dışı
-Ekran kenarı renkli çerçeve uygulanmadı: cm penceresi normal bir pencere; ekran kenarına çizen, tıklanmayan ve yakalamadan hariç tutulan katmanlı pencere yerel (src/platform, Windows `WDA_EXCLUDEFROMCAPTURE`) kod gerektirir. Yalnızca şerit vardır.
+Ekran kenarı çerçevesi (Windows) eklendi: `src/platform/m2y_frame.rs` — katmanlı, tıklanmayan, her zaman üstte kırmızı kenar halkası (5 px, tüm sanal masaüstü), `WDA_EXCLUDEFROMCAPTURE` ile danışmanın görüntüsüne girmez. Bağlantı yöneticisindeki "Danışmanınız bağlı" şeridi görünürken Dart `bind.mainM2ySetFrame` ile açılır/kapanır (sayaçlı). Derlenmedi; Linux/macOS'ta işlem yok. Güvenli masaüstü (UAC) gösterilmez.
 
 ## Nasıl test edilir
 1. İki cihazda uygulamayı çalıştır, danışan tarafında bağlantıyı kabul et.

@@ -373,11 +373,41 @@ Widget buildConnectionCard(Client client) {
 }
 
 // M2YDesk: Türkçe sabit metin. Bağlantı sürerken sabit, belirgin gösterge şeridi.
-class _M2yConnectionBanner extends StatelessWidget {
+class _M2yConnectionBanner extends StatefulWidget {
   final Client client;
 
   const _M2yConnectionBanner({Key? key, required this.client})
       : super(key: key);
+
+  @override
+  State<_M2yConnectionBanner> createState() => _M2yConnectionBannerState();
+}
+
+// Şerit görünürken (yetkilendirilmiş, sürmekte olan bağlantı) ekran kenarı kırmızı çerçeve de açık kalır.
+// Birden çok bağlantıda sayaç: son şerit kalkınca çerçeve kapanır. (Windows dışında Rust tarafı işlem yapmaz.)
+int _m2yFrameUsers = 0;
+
+class _M2yConnectionBannerState extends State<_M2yConnectionBanner> {
+  @override
+  void initState() {
+    super.initState();
+    _m2yFrameUsers++;
+    if (_m2yFrameUsers == 1) {
+      bind.mainM2ySetFrame(visible: true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _m2yFrameUsers--;
+    if (_m2yFrameUsers <= 0) {
+      _m2yFrameUsers = 0;
+      bind.mainM2ySetFrame(visible: false);
+    }
+    super.dispose();
+  }
+
+  Client get client => widget.client;
 
   @override
   Widget build(BuildContext context) {

@@ -2415,6 +2415,14 @@ pub fn main_m2y_mark_auth_ok() -> SyncReturn<()> {
     SyncReturn(())
 }
 
+/// M2YDesk: danışman bağlıyken ekran kenarı kırmızı çerçeve (yalnız Windows; diğerlerinde işlem yok).
+pub fn main_m2y_set_frame(visible: bool) {
+    #[cfg(windows)]
+    crate::platform::m2y_frame::set_visible(visible);
+    #[cfg(not(windows))]
+    let _ = visible;
+}
+
 pub fn main_m2y_set_connection_gate(closed: bool) {
     M2Y_GATE_AUTH.store(if closed { 1 } else { 2 }, Ordering::SeqCst);
     m2y_apply_gate();
