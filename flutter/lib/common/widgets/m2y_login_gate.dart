@@ -94,26 +94,23 @@ class _M2yAuthGateState extends State<M2yAuthGate> {
 
 /// Hızlı Destek'in dar penceresi için sıkı görünüm: küçük yazı, yoğun giriş alanları ve düğmeler.
 Widget m2yCompact(BuildContext context, Widget child) {
+  // Yazı ölçeği pencere genişliğine göre genel olarak ayarlanır (main.dart m2yTextScale);
+  // burada yalnız yoğunluk: sıkı giriş alanları ve düğmeler, biraz küçük başlıklar.
   final t = Theme.of(context);
-  final mq = MediaQuery.of(context);
-  return MediaQuery(
-    data: mq.copyWith(textScaler: const TextScaler.linear(0.86)),
-    child: Theme(
-      data: t.copyWith(
-        visualDensity: VisualDensity.compact,
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        inputDecorationTheme: t.inputDecorationTheme.copyWith(
-          isDense: true,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
-        ),
-        textTheme: t.textTheme.copyWith(
-          titleLarge: t.textTheme.titleLarge?.copyWith(fontSize: 18),
-          titleMedium: t.textTheme.titleMedium?.copyWith(fontSize: 15),
-        ),
+  return Theme(
+    data: t.copyWith(
+      visualDensity: VisualDensity.compact,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      inputDecorationTheme: t.inputDecorationTheme.copyWith(
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
       ),
-      child: child,
+      textTheme: t.textTheme.copyWith(
+        titleLarge: t.textTheme.titleLarge?.copyWith(fontSize: 18),
+        titleMedium: t.textTheme.titleMedium?.copyWith(fontSize: 15),
+      ),
     ),
+    child: child,
   );
 }
 

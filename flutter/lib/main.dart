@@ -525,7 +525,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
               ? (context, child) => AccessibilityListener(
                     child: MediaQuery(
                       data: MediaQuery.of(context).copyWith(
-                        textScaler: TextScaler.linear(1.0),
+                        textScaler: TextScaler.linear(1.04),
                       ),
                       child: child ?? Container(),
                     ),
@@ -550,12 +550,24 @@ class _AppState extends State<App> with WidgetsBindingObserver {
 }
 
 Widget _keepScaleBuilder(BuildContext context, Widget? child) {
+  final mq = MediaQuery.of(context);
   return MediaQuery(
-    data: MediaQuery.of(context).copyWith(
-      textScaler: TextScaler.linear(1.0),
+    data: mq.copyWith(
+      textScaler: TextScaler.linear(m2yTextScale(mq.size.width)),
     ),
     child: child ?? Container(),
   );
+}
+
+/// M2YDesk: yazı boyutu pencereye oranlanır. Calibri aynı punto değerinde Segoe UI'dan küçük
+/// göründüğü için geniş pencerelerde hafif büyütülür; Hızlı Destek gibi dar pencerelerde
+/// içerik taşmasın diye hafif küçültülür. Ara genişliklerde doğrusal geçiş yapılır.
+double m2yTextScale(double width) {
+  const narrow = 360.0, wide = 640.0;
+  const minScale = 0.94, maxScale = 1.06;
+  if (width <= narrow) return minScale;
+  if (width >= wide) return maxScale;
+  return minScale + (maxScale - minScale) * (width - narrow) / (wide - narrow);
 }
 
 _registerEventHandler() {
