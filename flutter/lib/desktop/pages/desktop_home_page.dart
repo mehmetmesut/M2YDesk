@@ -742,24 +742,37 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     );
   }
 
-  void _m2yAskDeviceReportConsent() {
+  Future<void> _m2yAskDeviceReportConsent() async {
     if (!mounted) return;
     if (bind.mainGetOptionSync(key: 'm2y-report-device') != 'Y') return;
     if (bind.mainGetOptionSync(key: 'm2y-report-consent') == 'Y') return;
-    gFFI.dialogManager.show((setState, close, context) {
+    // Oturum/parola adımları bitmeden sorma (giriş ekranıyla üst üste binmesin).
+    if (M2yAuth.instance.stage.value != M2yAuthStage.ready) {
+      Future.delayed(const Duration(seconds: 3), _m2yAskDeviceReportConsent);
+      return;
+    }
+    // Hızlı Destek penceresi dar: diyalog sığsın diye geçici olarak büyüt.
+    final qs = bind.isIncomingOnly();
+    if (qs) {
+      final cur = await windowManager.getSize();
+      await windowManager.setSize(Size(
+          cur.width < 440 ? 440 : cur.width, cur.height < 480 ? 480 : cur.height));
+    }
+    await gFFI.dialogManager.show((setState, close, context) {
       accept() async {
         await bind.mainSetOption(key: 'm2y-report-consent', value: 'Y');
         close();
       }
 
+      Widget sik(Widget w) => qs ? m2yCompact(context, w) : w;
       return CustomAlertDialog(
-        title: Text(translate('m2y-consent-title')),
-        content: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 320),
+        title: sik(Text(translate('m2y-consent-title'))),
+        content: sik(ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 320, maxHeight: 240),
           child: SingleChildScrollView(
             child: Text(translate('m2y-consent-text')),
           ),
-        ),
+        )),
         actions: [
           dialogButton('m2y-consent-decline', onPressed: close, isOutline: true),
           dialogButton('m2y-consent-accept', onPressed: accept),
@@ -768,6 +781,9 @@ class _DesktopHomePageState extends State<DesktopHomePage>
         onCancel: close,
       );
     }, tag: 'm2y-consent');
+    if (qs && mounted) {
+      await windowManager.setSize(getIncomingOnlyHomeSize());
+    }
   }
 
   @override

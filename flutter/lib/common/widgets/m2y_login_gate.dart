@@ -18,7 +18,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 
 const _kResendSeconds = 60;
-const _kQuickSupportWidth = 280.0;
+const _kQuickSupportWidth = 360.0;
 const _kFullWidth = 380.0;
 
 class M2yAuthGate extends StatefulWidget {
@@ -76,7 +76,7 @@ class _M2yAuthGateState extends State<M2yAuthGate> {
       padding: const EdgeInsets.all(16),
       child: content,
     );
-    return Container(
+    final page = Container(
       color: Theme.of(context).colorScheme.background,
       alignment: _qs ? Alignment.topLeft : Alignment.center,
       child: SingleChildScrollView(
@@ -88,7 +88,33 @@ class _M2yAuthGateState extends State<M2yAuthGate> {
               ),
       ),
     );
+    return _qs ? m2yCompact(context, page) : page;
   }
+}
+
+/// Hızlı Destek'in dar penceresi için sıkı görünüm: küçük yazı, yoğun giriş alanları ve düğmeler.
+Widget m2yCompact(BuildContext context, Widget child) {
+  final t = Theme.of(context);
+  final mq = MediaQuery.of(context);
+  return MediaQuery(
+    data: mq.copyWith(textScaler: const TextScaler.linear(0.86)),
+    child: Theme(
+      data: t.copyWith(
+        visualDensity: VisualDensity.compact,
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        inputDecorationTheme: t.inputDecorationTheme.copyWith(
+          isDense: true,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+        ),
+        textTheme: t.textTheme.copyWith(
+          titleLarge: t.textTheme.titleLarge?.copyWith(fontSize: 18),
+          titleMedium: t.textTheme.titleMedium?.copyWith(fontSize: 15),
+        ),
+      ),
+      child: child,
+    ),
+  );
 }
 
 Widget _section(
@@ -347,9 +373,8 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
             children: [
               Checkbox(
                 value: _consent,
-                onChanged: _busy
-                    ? null
-                    : (v) => setState(() => _consent = v ?? false),
+                onChanged:
+                    _busy ? null : (v) => setState(() => _consent = v ?? false),
               ),
               Expanded(
                 child: Text(
