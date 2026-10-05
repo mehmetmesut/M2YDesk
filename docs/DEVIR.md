@@ -222,3 +222,9 @@ Bulut için kalanlar: e-posta+kod giriş ekranı (istemci), sabit parola ilk aç
 - Denetim: `/api/audit/conn` (new/close) saklanıyor ama e-posta/kuruluş/not yok ve uçlar **kimliksiz** (sahtelenebilir).
 - Yetki belirteci: `LoginRequest`'te boş alan yok → `message.proto`'ya `bytes m2y_auth = 100` (geriye uyumlu); öneri: **hedef cihaza bağlı, ≤5 dk ömürlü** belirteç.
 - Upstream ~1 yıldır durağan → fork bakımı bizde. Kararlar bekliyor: fork açılması (özel depo), belirteç biçimi, Vue panel fork'u.
+
+## KARAR + başladı — m2y-api fork'u (kullanıcı, 05.10.2026)
+- **Fork onaylandı:** özel depo **`mehmetmesut/m2y-api`** (lejianwen/rustdesk-api `c5687e1`, MIT; `upstream` uzak adı korunur). Yerel klon: `C:\Users\Mmy\Desktop\YazılımProjelerim\m2y-api`.
+- **Belirteç kararı:** yetkili hesap belirteci **hedef cihaza bağlı, 5 dk ömürlü**, Ed25519 imzalı (`proto`'ya `bytes m2y_auth = 100`; istemci tarafı bulut/sonraki aşama).
+- **Aşama 1 (yerel, Opus ajanı, sürüyor):** e-posta+kod girişi (`/api/m2y/kod-gonder`, `/api/m2y/kod-dogrula`, SMTP ortam değişkenleri, HMAC'li kod, hız sınırları), `M2Y_ADMIN_EMAILS` ile otomatik ve korumalı admin, OIDC `email_verified` zorunluluğu, `/api/m2y/yetki` belirteç ucu. Derleme/test sunucuda geçici `golang:1.23` kapsayıcısında.
+- Sonraki aşamalar: Destek iste (talep tablosu + bildirim), oturum kaydı/rapor (kimlikli audit, not, Excel/PDF), MAC alanı, Vue panel ekranları; istemci: e-posta+kod ekranı, `m2y_auth` doğrulaması.
