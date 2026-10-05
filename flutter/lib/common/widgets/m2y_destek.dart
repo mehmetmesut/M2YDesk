@@ -60,26 +60,89 @@ class M2yApi {
   }
 }
 
+/// Sol paneldeki sıkı, tam genişlikte düğme: yazı tek satırda kalır (sığmazsa küçülür).
+Widget m2ySideButton({
+  required String tooltip,
+  required Widget icon,
+  required String label,
+  required VoidCallback onPressed,
+}) {
+  return Container(
+    margin: const EdgeInsets.only(left: 20, right: 16, bottom: 6),
+    width: double.infinity,
+    child: Tooltip(
+      message: tooltip,
+      child: OutlinedButton.icon(
+        onPressed: onPressed,
+        style: OutlinedButton.styleFrom(
+          alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          minimumSize: const Size(0, 32),
+          visualDensity: VisualDensity.compact,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+        ),
+        icon: IconTheme.merge(
+            data: const IconThemeData(size: 16), child: icon),
+        label: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(label, maxLines: 1, softWrap: false),
+        ),
+      ),
+    ),
+  );
+}
+
 /// Sol paneldeki "Destek iste" düğmesi.
 class M2yDestekButton extends StatelessWidget {
   const M2yDestekButton({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(left: 20, right: 16, bottom: 8),
-      alignment: Alignment.centerLeft,
-      child: Tooltip(
-        message: 'Danışmanınızdan bağlanmasını isteyin',
-        child: OutlinedButton.icon(
-          onPressed: () => showDialog(
-              context: context, builder: (_) => const _M2yDestekDialog()),
-          icon: const Icon(Icons.support_agent, size: 20),
-          label: const Text('Destek iste'),
-        ),
-      ),
+    return m2ySideButton(
+      tooltip: 'Danışmanınızdan bağlanmasını isteyin',
+      icon: const Icon(Icons.support_agent),
+      label: 'Destek iste',
+      onPressed: () => showDialog(
+          context: context,
+          builder: (ctx) => m2yCompactDialog(ctx, const _M2yDestekDialog())),
     );
   }
+}
+
+/// Diyaloglar için sıkı görünüm: küçük başlık, yoğun alanlar ve düğmeler.
+Widget m2yCompactDialog(BuildContext context, Widget child) {
+  final t = Theme.of(context);
+  final buttonStyle = ButtonStyle(
+    padding: const MaterialStatePropertyAll(
+        EdgeInsets.symmetric(horizontal: 14, vertical: 8)),
+    minimumSize: const MaterialStatePropertyAll(Size(0, 32)),
+    textStyle: const MaterialStatePropertyAll(TextStyle(fontSize: 13)),
+    visualDensity: VisualDensity.compact,
+  );
+  return Theme(
+    data: t.copyWith(
+      visualDensity: VisualDensity.compact,
+      iconTheme: t.iconTheme.copyWith(size: 18),
+      inputDecorationTheme: t.inputDecorationTheme.copyWith(
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+      ),
+      dialogTheme: t.dialogTheme.copyWith(
+        titleTextStyle: t.textTheme.titleMedium
+            ?.copyWith(fontSize: 16, fontWeight: FontWeight.w600),
+        contentTextStyle: t.textTheme.bodyMedium?.copyWith(fontSize: 13),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+          style: buttonStyle.merge(t.elevatedButtonTheme.style)),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+          style: buttonStyle.merge(t.outlinedButtonTheme.style)),
+      textButtonTheme: TextButtonThemeData(
+          style: buttonStyle.merge(t.textButtonTheme.style)),
+    ),
+    child: child,
+  );
 }
 
 class _M2yDestekDialog extends StatefulWidget {

@@ -73,15 +73,22 @@ class _DesktopHomePageState extends State<DesktopHomePage>
         : !M2yAuth.instance.isReady
         ? const M2yAuthGate()
         : _buildBlock(
-            child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            buildLeftPane(context),
-            if (!isIncomingOnly) const VerticalDivider(width: 1),
-            if (!isIncomingOnly) Expanded(child: buildRightPane(context)),
-          ],
-        )));
+            child: _m2yQsCompact(
+                isIncomingOnly,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildLeftPane(context),
+                    if (!isIncomingOnly) const VerticalDivider(width: 1),
+                    if (!isIncomingOnly)
+                      Expanded(child: buildRightPane(context)),
+                  ],
+                ))));
   }
+
+  // M2YDesk: Hızlı Destek'in dar penceresinde sıkı görünüm (küçük ikon ve düğmeler).
+  Widget _m2yQsCompact(bool qs, Widget child) =>
+      qs ? m2yCompact(context, child) : child;
 
   Widget _buildBlock({required Widget child}) {
     return buildRemoteBlock(
@@ -306,17 +313,11 @@ class _DesktopHomePageState extends State<DesktopHomePage>
         .mainGetHardOption(key: 'm2y-whatsapp')
         .replaceAll(RegExp(r'[^0-9]'), '');
     if (phone.isEmpty) return const Offstage();
-    return Container(
-      margin: const EdgeInsets.only(left: 20, right: 16, bottom: 8),
-      alignment: Alignment.centerLeft,
-      child: Tooltip(
-        message: 'ID ve parolayı danışmana WhatsApp ile gönder',
-        child: OutlinedButton.icon(
-          onPressed: () => _m2ySendViaWhatsApp(phone),
-          icon: const Icon(Icons.chat, color: Color(0xFF25D366), size: 20),
-          label: const Text('WhatsApp ile gönder'),
-        ),
-      ),
+    return m2ySideButton(
+      tooltip: 'ID ve parolayı danışmana WhatsApp ile gönder',
+      icon: const Icon(Icons.chat, color: Color(0xFF25D366)),
+      label: 'WhatsApp ile gönder',
+      onPressed: () => _m2ySendViaWhatsApp(phone),
     );
   }
 

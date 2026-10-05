@@ -3747,16 +3747,20 @@ pub fn m2y_service_autostart_failed() -> bool {
     M2Y_SERVICE_AUTOSTART_FAILED.load(Ordering::Relaxed)
 }
 
-/// M2YDesk: kurulu sürümde hizmet çalışmıyorsa ve kullanıcı bilinçli durdurmadıysa
-/// (`stop-service` != "Y") ana pencere açılışında hizmeti BİR KEZ, yönetici izni istemeden
-/// başlatmayı dener. Arayüzün kendi sunucusunu başlatmasından önce çağrılır; böylece hizmetin
+/// M2YDesk: kurulu hizmet çalışmıyorsa ve kullanıcı bilinçli durdurmadıysa ana pencere
+/// açılışında hizmeti BİR KEZ, yönetici izni istemeden başlatmayı dener (kurulu exe ya da
+/// kurulumun yanında çalıştırılan taşınabilir exe). `stop-service` = "Y" ama bunu oturum kapısı
+/// koyduysa (`m2y-gate-stopped`) yine başlatılır: kapı gelen bağlantıyı `stop-service` ile
+/// zaten keser, oturum açılınca kaldırılır; hizmet kapalı kalırsa kullanıcı elle başlatmak
+/// zorunda kalıyordu. Arayüzün kendi sunucusunu başlatmasından önce çağrılır; böylece hizmetin
 /// başlattığı `--server` ile IPC çakışması olmaz. Tekrar deneme yoktur; başarısızsa arayüz
 /// "Servisi başlat" bağlantısını gösterir. Arka plan iş parçacığında çağrılmalıdır (bloklar).
 pub fn m2y_try_start_service_on_launch() {
+    let user_stopped = Config::get_option("stop-service") == "Y"
+        && config::LocalConfig::get_option(hbb_common::m2y::OPT_GATE_STOPPED) != "Y";
     if config::is_outgoing_only()
         || !is_installed()
-        || !is_cur_exe_the_installed()
-        || Config::get_option("stop-service") == "Y"
+        || user_stopped
         || is_self_service_running()
     {
         return;
