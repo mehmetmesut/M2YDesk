@@ -992,6 +992,8 @@ pub async fn do_check_software_update() -> hbb_common::ResultType<()> {
         *SOFTWARE_UPDATE_URL.lock().unwrap() = "".to_string();
         hbb_common::bail!("surum.json: imza yok veya geçersiz; güncelleme yapılmaz");
     }
+    // Zorunlu güncelleme yalnızca imzası doğrulanmış dosyadaki `asgari_surum` ile tetiklenir.
+    m2y_store_min_version(&bytes);
     let info: hbb_common::M2yUpdateInfo = serde_json::from_slice(&bytes)?;
     let latest_release_version = info.version.trim().trim_start_matches('v').to_owned();
     if latest_release_version.is_empty() {
@@ -1141,6 +1143,167 @@ pub async fn m2y_connect_gate() -> Option<String> {
         return Some(m2y_tr("m2y-blocked"));
     }
     None
+}
+
+/// İmzası doğrulanmış `surum.json`'daki `asgari_surum`'u yerel yapılandırmaya yazar (yoksa temizler).
+/// Ağ yokken son doğrulanmış değer geçerli kalır.
+fn m2y_store_min_version(bytes: &[u8]) {
+    let min = serde_json::from_slice::<Value>(bytes)
+        .ok()
+        .and_then(|v| v.get("asgari_surum")?.as_str().map(|s| s.trim().to_owned()))
+        .unwrap_or_default();
+    if LocalConfig::get_option(hbb_common::m2y::OPT_MIN_VERSION) != min {
+        LocalConfig::set_option(hbb_common::m2y::OPT_MIN_VERSION.to_owned(), min);
+    }
+}
+
+/// Bu sürüm, son doğrulanmış `asgari_surum`'dan eski mi?
+pub fn m2y_mandatory_update_required() -> bool {
+    hbb_common::m2y::update_required(
+        crate::VERSION,
+        &LocalConfig::get_option(hbb_common::m2y::OPT_MIN_VERSION),
+    )
+}
+
+/// Arayüz için durum: `{zorunlu, mevcut, gerekli, yontem: kurulu|tasinabilir|sayfa, sayfa}`.
+pub fn m2y_mandatory_update_info() -> String {
+    let min = LocalConfig::get_option(hbb_common::m2y::OPT_MIN_VERSION);
+    #[cfg(windows)]
+    let yontem = if m2y_update_file_key() == "windows_install" {
+        "kurulu"
+    } else {
+        "tasinabilir"
+    };
+    #[cfg(not(windows))]
+    let yontem = "sayfa";
+    json!({
+        "zorunlu": hbb_common::m2y::update_required(crate::VERSION, &min),
+        "mevcut": crate::VERSION,
+        "gerekli": min.trim().trim_start_matches(|c: char| c == 'v' || c == 'V'),
+        "yontem": yontem,
+        "sayfa": format!("https://{}/", hbb_common::m2y_update_host()),
+    })
+    .to_string()
+}
+
+/// Zorunlu güncellemeyi hemen başlatır (Windows). Kurulu: SHA-256 doğrulanmış kurulum dosyası
+/// `update_to` (`--update`) ile çalıştırılır. Taşınabilir / Hızlı Destek: yeni exe çalışan exe'nin
+/// yanına `<ad>-yeni.exe` olarak yazılır ve `--m2y-replace <eski>` ile başlatılır; çağıran program
+/// ardından kapanmalıdır (yardımcı eskisinin üzerine kopyalayıp yeniden başlatır).
+#[cfg(windows)]
+pub fn m2y_mandatory_update_now() -> ResultType<()> {
+    if M2Y_UPDATE_FILE.lock().unwrap().is_none() {
+        allow_err!(do_check_software_update());
+    }
+    let file = M2Y_UPDATE_FILE.lock().unwrap().clone();
+    let Some(file) = file else {
+        bail!("doğrulanmış güncelleme dosyası yok");
+    };
+    if m2y_update_file_key() == "windows_install" {
+        let Some(path) = crate::updater::get_download_file_from_url(&file.url) else {
+            bail!("geçersiz indirme adresi");
+        };
+        m2y_download_verified(&file, &path)?;
+        let Some(p) = path.to_str() else {
+            bail!("geçersiz dosya yolu");
+        };
+        return crate::platform::update_to(p);
+    }
+    let exe = std::env::current_exe()?;
+    let helper = m2y_replace_helper_path(&exe)?;
+    m2y_download_verified(&file, &helper)?;
+    std::process::Command::new(&helper)
+        .arg("--m2y-replace")
+        .arg(&exe)
+        .spawn()?;
+    Ok(())
+}
+
+/// Adres (`https://<M2Y_SERVER_HOST>/`) ve SHA-256 doğrulanmadan dosya diske yazılmaz.
+/// Hedefte aynı özetli dosya varsa yeniden kullanılır.
+#[cfg(windows)]
+fn m2y_download_verified(
+    file: &hbb_common::M2yUpdateFile,
+    dest: &std::path::Path,
+) -> ResultType<()> {
+    if !hbb_common::m2y_update_file_url_ok(&file.url) || file.sha256.trim().is_empty() {
+        bail!("güncelleme dosyası adresi/özeti geçersiz");
+    }
+    if let Ok(d) = std::fs::read(dest) {
+        if hbb_common::sha256_matches(&d, &file.sha256) {
+            return Ok(());
+        }
+    }
+    let resp = crate::hbbs_http::create_http_client_with_url(&file.url)
+        .get(&file.url)
+        .send()?;
+    if !resp.status().is_success() {
+        bail!("indirme başarısız: {}", resp.status());
+    }
+    let data = resp.bytes()?;
+    if !hbb_common::sha256_matches(&data, &file.sha256) {
+        bail!("SHA-256 uyuşmazlığı");
+    }
+    std::fs::write(dest, &data)?;
+    Ok(())
+}
+
+/// Çalışan exe'nin yanındaki geçici yardımcı: `<ad>-yeni.exe`.
+#[cfg(windows)]
+fn m2y_replace_helper_path(exe: &std::path::Path) -> ResultType<std::path::PathBuf> {
+    let Some(stem) = exe.file_stem().and_then(|s| s.to_str()) else {
+        bail!("geçersiz exe adı");
+    };
+    Ok(exe.with_file_name(format!("{stem}-yeni.exe")))
+}
+
+/// Önceki taşınabilir güncellemeden kalan `<ad>-yeni.exe` yardımcısını siler (yoksa bir şey yapmaz).
+#[cfg(windows)]
+pub fn m2y_cleanup_replace_helper() {
+    let Ok(exe) = std::env::current_exe() else {
+        return;
+    };
+    let Ok(helper) = m2y_replace_helper_path(&exe) else {
+        return;
+    };
+    if helper != exe && helper.exists() {
+        if let Err(e) = std::fs::remove_file(&helper) {
+            log::warn!("M2YDesk: {:?} silinemedi: {}", helper, e);
+        }
+    }
+}
+
+/// `--m2y-replace <eski_exe>`: yardımcı (yeni sürüm) eski program kapanıp dosya kilidi kalkana
+/// kadar (en çok ~60 sn) kendini eskisinin üzerine kopyalamayı dener, sonra eskisini başlatır.
+/// Yalnızca aynı klasördeki başka bir `.exe` hedef olabilir.
+#[cfg(windows)]
+pub fn m2y_replace_and_restart(target: &str) {
+    const TRIES: usize = 120;
+    let target = std::path::PathBuf::from(target);
+    let me = match std::env::current_exe() {
+        Ok(me) => me,
+        Err(e) => {
+            log::error!("M2YDesk: exe yolu alınamadı: {}", e);
+            return;
+        }
+    };
+    let is_exe = target
+        .extension()
+        .map_or(false, |e| e.eq_ignore_ascii_case("exe"));
+    if !is_exe || target == me || target.parent().is_none() || target.parent() != me.parent() {
+        log::error!("M2YDesk: geçersiz değiştirme hedefi: {:?}", target);
+        return;
+    }
+    for _ in 0..TRIES {
+        if std::fs::copy(&me, &target).is_ok() {
+            if let Err(e) = std::process::Command::new(&target).spawn() {
+                log::error!("M2YDesk: yeni sürüm başlatılamadı: {}", e);
+            }
+            return;
+        }
+        std::thread::sleep(std::time::Duration::from_millis(500));
+    }
+    log::error!("M2YDesk: {:?} değiştirilemedi (dosya kullanımda)", target);
 }
 
 /// `surum.json` içindeki `dosyalar` anahtarı (platform + varyant).

@@ -7,6 +7,7 @@
 # Kullanım:
 #   sudo bash scripts/istemci-hazirla.sh                     # en son release
 #   M2Y_SURUM=1.4.9 sudo bash scripts/istemci-hazirla.sh      # belirli etiket
+#   M2Y_ASGARI_SURUM=1.0.0 sudo bash scripts/istemci-hazirla.sh # zorunlu asgari sürüm (varsayılan: yayınlanan sürüm)
 #   SITE_DIZINI=/var/www/vhosts/mehmetmesut.com/desk.mehmetmesut.com sudo bash scripts/istemci-hazirla.sh
 #   GITHUB_TOKEN=ghp_... (depo ÖZEL ise zorunlu; herkese açık depoda gerekmez)
 #
@@ -133,8 +134,12 @@ EOF
 GUNCELLEME_DIZINI="$SITE_DIZINI/guncelleme"
 mkdir -p "$GUNCELLEME_DIZINI"
 SURUM_SAYI="${SURUM#v}"
+# Zorunlu güncelleme: bu sürümden eski istemciler güncellemeden bağlanamaz (docs/guncelleme.md).
+ASGARI="${M2Y_ASGARI_SURUM:-$SURUM_SAYI}"
+ASGARI="${ASGARI#v}"
 if [[ "$SURUM_SAYI" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    ALAN="$ALAN_ADI" SURUM_SAYI="$SURUM_SAYI" INDIR="$INDIR_DIZINI" \
+    [[ "$ASGARI" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || hata "M2Y_ASGARI_SURUM x.y.z biçiminde olmalı: '$ASGARI'"
+    ALAN="$ALAN_ADI" SURUM_SAYI="$SURUM_SAYI" ASGARI="$ASGARI" INDIR="$INDIR_DIZINI" \
     HEDEF="$GUNCELLEME_DIZINI/surum.json" \
     SONUC_JSON="$(for p in "${!SONUC[@]}"; do printf '%s\t%s\n' "$p" "${SONUC[$p]}"; done)" \
     python3 - <<'PY'
@@ -153,13 +158,14 @@ for satir in os.environ["SONUC_JSON"].splitlines():
     dosyalar[platform] = {"url": f"https://{alan}/indir/{ad}", "sha256": h.hexdigest()}
 veri = {"version": os.environ["SURUM_SAYI"],
         "tarih": datetime.date.today().isoformat(),
+        "asgari_surum": os.environ["ASGARI"],
         "dosyalar": dosyalar}
 gecici = os.environ["HEDEF"] + ".tmp"
 with open(gecici, "w", encoding="utf-8") as f:
     json.dump(veri, f, ensure_ascii=False, indent=2)
 os.replace(gecici, os.environ["HEDEF"])
 PY
-    basari "guncelleme/surum.json yazıldı (sürüm $SURUM_SAYI)"
+    basari "guncelleme/surum.json yazıldı (sürüm $SURUM_SAYI, asgari $ASGARI)"
 else
     uyari "Etiket '$SURUM' x.y.z biçiminde değil; surum.json güncellenmedi (istemciler eski bildirimi görür)."
 fi

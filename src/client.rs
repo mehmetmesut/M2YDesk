@@ -3415,7 +3415,12 @@ pub fn handle_login_error(
         true
     } else if err == hbb_common::m2y::AUTH_REJECTED {
         // M2YDesk: karşı taraf yetki belirtecini reddetti (yok, süresi dolmuş ya da yetkisiz hesap).
-        interface.msgbox("error", err, hbb_common::m2y::AUTH_REJECTED_LOCAL, "");
+        let text = if M2Y_OUTDATED.load(std::sync::atomic::Ordering::SeqCst) {
+            hbb_common::m2y::OUTDATED_LOCAL
+        } else {
+            hbb_common::m2y::AUTH_REJECTED_LOCAL
+        };
+        interface.msgbox("error", err, text, "");
         false
     } else if LOGIN_ERROR_MAP.contains_key(err) {
         if let Some(msgbox_info) = LOGIN_ERROR_MAP.get(err) {
@@ -3648,9 +3653,13 @@ async fn send_login(
     allow_err!(peer.send(&msg_out).await);
 }
 
+/// M2YDesk: son yetki isteği HTTP 426 (istemci sürümü eski) aldıysa `true`.
+static M2Y_OUTDATED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
 /// M2YDesk: oturum açıksa `POST /api/m2y/yetki` ile hedefe bağlı (5 dk) yetki belirteci alır.
 /// Oturum yoksa, sunucuya ulaşılamazsa ya da hesap yetkisizse boş döner (5 sn zaman aşımı).
 async fn m2y_fetch_auth(target: &str) -> String {
+    M2Y_OUTDATED.store(false, std::sync::atomic::Ordering::SeqCst);
     let access_token = LocalConfig::get_option("access_token");
     if access_token.is_empty() || target.is_empty() {
         return String::new();
@@ -3664,7 +3673,7 @@ async fn m2y_fetch_auth(target: &str) -> String {
         return String::new();
     }
     let url = format!("{api}/api/m2y/yetki");
-    let body = serde_json::json!({ "hedef_id": target }).to_string();
+    let body = serde_json::json!({ "hedef_id": target, "surum": crate::VERSION }).to_string();
     let fetch = async {
         // Taşıyıcı belirteç gönderildiği için geçersiz sertifikaya geri düşülmez (yalnızca doğrulayan TLS).
         for tls in [hbb_common::tls::TlsType::Rustls, hbb_common::tls::TlsType::NativeTls] {
@@ -3685,6 +3694,10 @@ async fn m2y_fetch_auth(target: &str) -> String {
             let status = resp.status();
             if !status.is_success() {
                 log::warn!("M2YDesk: yetki belirteci verilmedi: HTTP {}", status);
+                if status.as_u16() == 426 {
+                    // Sunucu bu sürümü eski buldu; ret iletisi "güncelleyin" olarak gösterilir.
+                    M2Y_OUTDATED.store(true, std::sync::atomic::Ordering::SeqCst);
+                }
                 return String::new();
             }
             return match resp.text().await {

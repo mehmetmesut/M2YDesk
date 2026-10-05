@@ -6,6 +6,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hbb/common/widgets/connection_page_title.dart';
+import 'package:flutter_hbb/common/widgets/m2y_zorunlu_guncelleme.dart';
 import 'package:flutter_hbb/consts.dart';
 import 'package:flutter_hbb/desktop/widgets/popup_menu.dart';
 import 'package:flutter_hbb/models/state_model.dart';
@@ -336,6 +337,8 @@ class _ConnectionPageState extends State<ConnectionPage>
       {bool isFileTransfer = false,
       bool isViewCamera = false,
       bool isTerminal = false}) {
+    // M2YDesk: zorunlu güncelleme bekleniyorsa giden bağlantı kurulmaz.
+    if (M2yZorunluGuncelleme.instance.required.value) return;
     var id = _idController.id;
     connect(context, id,
         isFileTransfer: isFileTransfer,
@@ -523,12 +526,15 @@ class _ConnectionPageState extends State<ConnectionPage>
               child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                 SizedBox(
                   height: 28.0,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      onConnect();
-                    },
-                    child: Text(translate("Connect")),
-                  ),
+                  child: Obx(() => ElevatedButton(
+                        onPressed:
+                            M2yZorunluGuncelleme.instance.required.value
+                                ? null
+                                : () {
+                                    onConnect();
+                                  },
+                        child: Text(translate("Connect")),
+                      )),
                 ),
                 const SizedBox(width: 8),
                 Container(

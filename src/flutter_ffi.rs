@@ -2416,7 +2416,62 @@ pub fn main_m2y_mark_auth_ok() -> SyncReturn<()> {
 }
 
 pub fn main_m2y_set_connection_gate(closed: bool) {
-    ui_interface::m2y_set_connection_gate(closed)
+    M2Y_GATE_AUTH.store(if closed { 1 } else { 2 }, Ordering::SeqCst);
+    m2y_apply_gate();
+}
+
+// M2YDesk: bağlantı kapısını iki bağımsız neden kapatır (oturum, zorunlu güncelleme); kapı yalnızca
+// ikisi de açık istediğinde açılır. Oturum durumu: 0 = henüz bilinmiyor, 1 = kapalı, 2 = açık.
+static M2Y_GATE_AUTH: std::sync::atomic::AtomicU8 = std::sync::atomic::AtomicU8::new(0);
+static M2Y_GATE_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
+fn m2y_apply_gate() {
+    let _guard = M2Y_GATE_LOCK.lock().unwrap();
+    let auth = M2Y_GATE_AUTH.load(Ordering::SeqCst);
+    if crate::common::m2y_mandatory_update_required() || auth == 1 {
+        ui_interface::m2y_set_connection_gate(true);
+    } else if auth == 2 {
+        ui_interface::m2y_set_connection_gate(false);
+    }
+}
+
+/// M2YDesk zorunlu güncelleme durumu (JSON, bkz. `common::m2y_mandatory_update_info`).
+pub fn main_m2y_mandatory_update() -> SyncReturn<String> {
+    SyncReturn(crate::common::m2y_mandatory_update_info())
+}
+
+/// İmzalı `surum.json`'ı arka planda yeniden okur (açılışta ve 30 dk'da bir), kapıyı günceller ve
+/// `m2y_zorunlu_guncelleme` olayını yayınlar. Ağ yoksa son doğrulanmış `asgari_surum` geçerli kalır.
+pub fn main_m2y_check_mandatory_update() {
+    m2y_apply_gate();
+    std::thread::spawn(|| {
+        #[cfg(windows)]
+        crate::common::m2y_cleanup_replace_helper();
+        if let Err(e) = crate::common::do_check_software_update() {
+            log::warn!("M2YDesk: surum.json denetimi: {}", e);
+        }
+        m2y_apply_gate();
+        let data = serde_json::json!({ "name": "m2y_zorunlu_guncelleme" }).to_string();
+        let _ = flutter::push_global_event(flutter::APP_TYPE_MAIN, data);
+    });
+}
+
+/// Zorunlu güncellemeyi başlatır; başarıda boş, hatada açıklama döner (Windows dışı: desteklenmez).
+pub fn main_m2y_mandatory_update_now() -> String {
+    #[cfg(windows)]
+    {
+        match crate::common::m2y_mandatory_update_now() {
+            Ok(()) => String::new(),
+            Err(e) => {
+                log::error!("M2YDesk: zorunlu güncelleme başarısız: {}", e);
+                e.to_string()
+            }
+        }
+    }
+    #[cfg(not(windows))]
+    {
+        "desteklenmiyor".to_owned()
+    }
 }
 
 /// M2YDesk: oturumun kayıt bilgisi `{"uuid","tur","sure_sn"}`; kayıt yoksa boş (bitiş notu penceresi için).
