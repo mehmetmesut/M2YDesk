@@ -76,7 +76,14 @@ services:
   api:
     container_name: m2y-api
     profiles: ["api"]
-    image: lejianwen/rustdesk-api:${API_SURUM:-latest}
+    # mehmetmesut/m2y-api (özel fork) sunucuda derlenir: scripts/m2y-api-guncelle.sh
+    image: ${M2Y_API_IMAJ:-m2y-api:yerel}
+    # Sırlar (M2Y_KOD_SIRRI, RUSTDESK_API_JWT_KEY, M2Y_YETKI_ANAHTARI, M2Y_SMTP_*): yalnızca sunucuda, 600
+    env_file:
+      - .env.m2yapi
+    # SMTP sunucunun kendi Postfix'i (587): kapsayıcıdan ana makineye erişim
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       - TZ=${TZ:-Europe/Istanbul}
       # README (04.10.2026 doğrulandı): desteklenen diller en / zh-CN

@@ -232,3 +232,10 @@ Bulut için kalanlar: e-posta+kod giriş ekranı (istemci), sabit parola ilk aç
 ## KALDIĞIMIZ YER (05.10.2026 sabah, kullanıcı bilgisayarı kapattı)
 - m2y-api Aşama 1 ajanı **yarıda kaldı**. Ara kayıt: `mehmetmesut/m2y-api` dalı **`m2y-asama1-wip`** (`bf3a45f`, derlenmemiş/test edilmemiş olabilir; `main` değişmedi). Yeni oturumda: dalı incele → eksikleri tamamla → sunucuda `golang:1.23` ile `go build/vet/test` → `main`'e birleştir → sunucuda API'yi güncelle. Sunucuda `/root/m2y-api-derleme` geçici klasörü kalmış olabilir (sil).
 - ruskdesk deposunda push edilmemiş iş yok.
+
+## m2y-api Aşama 1 CANLIDA (yerel, 05.10.2026)
+- Fork `mehmetmesut/m2y-api` `main` = `ab9a6ea` (Opus ajanı: f6ce7da, 056ecb6, c055d6d; yerel güvenlik düzeltmesi ab9a6ea: korumalı hesabın parolasını yalnız sahibi değiştirir, e-posta başına günde ≤10 kod → tahmin üst sınırı 50/gün). 66 test geçti (46 M2Y). `m2y-asama1-wip` dalı artık gereksiz.
+- Sunucuda derleme: `scripts/m2y-api-guncelle.sh` (kaynak `/root/m2y-api-derleme`, golang:1.23 statik ikili, panel arayüzü çalışan kapsayıcıdan kopyalanır, imaj `m2y-api:yerel`). Sırlar `/opt/m2ydesk/server/.env.m2yapi` (600, rastgele üretildi, gösterilmedi; gece yedeğine dahil): `M2Y_KOD_SIRRI`, `RUSTDESK_API_JWT_KEY`, `M2Y_YETKI_ANAHTARI` (Ed25519), SMTP (Postfix, `host.docker.internal:587`). Yöneticiler: mehmetmesut@gmail.com, mehmetmesut.yilmaz@antalya.edu.tr. Geçiş öncesi DB yedeği `yedekler/rustdeskapi-oncesi-*.db`. Geri dönüş: `M2Y_API_IMAJ=lejianwen/rustdesk-api:latest docker compose --profile api up -d api`.
+- Uçtan uca: `POST /api/m2y/kod-gonder` → 200 ve Gmail'e teslim (`status=sent`); yanlış kod → 400; `/api/m2y/yetki-acik-anahtar` → 200; `/_admin/` → 200 (izinli IP).
+- **Bulut için:** istemciye gömülecek yetki açık anahtarı `GET https://desk.mehmetmesut.com/api/m2y/yetki-acik-anahtar` (base64). Belirteç biçimi ve imza ayrıntısı: m2y-api `docs/m2y.md`. İstemci tarafı (e-posta+kod ekranı, `m2y_auth` proto alanı ve doğrulama) bulut/sonraki iş.
+- Açık güvenlik notları (m2y.md): yetki belirteci 5 dk içinde aynı hedefte yeniden kullanılabilir; IP sınırı bellek içi; IPv6 /64 gruplaması yok.
