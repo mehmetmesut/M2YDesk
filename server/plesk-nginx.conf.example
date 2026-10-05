@@ -1,7 +1,8 @@
 # Plesk ek nginx yönergeleri. Sunucuda uygulanan hali: /var/www/vhosts/system/desk.mehmetmesut.com/conf/vhost_nginx.conf
 # (Plesk 18.0.80 CLI bu alanı ayarlayamıyor; dosya yazılıp: /usr/local/psa/admin/bin/httpdmng --reconfigure-domain desk.mehmetmesut.com)
-# /_admin/ yalnızca izinli IPlere açık (ev/iş). IP değişirse buradan güncelleyin.
-# M2YDesk hesap API'si (lejianwen/rustdesk-api, 127.0.0.1:21114) — 04.10.2026
+# Yönetim paneli /yonetici/ altında, yalnızca izinli IP'lere (ev/iş) açık. IP değişirse buradan güncelleyin.
+
+# M2YDesk hesap API'si (m2y-api, 127.0.0.1:21114)
 location ^~ /api/ {
     proxy_pass http://127.0.0.1:21114;
     proxy_set_header Host $host;
@@ -11,28 +12,28 @@ location ^~ /api/ {
     proxy_read_timeout 60s;
 }
 
-# Yönetim paneli: yalnızca ev ve iş IP'leri
-location ^~ /_admin/ {
+# Yönetim paneli: /yonetici/ (panel arayüzü göreli yol kullanır, API çağrıları /api/admin'e gider)
+location ^~ /yonetici/ {
     allow 88.232.174.141;
     allow 185.33.62.141;
     deny all;
-    proxy_pass http://127.0.0.1:21114;
+    proxy_pass http://127.0.0.1:21114/_admin/;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
+    add_header X-Frame-Options "DENY" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "same-origin" always;
+}
+location = /yonetici {
+    return 301 /yonetici/;
 }
 
-# Kısa ve Türkçe yönetim adresi: /yonetici → panel (aynı IP kısıtı)
-location = /yonetici {
-    allow 88.232.174.141;
-    allow 185.33.62.141;
-    deny all;
-    return 302 /_admin/;
+# Eski adres kalıcı olarak yeni adrese
+location ^~ /_admin/ {
+    return 301 /yonetici/;
 }
-location = /yonetici/ {
-    allow 88.232.174.141;
-    allow 185.33.62.141;
-    deny all;
-    return 302 /_admin/;
+location = /_admin {
+    return 301 /yonetici/;
 }

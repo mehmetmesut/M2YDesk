@@ -270,3 +270,8 @@ Tüm geliştirme **yerel oturumda** sürer. Daha önce "bulut oturumundan istene
 
 ## KARAR — Zorunlu güncelleme (kullanıcı, 05.10.2026) — sırada (ajan F bitince)
 Danışanlara güncelleme bildirimi + güncel sürümü yükleme zorunluluğu. Tasarım: `guncelleme.md` → "Zorunlu güncelleme" (imzalı `surum.json` `asgari_surum`, engelleyici pencere, kurulu sürümde sessiz güncelleme, taşınabilir/QS'te kendini değiştirme, API `/api/m2y/yetki`'de sürüm denetimi).
+
+## Yönetim paneli /yonetici + canlı test + Türkçeleştirme (yerel, 05.10.2026)
+- Panel artık **doğrudan** `https://desk.mehmetmesut.com/yonetici/` altında sunuluyor (nginx `proxy_pass …/_admin/`; panel arayüzü göreli yol, API mutlak `/api/admin`). `/yonetici` ve eski `/_admin/` → 301 `/yonetici/`. Yalnız ev+iş IP (diğerleri 403). Güvenlik başlıkları: X-Frame-Options DENY, nosniff, Referrer-Policy.
+- Chrome'da canlı tarama: 22 sayfa (kişisel cihazlar, adres defterleri, etiketler, paylaşım/giriş kayıtları, kullanıcı/grup/cihaz grubu yönetimi, OAuth, belirteçler, denetim günlükleri, sunucu komutu) → başarısız API isteği, JS hatası, hata bildirimi **yok**.
+- Sorun: panel Türkçe değil (dil seçenekleri zh/en/fr/ko/ru/es/zh-TW; açılışta Çince karşılama). Kullanıcı kuralı: **panel yalnız Türkçe**. Panel kaynağı özel fork **`mehmetmesut/m2y-panel`** (lejianwen/rustdesk-api-web, MIT; yerel `YazılımProjelerim\m2y-panel`). Ajan I: tr.json + tek dil Türkçe + Element Plus tr + marka "M2YDesk Yönetim" + API `resources/i18n/tr.toml`. Sonra: `m2y-api-guncelle.sh` panel arayüzünü kapsayıcıdan değil m2y-panel derlemesinden alacak.
