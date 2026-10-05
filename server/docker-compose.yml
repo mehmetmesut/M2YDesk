@@ -86,8 +86,8 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       - TZ=${TZ:-Europe/Istanbul}
-      # README (04.10.2026 doğrulandı): desteklenen diller en / zh-CN
-      - RUSTDESK_API_LANG=en
+      # Yönetim paneli ve API mesajları yalnız Türkçe (m2y-api resources/i18n/tr.toml)
+      - RUSTDESK_API_LANG=tr
       # nginx (Plesk) ters vekili yerelden gelir → gerçek istemci IP'si X-Forwarded-For'dan okunur
       - RUSTDESK_API_GIN_TRUST_PROXY=127.0.0.1
       # Kaba kuvvet: 3 hatada CAPTCHA, 5 hatada IP yasağı

@@ -22,8 +22,12 @@ docker run --rm -v "$PWD":/src -w /src golang:1.23 sh -c '
 [[ -x amd64/release/apimain ]] || { echo "[HATA] ikili üretilemedi"; exit 1; }
 cp -r resources docs conf amd64/release/
 
-echo "[2/6] Yönetim paneli arayüzü çalışan kapsayıcıdan alınıyor"
-if docker ps --format '{{.Names}}' | grep -qx m2y-api && docker exec m2y-api test -d /app/resources/admin; then
+echo "[2/6] Yönetim paneli arayüzü"
+PANEL=/root/m2y-panel-dist   # mehmetmesut/m2y-panel (Türkçe) derlemesi; scp ile gelir
+if [[ -f "$PANEL/index.html" ]]; then
+    rm -rf amd64/release/resources/admin && cp -r "$PANEL" amd64/release/resources/admin
+    echo "      Türkçe panel derlemesi kullanıldı ($PANEL)"
+elif docker ps --format '{{.Names}}' | grep -qx m2y-api && docker exec m2y-api test -d /app/resources/admin; then
     docker cp m2y-api:/app/resources/admin amd64/release/resources/admin
 elif docker image inspect "$IMAJ" >/dev/null 2>&1; then
     CID=$(docker create "$IMAJ"); docker cp "$CID":/app/resources/admin amd64/release/resources/admin; docker rm "$CID" >/dev/null
