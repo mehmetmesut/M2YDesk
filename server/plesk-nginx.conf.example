@@ -37,3 +37,12 @@ location ^~ /_admin/ {
 location = /_admin {
     return 301 /yonetici/;
 }
+
+# Kurulum betikleri (Windows PowerShell / macOS): UTF-8 olarak sunulur; aksi hâlde PowerShell 5.1
+# Türkçe karakterleri bozar.
+location ~ ^/(win-kur\.ps1|mac-kur\.sh)$ {
+    types { }
+    default_type "text/plain; charset=utf-8";
+    add_header Cache-Control "no-cache" always;
+    add_header X-Content-Type-Options "nosniff" always;
+}
