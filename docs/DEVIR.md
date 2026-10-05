@@ -321,3 +321,11 @@ Sunucu komutu kartları (gerçek işlev rustdesk-server kaynağından doğruland
 - Doğrulama: 6 dosyanın SHA-256'sı GitHub API `digest` = `surum.json` = diskteki dosya (hepsi eşleşti; exe ile install.exe aynı ikili). `surum.json` PC'de `imzala.py` ile imzalandı, `dogrula` GEÇERLİ, `.sig` yüklendi; `dogrula.sh` hiç ✘ yok.
 - `asgari_surum` yalnız ≥1.0.2 istemcilerince okunur (eskiler alanı bilmez) → şu an kimseyi kesmez. **Eski istemcileri kesen ayar API'deki `M2Y_ASGARI_SURUM` (yetki isteğine 426) — kullanıcı onayı bekliyor, AYARLANMADI.**
 - Sırada: gerçek cihaz testi (giriş kapısı/e-posta kodu, Google girişi, ekran kenarı çerçevesi, Destek iste, oturum notu, zorunlu güncelleme penceresi), sonra onayla `M2Y_ASGARI_SURUM=1.0.2`.
+
+## Microsoft Store (06.10.2026) — Hızlı Destek
+- Geliştirici hesabı (bireysel, ücretsiz) açıldı; yayımcı görünen adı **M2Y Software**. Ürün adı ayrıldı: **M2YDesk Hızlı Destek**, Store ID `9MZ8NFJ4QVM9` (3 ay içinde gönderilmezse ad düşer).
+- Kimlik: Name `M2YSoftware.M2YDeskHzlDestek`, Publisher `CN=F12BF89C-A343-46B6-A6E6-0B2F2C0D6B7F`, PFN `M2YSoftware.M2YDeskHzlDestek_r2jdj4998dc4a` → GitHub Variables `M2Y_MSIX_NAME/PUBLISHER/PUBLISHER_DISPLAY`.
+- Paketleme: `res/m2y/msix/` (manifest şablonu + `hazirla.py`: sürücüleri dışlar, Store simgelerini üretir), workflow QS işinde "Build Microsoft Store package" adımı (makeappx, imzasız; Store imzalar) → `M2YDesk-QS-<sürüm>-x86_64.msix`.
+- Store sürümünde güncelleme Store'a yönlendirilir (`m2y_is_store()` = exe yolu `\WindowsApps\`); kendi kendini değiştirme kapalı.
+- Sürüm 1.0.3. Test derlemesi koşu **37361973060** (tag m2y-test, yalnız Windows): QS sıkı görünüm düzeltmeleri + ilk MSIX. Sırada: MSIX'i Partner Center'a yükle, Store sayfası (açıklama, ekran görüntüleri, gizlilik bağlantısı, yaş derecelendirmesi, ücretsiz, pazarlar).
+- Tam M2YDesk Store'a: hizmet + sürücüler MSIX'te kısıtlı; değerlendirme bekliyor (kullanıcı istedi).
