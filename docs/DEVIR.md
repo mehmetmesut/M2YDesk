@@ -239,3 +239,10 @@ Bulut için kalanlar: e-posta+kod giriş ekranı (istemci), sabit parola ilk aç
 - Uçtan uca: `POST /api/m2y/kod-gonder` → 200 ve Gmail'e teslim (`status=sent`); yanlış kod → 400; `/api/m2y/yetki-acik-anahtar` → 200; `/_admin/` → 200 (izinli IP).
 - **Bulut için:** istemciye gömülecek yetki açık anahtarı `GET https://desk.mehmetmesut.com/api/m2y/yetki-acik-anahtar` (base64). Belirteç biçimi ve imza ayrıntısı: m2y-api `docs/m2y.md`. İstemci tarafı (e-posta+kod ekranı, `m2y_auth` proto alanı ve doğrulama) bulut/sonraki iş.
 - Açık güvenlik notları (m2y.md): yetki belirteci 5 dk içinde aynı hedefte yeniden kullanılabilir; IP sınırı bellek içi; IPv6 /64 gruplaması yok.
+
+## KARAR — Bulut oturumu KULLANILMIYOR (kullanıcı, 05.10.2026)
+Tüm geliştirme **yerel oturumda** sürer. Daha önce "bulut oturumundan istenen iş" diye yazılan maddelerin hepsi yerelin işidir. Yerel iş planı (ajanlarla, paralel, dosya sınırları ayrık):
+- **A (Opus):** zorunlu e-posta+kod giriş ekranı (iki program; Google ek seçenek; 7 gün kayan oturum; e-posta hatırlanır) + ilk açılışta 6 haneli sabit parola (atlanamaz, sürekli erişim varsayılan açık; Hızlı Destek'te değiştir/kapat menüsü).
+- **C (Opus):** yetkili hesap belirteci `m2y_auth` (proto alanı, denetleyici `/api/m2y/yetki`'den alır, kontrol edilen taraf gömülü açık anahtarla doğrular, yetkisizi reddeder).
+- **E (Sonnet):** m2y-api Aşama 2 (Destek iste talepleri + bildirim, kimlikli oturum kaydı + not + aylık Excel/PDF, MAC alanı).
+- Sonra: üyelik kartı + "Destek iste" düğmesi (istemci), ekran kenarı çerçevesi, 1.0.2 tek doğrulama derlemesi.
