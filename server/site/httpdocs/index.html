@@ -195,12 +195,14 @@
 
   // Platform tablosu: d = [ayar anahtarı, düğme metni]
   var PL = [
-    { id: 'qs', ad: 'Windows', alt: 'Hızlı Destek', ac: 'Destek almak için önerilir. Kurulum gerektirmez; bilgisayarınıza hiçbir şey kurmaz.',
-      d: [['windows_qs', 'Hızlı Destek’i indir']],
-      not: 'Windows “PC’nizi korudu” uyarısı verirse: Ek bilgi → Yine de çalıştır. Dosya imzasızdır; yalnızca bu sayfadan indirdiğinizi çalıştırın.' },
-    { id: 'win', ad: 'Windows', alt: 'Kurulum', ac: 'Sık kullandığınız bilgisayarlar için kalıcı kurulum.',
+    { id: 'qs', ad: 'Windows', alt: 'Hızlı Destek', ac: 'Destek almak için önerilir. Kurulum gerektirmez. En kolay yol: Başlat’a “PowerShell” yazıp açın, aşağıdaki komutu yapıştırıp Enter’a basın; uyarı çıkmadan açılır.',
+      komut: "$env:M2Y_HIZLI='1'; irm https://desk.mehmetmesut.com/win-kur.ps1 | iex",
+      d: [['windows_qs', 'Ya da Hızlı Destek’i indir']],
+      not: 'İndirdiğiniz dosyada Windows “PC’nizi korudu” uyarısı verirse: Ek bilgi → Yine de çalıştır. Komut, dosyayı indirip doğruladıktan sonra açar.' },
+    { id: 'win', ad: 'Windows', alt: 'Kurulum', ac: 'Sık kullandığınız bilgisayarlar için kalıcı kurulum. En kolay yol: PowerShell’i açın, aşağıdaki komutu yapıştırıp Enter’a basın; indirir, doğrular ve kurar.',
+      komut: 'irm https://desk.mehmetmesut.com/win-kur.ps1 | iex',
       d: [['windows_install', 'Kurulum dosyasını indir'], ['windows', 'Taşınabilir sürüm (kurulumsuz)'], ['windows_msi', 'MSI paketi (kurumsal dağıtım)']],
-      not: 'Windows “PC’nizi korudu” uyarısı verirse: Ek bilgi → Yine de çalıştır.' },
+      not: 'Kurulum sırasında yönetici onayı istenir. İndirdiğiniz dosyada “PC’nizi korudu” uyarısı çıkarsa: Ek bilgi → Yine de çalıştır.' },
     { id: 'mac', ad: 'macOS', alt: 'Apple Silicon (M1 ve üzeri)', ac: 'En kolay yol: Terminal’i açın (Spotlight’ta “Terminal” yazın), aşağıdaki komutu yapıştırıp Enter’a basın. İndirir, doğrular ve kurar; “Geliştirici doğrulanamadı” uyarısı çıkmaz.',
       komut: 'curl -fsSL https://desk.mehmetmesut.com/mac-kur.sh | bash',
       d: [['macos_apple', 'Ya da .dmg dosyasını indir']],
