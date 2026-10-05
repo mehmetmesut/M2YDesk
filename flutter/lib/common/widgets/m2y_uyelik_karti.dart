@@ -51,7 +51,7 @@ class _M2yUyelikKartiState extends State<M2yUyelikKarti> {
   Future<void> _confirmLogout() async {
     final ok = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => m2yCompactDialog(ctx, AlertDialog(
         title: const Text('Çıkış yap'),
         content: const Text(
             'Çıkış yapılırsa bağlantı kapısı kapanır ve yeniden giriş gerekir.'),
@@ -66,7 +66,7 @@ class _M2yUyelikKartiState extends State<M2yUyelikKarti> {
             child: const Text('Çıkış yap'),
           ),
         ],
-      ),
+      )),
     );
     if (ok == true) await M2yAuth.instance.logout();
   }
@@ -92,47 +92,55 @@ class _M2yUyelikKartiState extends State<M2yUyelikKarti> {
       if (name.isEmpty) return const Offstage();
       final display = gFFI.userModel.displayName.value.trim();
       final title = display.isNotEmpty ? display : name;
+      // Sol paneldeki diğer öğelerle aynı iç boşluk; rozetler ve çıkış tek satırda.
       return Container(
         width: double.infinity,
-        margin: const EdgeInsets.fromLTRB(8, 4, 8, 8),
-        padding: const EdgeInsets.all(10),
+        margin: const EdgeInsets.fromLTRB(12, 4, 12, 12),
+        padding: const EdgeInsets.fromLTRB(10, 8, 4, 6),
         decoration: BoxDecoration(
           color: theme.scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: theme.dividerColor),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontWeight: FontWeight.w600)),
+            Tooltip(
+              message: _email.isNotEmpty ? _email : title,
+              child: Text(title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                      fontSize: 13, fontWeight: FontWeight.w600)),
+            ).marginOnly(right: 6),
             if (_email.isNotEmpty && _email != title)
               Text(_email,
                   maxLines: 1, overflow: TextOverflow.ellipsis, style: small),
             if (_kurulus.isNotEmpty)
               Text(_kurulus,
                   maxLines: 1, overflow: TextOverflow.ellipsis, style: small),
-            const SizedBox(height: 6),
-            Wrap(spacing: 4, runSpacing: 4, children: [
-              _badge('Üye', MyTheme.accent),
-              if (_isAdmin)
-                _badge('Yönetici', Colors.deepOrange)
-              else if (_isYetkili)
-                _badge('Yetkili danışman', Colors.teal),
-            ]),
-            const SizedBox(height: 6),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: TextButton.icon(
-                onPressed: _confirmLogout,
-                style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero, minimumSize: const Size(0, 28)),
-                icon: const Icon(Icons.logout, size: 16),
-                label: const Text('Çıkış yap'),
+            const SizedBox(height: 4),
+            Row(children: [
+              Expanded(
+                child: Wrap(spacing: 4, runSpacing: 4, children: [
+                  _badge('Üye', MyTheme.accent),
+                  if (_isAdmin)
+                    _badge('Yönetici', Colors.deepOrange)
+                  else if (_isYetkili)
+                    _badge('Yetkili', Colors.teal),
+                ]),
               ),
-            ),
+              IconButton(
+                tooltip: 'Çıkış yap',
+                onPressed: _confirmLogout,
+                visualDensity: VisualDensity.compact,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints.tightFor(width: 28, height: 28),
+                iconSize: 16,
+                icon: const Icon(Icons.logout),
+              ),
+            ]),
           ],
         ),
       );

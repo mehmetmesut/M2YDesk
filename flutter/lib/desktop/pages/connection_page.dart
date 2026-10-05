@@ -22,6 +22,9 @@ import '../../common/widgets/autocomplete.dart';
 import '../../models/platform_model.dart';
 import '../../desktop/widgets/material_mod_popup_menu.dart' as mod_menu;
 
+/// M2YDesk: uzak kimlik alanı, Bağlan ve seçenek düğmesinin ortak yüksekliği.
+const double _kM2yConnectRowHeight = 40;
+
 class OnlineStatusWidget extends StatefulWidget {
   const OnlineStatusWidget({Key? key, this.onSvcStatusChanged})
       : super(key: key);
@@ -350,15 +353,14 @@ class _ConnectionPageState extends State<ConnectionPage>
   /// Search for a peer.
   Widget _buildRemoteIDTextField(BuildContext context) {
     var w = Container(
-      width: 320 + 20 * 2,
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 22),
+      padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
       decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(13)),
           border: Border.all(color: Theme.of(context).colorScheme.background)),
       child: Ink(
         child: Column(
           children: [
-            getConnectionPageTitle(context, false).marginOnly(bottom: 15),
+            getConnectionPageTitle(context, false).marginOnly(bottom: 12),
             Row(
               children: [
                 Expanded(
@@ -427,9 +429,10 @@ class _ConnectionPageState extends State<ConnectionPage>
                           focusNode: fieldFocusNode,
                           style: const TextStyle(
                             fontFamily: 'WorkSans',
-                            fontSize: 22,
-                            height: 1.4,
+                            fontSize: 20,
+                            height: 1.2,
                           ),
+                          textAlignVertical: TextAlignVertical.center,
                           maxLines: 1,
                           cursorColor:
                               Theme.of(context).textTheme.titleLarge?.color,
@@ -439,8 +442,10 @@ class _ConnectionPageState extends State<ConnectionPage>
                               hintText: _idInputFocused.value
                                   ? null
                                   : translate('Enter Remote ID'),
+                              constraints: const BoxConstraints.tightFor(
+                                  height: _kM2yConnectRowHeight),
                               contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 15, vertical: 13)),
+                                  horizontal: 14, vertical: 8)),
                           controller: fieldTextEditingController,
                           inputFormatters: [IDTextInputFormatter()],
                           onChanged: (v) {
@@ -519,13 +524,10 @@ class _ConnectionPageState extends State<ConnectionPage>
                     );
                   },
                 )),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 13.0),
-              child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                // M2YDesk: Bağlan ve seçenekler alanla aynı satırda, alanla aynı yükseklikte.
+                const SizedBox(width: 8),
                 SizedBox(
-                  height: 28.0,
+                  height: _kM2yConnectRowHeight,
                   child: Obx(() => ElevatedButton(
                         onPressed:
                             M2yZorunluGuncelleme.instance.required.value
@@ -536,10 +538,10 @@ class _ConnectionPageState extends State<ConnectionPage>
                         child: Text(translate("Connect")),
                       )),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
                 Container(
-                  height: 28.0,
-                  width: 28.0,
+                  height: _kM2yConnectRowHeight,
+                  width: _kM2yConnectRowHeight,
                   decoration: BoxDecoration(
                     border: Border.all(color: Theme.of(context).dividerColor),
                     borderRadius: BorderRadius.circular(8),
@@ -615,7 +617,7 @@ class _ConnectionPageState extends State<ConnectionPage>
                     ),
                   ),
                 ),
-              ]),
+              ],
             ),
           ],
         ),
