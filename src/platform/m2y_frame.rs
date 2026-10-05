@@ -65,7 +65,7 @@ pub fn set_visible(visible: bool) {
             Ok(hwnd) if hwnd != 0 => *guard = Some(Running { hwnd, thread }),
             _ => {
                 let _ = thread.join();
-                log::warn!("M2YDesk: kenar çerçevesi penceresi oluşturulamadı");
+                hbb_common::log::warn!("M2YDesk: kenar çerçevesi penceresi oluşturulamadı");
             }
         }
     } else if let Some(r) = guard.take() {
