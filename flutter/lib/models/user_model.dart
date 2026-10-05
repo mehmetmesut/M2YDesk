@@ -91,7 +91,7 @@ class UserModel {
       final user = UserPayload.fromJson(data);
       _parseAndUpdateUser(user);
       // M2YDesk: başarılı sunucu doğrulaması 7 günlük süreyi sıfırlar.
-      bind.mainM2yMarkAuthOk();
+      bind.mainM2YMarkAuthOk();
     } catch (e) {
       debugPrint('Failed to refreshCurrentUser: $e');
     } finally {
@@ -262,7 +262,7 @@ class UserModel {
       debugPrint('M2YDesk: currentUser yanıtı çözülemedi: $e');
       return -1;
     }
-    bind.mainM2yMarkAuthOk();
+    bind.mainM2YMarkAuthOk();
     return 200;
   }
 
@@ -328,7 +328,7 @@ class UserModel {
       throw RequestException(-1, '');
     }
     await bind.mainSetLocalOption(key: 'access_token', value: token);
-    bind.mainM2yMarkAuthOk();
+    bind.mainM2YMarkAuthOk();
   }
 
   static Future<List<dynamic>> queryOidcLoginOptions() async {

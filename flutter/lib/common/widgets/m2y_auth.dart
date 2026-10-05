@@ -62,7 +62,7 @@ class M2yAuth {
       if (name.isEmpty && active) unawaited(_toLogin());
     });
     final token = bind.mainGetLocalOption(key: 'access_token');
-    if (token.isEmpty || bind.mainM2yAuthExpired()) {
+    if (token.isEmpty || bind.mainM2YAuthExpired()) {
       await _toLogin(clearSession: token.isNotEmpty);
     } else {
       // 7 günlük tolerans içinde: hemen aç, sunucuyu arka planda doğrula.
@@ -82,7 +82,7 @@ class M2yAuth {
       if (stage.value != M2yAuthStage.login) await _toLogin();
       return;
     }
-    if (bind.mainM2yAuthExpired()) {
+    if (bind.mainM2YAuthExpired()) {
       debugPrint('M2YDesk: 7 gündür sunucuya ulaşılamadı, oturum kapatılıyor');
       await _toLogin(clearSession: true);
     }
@@ -90,13 +90,13 @@ class M2yAuth {
 
   Future<void> _toLogin({bool clearSession = false}) async {
     stage.value = M2yAuthStage.login;
-    bind.mainM2ySetConnectionGate(closed: true);
+    bind.mainM2YSetConnectionGate(closed: true);
     if (clearSession) await gFFI.userModel.reset(resetOther: true);
   }
 
   /// Kod ya da Google ile oturum açıldıktan sonra.
   Future<void> onLoggedIn() async {
-    bind.mainM2yMarkAuthOk();
+    bind.mainM2YMarkAuthOk();
     await _afterLogin();
   }
 
@@ -121,7 +121,7 @@ class M2yAuth {
       unawaited(_toLogin());
       return;
     }
-    bind.mainM2ySetConnectionGate(closed: false);
+    bind.mainM2YSetConnectionGate(closed: false);
     stage.value = M2yAuthStage.ready;
   }
 

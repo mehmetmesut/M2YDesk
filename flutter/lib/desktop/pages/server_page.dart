@@ -393,7 +393,7 @@ class _M2yConnectionBannerState extends State<_M2yConnectionBanner> {
     super.initState();
     _m2yFrameUsers++;
     if (_m2yFrameUsers == 1) {
-      bind.mainM2ySetFrame(visible: true);
+      bind.mainM2YSetFrame(visible: true);
     }
   }
 
@@ -402,7 +402,7 @@ class _M2yConnectionBannerState extends State<_M2yConnectionBanner> {
     _m2yFrameUsers--;
     if (_m2yFrameUsers <= 0) {
       _m2yFrameUsers = 0;
-      bind.mainM2ySetFrame(visible: false);
+      bind.mainM2YSetFrame(visible: false);
     }
     super.dispose();
   }

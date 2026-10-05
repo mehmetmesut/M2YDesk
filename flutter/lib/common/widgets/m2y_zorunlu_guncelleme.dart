@@ -45,14 +45,14 @@ class M2yZorunluGuncelleme {
     _started = true;
     _refresh();
     platformFFI.registerEventHandler(_kEvent, _kEvent, (_) async => _refresh());
-    bind.mainM2yCheckMandatoryUpdate();
+    bind.mainM2YCheckMandatoryUpdate();
     _timer = Timer.periodic(
-        _checkInterval, (_) => bind.mainM2yCheckMandatoryUpdate());
+        _checkInterval, (_) => bind.mainM2YCheckMandatoryUpdate());
   }
 
   void _refresh() {
     try {
-      final m = jsonDecode(bind.mainM2yMandatoryUpdate());
+      final m = jsonDecode(bind.mainM2YMandatoryUpdate());
       if (m is! Map<String, dynamic>) return;
       current = '${m['mevcut'] ?? ''}';
       minimum = '${m['gerekli'] ?? ''}';
@@ -82,7 +82,7 @@ class M2yZorunluGuncelleme {
     }
     error = '';
     stage.value = M2yUpdateStage.working;
-    final err = await bind.mainM2yMandatoryUpdateNow();
+    final err = await bind.mainM2YMandatoryUpdateNow();
     if (err.isNotEmpty) {
       error = err;
       stage.value = M2yUpdateStage.failed;

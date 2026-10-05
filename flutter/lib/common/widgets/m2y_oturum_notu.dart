@@ -25,7 +25,7 @@ bool m2yOturumNotuGerekli(String tur, int sureSn) =>
 /// kullanıcıyı engellemez; "Atla" ya da "Kaydet" ile biter.
 Future<void> m2yOturumNotuSor(FFI ffi) async {
   try {
-    final raw = bind.sessionM2yInfo(sessionId: ffi.sessionId);
+    final raw = bind.sessionM2YInfo(sessionId: ffi.sessionId);
     if (raw.isEmpty) return;
     final info = jsonDecode(raw);
     if (info is! Map) return;
