@@ -51,7 +51,7 @@ fi
 # data/ (anahtarlar, hbbs ve API veritabanları) + yapılandırma dosyaları (.env*, compose). Sırlar içerir → 600.
 tar -czf "$DOSYA" -C "$PROJE_DIZINI" \
     $(cd "$PROJE_DIZINI" && ls -d data/id_ed25519 data/id_ed25519.pub data/db_v2.sqlite3 data/db_v2.sqlite3-wal \
-        data/db_v2.sqlite3-shm data/api .env .env.smtp .env.izleme .env.github .env.m2yapi docker-compose.yml 2>/dev/null)
+        data/db_v2.sqlite3-shm data/api .env .env.smtp .env.izleme .env.github .env.m2yapi .env.m2yadmin docker-compose.yml 2>/dev/null)
 chmod 600 "$DOSYA"
 bilgi "Yedek oluşturuldu: $DOSYA ($(du -h "$DOSYA" | cut -f1))"
 

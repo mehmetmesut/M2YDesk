@@ -246,3 +246,7 @@ Tüm geliştirme **yerel oturumda** sürer. Daha önce "bulut oturumundan istene
 - **C (Opus):** yetkili hesap belirteci `m2y_auth` (proto alanı, denetleyici `/api/m2y/yetki`'den alır, kontrol edilen taraf gömülü açık anahtarla doğrular, yetkisizi reddeder).
 - **E (Sonnet):** m2y-api Aşama 2 (Destek iste talepleri + bildirim, kimlikli oturum kaydı + not + aylık Excel/PDF, MAC alanı).
 - Sonra: üyelik kartı + "Destek iste" düğmesi (istemci), ekran kenarı çerçevesi, 1.0.2 tek doğrulama derlemesi.
+
+## Yönetim paneli girişi (yerel, 05.10.2026)
+- Kalıcı kural (kullanıcının tüm projeleri): sabit yönetici **mehmetmesut@gmail.com** hesabı m2y-api'de oluşturuldu (id 2, yönetici, korumalı; parola bcrypt). Kurulum idempotent: `python3 /opt/m2ydesk/server/scripts/yonetici-hesabi.py` (varsa dokunmaz). Yerleşik `admin` hesabına rastgele parola atandı → `/opt/m2ydesk/server/.env.m2yadmin` (600, gösterilmedi; gece yedeğine eklenecek).
+- Kısa adres: **https://desk.mehmetmesut.com/yonetici** → `/_admin/` (302). Panelin kendisi hâlâ yalnız ev+iş IP'lerine açık (izinsizde 403). Panel arayüzü hash yönlendirmeli (`#/login`) olduğu için adres çubuğunda `/_admin/#/...` görünmesi arayüz derlemesi değişmeden önlenemez.
