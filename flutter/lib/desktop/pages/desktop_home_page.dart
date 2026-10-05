@@ -9,8 +9,10 @@ import 'package:flutter_hbb/common.dart';
 import 'package:flutter_hbb/common/widgets/animated_rotation_widget.dart';
 import 'package:flutter_hbb/common/widgets/custom_password.dart';
 import 'package:flutter_hbb/common/widgets/m2y_auth.dart';
+import 'package:flutter_hbb/common/widgets/m2y_destek.dart';
 import 'package:flutter_hbb/common/widgets/m2y_fixed_password.dart';
 import 'package:flutter_hbb/common/widgets/m2y_login_gate.dart';
+import 'package:flutter_hbb/common/widgets/m2y_uyelik_karti.dart';
 import 'package:flutter_hbb/consts.dart';
 import 'package:flutter_hbb/desktop/pages/connection_page.dart';
 import 'package:flutter_hbb/desktop/pages/desktop_setting_page.dart';
@@ -98,6 +100,7 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       buildTip(context),
       if (!isOutgoingOnly) buildIDBoard(context),
       if (!isOutgoingOnly) buildPasswordBoard(context),
+      if (!isOutgoingOnly) const M2yDestekButton(),
       if (!isOutgoingOnly) buildWhatsAppShare(context),
       FutureBuilder<Widget>(
         future: Future.value(
@@ -150,7 +153,9 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                     children: children,
                   ),
                 ),
-                Expanded(child: Container())
+                Expanded(child: Container()),
+                // M2YDesk: üyelik kartı yalnız tam sürümde (Hızlı Destek'te yok)
+                if (!isIncomingOnly && !isOutgoingOnly) const M2yUyelikKarti(),
               ],
             ),
             if (isOutgoingOnly)
