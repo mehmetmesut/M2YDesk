@@ -309,3 +309,8 @@ Sunucu komutu kartları (gerçek işlev rustdesk-server kaynağından doğruland
 - #9 (fbbee62): Android ve Windows `cargo build` hatası: `E0616 LoginConfigHandler.id özel` (`flutter_ffi.rs` `session_m2y_info`) ve `E0433 log` (`m2y_frame.rs`). Düzeltme `4132d50`: `lc.read().unwrap().get_id().to_owned()` ve `hbb_common::log::warn!`. #9 iptal edildi.
 - **#10: koşu 37311232770** (tag v1.0.2, Win+Android+Linux, commit 4132d50). Çözümleme hataları başka tür hataları gizlemiş olabilir (E0433 tip denetimini keser) → yeni tur hata verirse günlükten oku (GitHub iş sayfası → "Build rustdesk" adımı → `get_page_text`).
 - Google OAuth: Client ID panelde forma yazıldı, Client Secret kullanıcıda; JSON dosyası Masaüstü'nde duruyor (silinmeli).
+
+### Güncelleme 7 — Google girişi çalışıyor; derleme #10 Dart adlarında düştü, #11 başladı
+- Google OIDC: sağlayıcı kayıtlı (`/api/login-options` → google), `/api/oidc/auth` doğru client_id/redirect/PKCE ile Google URL'si üretiyor. Gerçek oturum denemesi kullanıcıda.
+- #10 (4132d50): **Rust derlemesi geçti** (Android lib 4m41s). Android Dart adımı düştü: `bind.mainM2y…` tanımsız — **frb rakamdan sonraki harfi büyütür** (`session_send2fa`→`sessionSend2Fa`), yani `main_m2y_*` → `mainM2Y*`, `session_m2y_info` → `sessionM2YInfo`. Düzeltme `dd148b5` (tüm `bind.*M2y*` çağrıları). KURAL: yeni Rust FFI adı + rakam içeriyorsa Dart adını buna göre yaz.
+- **#11: koşu 37315821669** (tag v1.0.2, Win+Android+Linux, commit dd148b5).
