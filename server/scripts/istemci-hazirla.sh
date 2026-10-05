@@ -94,9 +94,16 @@ for platform in windows_qs windows windows_install windows_msi macos_apple macos
     fi
     AD="${SATIR%%$'\t'*}"; URL="${SATIR#*$'\t'}"
     bilgi "$platform indiriliyor: $AD"
-    if curl -fL -m 900 --retry 3 -# "${BASLIK[@]}" -H "Accept: application/octet-stream" -o "$INDIR_DIZINI/$AD" "$URL"; then
+    # Dikkat: BASLIK'taki "Accept: vnd.github+json" burada KULLANILMAZ; iki Accept olunca GitHub
+    # dosya yerine JSON meta veri döndürüyordu (05.10.2026 hatası). Yalnızca octet-stream + yetki.
+    INDIR_BASLIK=(-H "Accept: application/octet-stream")
+    [[ -n "${GITHUB_TOKEN:-}" ]] && INDIR_BASLIK+=(-H "Authorization: Bearer $GITHUB_TOKEN")
+    if curl -fL -m 900 --retry 3 -# "${INDIR_BASLIK[@]}" -o "$INDIR_DIZINI/$AD.indiriliyor" "$URL" \
+        && ! head -c 1 "$INDIR_DIZINI/$AD.indiriliyor" | grep -q '{'; then
+        mv -f "$INDIR_DIZINI/$AD.indiriliyor" "$INDIR_DIZINI/$AD"
         SONUC[$platform]="$AD"
     else
+        rm -f "$INDIR_DIZINI/$AD.indiriliyor"
         uyari "$platform indirilemedi."; SONUC[$platform]=""; rm -f "$INDIR_DIZINI/$AD"
     fi
 done

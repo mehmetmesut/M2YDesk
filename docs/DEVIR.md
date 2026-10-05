@@ -250,3 +250,9 @@ Tüm geliştirme **yerel oturumda** sürer. Daha önce "bulut oturumundan istene
 ## Yönetim paneli girişi (yerel, 05.10.2026)
 - Kalıcı kural (kullanıcının tüm projeleri): sabit yönetici **mehmetmesut@gmail.com** hesabı m2y-api'de oluşturuldu (id 2, yönetici, korumalı; parola bcrypt). Kurulum idempotent: `python3 /opt/m2ydesk/server/scripts/yonetici-hesabi.py` (varsa dokunmaz). Yerleşik `admin` hesabına rastgele parola atandı → `/opt/m2ydesk/server/.env.m2yadmin` (600, gösterilmedi; gece yedeğine eklenecek).
 - Kısa adres: **https://desk.mehmetmesut.com/yonetici** → `/_admin/` (302). Panelin kendisi hâlâ yalnız ev+iş IP'lerine açık (izinsizde 403). Panel arayüzü hash yönlendirmeli (`#/login`) olduğu için adres çubuğunda `/_admin/#/...` görünmesi arayüz derlemesi değişmeden önlenemez.
+
+## Y1 — 1.0.1 YAYINDA (yerel, 05.10.2026)
+- GitHub fine-grained belirteç (yalnız M2YDesk, Contents RO, süresiz — kullanıcı tercihi) sunucuda `.env.github` (600). `istemci-hazirla.sh` ile v1.0.1: Windows QS/exe/install/msi + **Linux deb + Android APK** `indir/` altında; `ayar.js` güncel.
+- **Hata bulundu ve düzeltildi:** indirme isteğinde iki `Accept` başlığı (vnd.github+json + octet-stream) gittiği için GitHub dosya yerine 1,8 KB JSON meta veri döndürüyordu → site kısa süre bozuk dosya sundu. Düzeltme: indirmede yalnız octet-stream + yetki; JSON gelirse dosya reddedilir (`.indiriliyor` geçici adı). Yeniden indirildi; 6 dosyanın SHA-256'sı GitHub release ile **birebir** (tarayıcıdan bağımsız doğrulandı).
+- `surum.json` (1.0.1) ve `engel.json` kullanıcının PC'sinde denetlenip `imzala.py` ile imzalandı, `.sig` yüklendi; `dogrula.sh` → hiç ✘ yok.
+- Her yeni sürümde aynı akış: sunucuda `istemci-hazirla.sh` → PC'ye `surum.json` al → GitHub hash'leriyle karşılaştır → imzala → `.sig` yükle.
