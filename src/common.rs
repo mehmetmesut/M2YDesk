@@ -1166,22 +1166,48 @@ pub fn m2y_mandatory_update_required() -> bool {
 }
 
 /// Arayüz için durum: `{zorunlu, mevcut, gerekli, yontem: kurulu|tasinabilir|sayfa, sayfa}`.
+/// Microsoft Store (MSIX) paketinden mi çalışıyoruz? Paketli uygulamalar `WindowsApps` altında,
+/// salt okunur klasörde kurulur; güncellemeyi Store yapar (Store kuralı: kendi kendini güncelleme yok).
+pub fn m2y_is_store() -> bool {
+    #[cfg(windows)]
+    {
+        std::env::current_exe()
+            .map(|p| p.to_string_lossy().to_lowercase().contains(r"\windowsapps\"))
+            .unwrap_or(false)
+    }
+    #[cfg(not(windows))]
+    {
+        false
+    }
+}
+
+/// Store sürümünde güncelleme sayfası: Store'un "İndirilenler ve güncellemeler" ekranı.
+const M2Y_STORE_UPDATES_URL: &str = "ms-windows-store://downloadsandupdates";
+
 pub fn m2y_mandatory_update_info() -> String {
     let min = LocalConfig::get_option(hbb_common::m2y::OPT_MIN_VERSION);
+    let store = m2y_is_store();
     #[cfg(windows)]
-    let yontem = if m2y_update_file_key() == "windows_install" {
+    let yontem = if store {
+        "sayfa"
+    } else if m2y_update_file_key() == "windows_install" {
         "kurulu"
     } else {
         "tasinabilir"
     };
     #[cfg(not(windows))]
     let yontem = "sayfa";
+    let sayfa = if store {
+        M2Y_STORE_UPDATES_URL.to_owned()
+    } else {
+        format!("https://{}/", hbb_common::m2y_update_host())
+    };
     json!({
         "zorunlu": hbb_common::m2y::update_required(crate::VERSION, &min),
         "mevcut": crate::VERSION,
         "gerekli": min.trim().trim_start_matches(|c: char| c == 'v' || c == 'V'),
         "yontem": yontem,
-        "sayfa": format!("https://{}/", hbb_common::m2y_update_host()),
+        "sayfa": sayfa,
     })
     .to_string()
 }
@@ -1192,6 +1218,9 @@ pub fn m2y_mandatory_update_info() -> String {
 /// ardından kapanmalıdır (yardımcı eskisinin üzerine kopyalayıp yeniden başlatır).
 #[cfg(windows)]
 pub fn m2y_mandatory_update_now() -> ResultType<()> {
+    if m2y_is_store() {
+        bail!("Microsoft Store sürümü yalnızca Store üzerinden güncellenir");
+    }
     if M2Y_UPDATE_FILE.lock().unwrap().is_none() {
         allow_err!(do_check_software_update());
     }
@@ -1260,6 +1289,9 @@ fn m2y_replace_helper_path(exe: &std::path::Path) -> ResultType<std::path::PathB
 /// Önceki taşınabilir güncellemeden kalan `<ad>-yeni.exe` yardımcısını siler (yoksa bir şey yapmaz).
 #[cfg(windows)]
 pub fn m2y_cleanup_replace_helper() {
+    if m2y_is_store() {
+        return;
+    }
     let Ok(exe) = std::env::current_exe() else {
         return;
     };
