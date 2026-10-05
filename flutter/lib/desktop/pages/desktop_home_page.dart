@@ -8,6 +8,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hbb/common.dart';
 import 'package:flutter_hbb/common/widgets/animated_rotation_widget.dart';
 import 'package:flutter_hbb/common/widgets/custom_password.dart';
+import 'package:flutter_hbb/common/widgets/m2y_auth.dart';
+import 'package:flutter_hbb/common/widgets/m2y_fixed_password.dart';
+import 'package:flutter_hbb/common/widgets/m2y_login_gate.dart';
 import 'package:flutter_hbb/consts.dart';
 import 'package:flutter_hbb/desktop/pages/connection_page.dart';
 import 'package:flutter_hbb/desktop/pages/desktop_setting_page.dart';
@@ -59,15 +62,18 @@ class _DesktopHomePageState extends State<DesktopHomePage>
   Widget build(BuildContext context) {
     super.build(context);
     final isIncomingOnly = bind.isIncomingOnly();
-    return _buildBlock(
-        child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        buildLeftPane(context),
-        if (!isIncomingOnly) const VerticalDivider(width: 1),
-        if (!isIncomingOnly) Expanded(child: buildRightPane(context)),
-      ],
-    ));
+    // M2YDesk: oturum açılmadan ana içerik (ID/parola) gösterilmez.
+    return Obx(() => !M2yAuth.instance.isReady
+        ? const M2yAuthGate()
+        : _buildBlock(
+            child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            buildLeftPane(context),
+            if (!isIncomingOnly) const VerticalDivider(width: 1),
+            if (!isIncomingOnly) Expanded(child: buildRightPane(context)),
+          ],
+        )));
   }
 
   Widget _buildBlock({required Widget child}) {
@@ -223,7 +229,9 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                                   ?.withOpacity(0.5)),
                         ).marginOnly(top: 5),
                         // M2YDesk Hızlı Destek: yalnızca gelen bağlantı modunda ayar menüsü (⋮) gizlenir
-                        if (!bind.isIncomingOnly()) buildPopupMenu(context)
+                        if (!bind.isIncomingOnly()) buildPopupMenu(context),
+                        // M2YDesk: Hızlı Destek'te sabit parola / sürekli erişim menüsü
+                        if (bind.isIncomingOnly()) const M2yQuickSupportMenu()
                       ],
                     ),
                   ),
@@ -756,6 +764,8 @@ class _DesktopHomePageState extends State<DesktopHomePage>
   @override
   void initState() {
     super.initState();
+    // M2YDesk: zorunlu oturum denetimi (oturum yoksa bağlantı kapısı kapanır).
+    M2yAuth.instance.start();
     // M2YDesk: cihaz bilgisi paylaşımı için açık onay (KVKK); onay yoksa hiçbir bilgi gönderilmez.
     Future.delayed(const Duration(seconds: 2), _m2yAskDeviceReportConsent);
     _updateTimer = periodic_immediate(const Duration(seconds: 1), () async {

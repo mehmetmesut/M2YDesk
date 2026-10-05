@@ -90,6 +90,8 @@ class ButtonOP extends StatelessWidget {
   final Color primaryColor;
   final double height;
   final Function() onTap;
+  // M2YDesk: isteğe bağlı sabit düğme metni (ör. "Google ile giriş yap").
+  final String? label;
 
   const ButtonOP({
     Key? key,
@@ -99,12 +101,14 @@ class ButtonOP extends StatelessWidget {
     required this.primaryColor,
     required this.height,
     required this.onTap,
+    this.label,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final branding = _oidcProviderBranding(op);
-    final buttonLabel = translate("Continue with {${branding.label}}");
+    final buttonLabel =
+        label ?? translate("Continue with {${branding.label}}");
     return Row(children: [
       Container(
         height: height,
@@ -149,11 +153,14 @@ class WidgetOP extends StatefulWidget {
   final ConfigOP config;
   final RxString curOP;
   final Function(Map<String, dynamic>) cbLogin;
+  // M2YDesk: isteğe bağlı sabit düğme metni.
+  final String? label;
   const WidgetOP({
     Key? key,
     required this.config,
     required this.curOP,
     required this.cbLogin,
+    this.label,
   }) : super(key: key);
 
   @override
@@ -235,6 +242,7 @@ class _WidgetOPState extends State<WidgetOP> {
           icon: widget.config.icon,
           primaryColor: str2color(widget.config.op, 0x7f),
           height: 36,
+          label: widget.label,
           onTap: () async {
             _resetState();
             widget.curOP.value = widget.config.op;

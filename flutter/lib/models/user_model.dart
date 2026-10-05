@@ -90,6 +90,8 @@ class UserModel {
 
       final user = UserPayload.fromJson(data);
       _parseAndUpdateUser(user);
+      // M2YDesk: başarılı sunucu doğrulaması 7 günlük süreyi sıfırlar.
+      bind.mainM2yMarkAuthOk();
     } catch (e) {
       debugPrint('Failed to refreshCurrentUser: $e');
     } finally {
@@ -217,6 +219,116 @@ class UserModel {
     }
 
     return loginResponse;
+  }
+
+  // ---- M2YDesk: e-posta + kod ile zorunlu oturum ----
+  static const _m2yTimeout = Duration(seconds: 15);
+
+  /// Oturumu sunucuda (`/api/currentUser`) doğrular; `disable-account` (Hızlı
+  /// Destek) durumunda da çalışır. 200 = geçerli (7 gün sıfırlanır), 401 =
+  /// reddedildi (oturum kapatıldı), 0 = sunucuya ulaşılamadı, diğer = belirsiz.
+  Future<int> m2yVerifySession() async {
+    final token = bind.mainGetLocalOption(key: 'access_token');
+    if (token.isEmpty) return 401;
+    _updateLocalUserInfo();
+    final http.Response resp;
+    try {
+      final url = await bind.mainGetApiServer();
+      resp = await http
+          .post(Uri.parse('$url/api/currentUser'),
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer $token'
+              },
+              body: json.encode({
+                'id': await bind.mainGetMyId(),
+                'uuid': await bind.mainGetUuid()
+              }))
+          .timeout(_m2yTimeout);
+    } catch (e) {
+      debugPrint('M2YDesk: oturum doğrulanamadı: $e');
+      return 0;
+    }
+    if (resp.statusCode == 401) {
+      await reset(resetOther: true);
+      return 401;
+    }
+    if (resp.statusCode != 200) return resp.statusCode;
+    try {
+      final data = json.decode(decode_http_response(resp));
+      if (data is! Map<String, dynamic> || data['error'] != null) return -1;
+      _parseAndUpdateUser(UserPayload.fromJson(data));
+    } catch (e) {
+      debugPrint('M2YDesk: currentUser yanıtı çözülemedi: $e');
+      return -1;
+    }
+    bind.mainM2yMarkAuthOk();
+    return 200;
+  }
+
+  Future<http.Response> _m2yPost(String path, Map<String, dynamic> body) async {
+    final url = await bind.mainGetApiServer();
+    return await http
+        .post(Uri.parse('$url$path'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(body))
+        .timeout(_m2yTimeout);
+  }
+
+  static String _m2yServerError(http.Response resp) {
+    try {
+      final body = jsonDecode(decode_http_response(resp));
+      if (body is Map && body['error'] != null) return body['error'].toString();
+    } catch (_) {
+      // Gövde JSON değil; çağıran HTTP koduna göre ileti seçer.
+    }
+    return '';
+  }
+
+  /// `POST /api/m2y/kod-gonder`. throw [RequestException] (0 = ağ hatası).
+  Future<void> m2ySendCode(String email) async {
+    final http.Response resp;
+    try {
+      resp = await _m2yPost('/api/m2y/kod-gonder', {'email': email});
+    } catch (e) {
+      throw RequestException(0, '');
+    }
+    if (resp.statusCode != 200) {
+      throw RequestException(resp.statusCode, _m2yServerError(resp));
+    }
+  }
+
+  /// `POST /api/m2y/kod-dogrula`; başarıda `access_token` + `user_info`
+  /// yerel yapılandırmaya yazılır. throw [RequestException] (0 = ağ hatası).
+  Future<void> m2yVerifyCode(String email, String code) async {
+    final http.Response resp;
+    try {
+      resp = await _m2yPost('/api/m2y/kod-dogrula', {
+        'email': email,
+        'kod': code,
+        'id': await bind.mainGetMyId(),
+        'uuid': await bind.mainGetUuid(),
+        'deviceInfo': jsonDecode(bind.mainGetLoginDeviceInfo()),
+      });
+    } catch (e) {
+      throw RequestException(0, '');
+    }
+    if (resp.statusCode != 200) {
+      throw RequestException(resp.statusCode, _m2yServerError(resp));
+    }
+    final LoginResponse loginResponse;
+    try {
+      loginResponse =
+          getLoginResponseFromAuthBody(jsonDecode(decode_http_response(resp)));
+    } catch (e) {
+      throw RequestException(-1, '');
+    }
+    final token = loginResponse.access_token;
+    if (loginResponse.type != HttpType.kAuthResTypeToken || token == null) {
+      throw RequestException(-1, '');
+    }
+    await bind.mainSetLocalOption(key: 'access_token', value: token);
+    bind.mainM2yMarkAuthOk();
   }
 
   static Future<List<dynamic>> queryOidcLoginOptions() async {

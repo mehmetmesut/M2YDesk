@@ -36,3 +36,28 @@
 4. **KVKK:** e-posta kişisel veridir; aydınlatma metni + açık rıza; saklama süresi ve silme talebi panelde.
 5. Kaynak açık olduğundan değiştirilmiş istemci giriş ekranını atlayabilir; asıl zorlama sunucuda olmalı (ör. hbbs/relay'de token doğrulaması — ileri aşama). Şimdilik istemci tarafı zorlama + API'de cihaz kaydı.
 6. Bağımlılık: hesap API'si (Y2) ve SMTP kurulmadan bu sürüm **dağıtılmaz**; aksi hâlde kimse programı kullanamaz.
+
+## Uygulama (istemci, 05.10.2026 — derlenmedi)
+
+**Dosyalar:** `flutter/lib/common/widgets/m2y_auth.dart` (durum denetleyicisi), `m2y_login_gate.dart` (giriş ekranları), `m2y_fixed_password.dart` (sabit parola formu + Hızlı Destek menüsü), `flutter/lib/models/user_model.dart` (`m2ySendCode`, `m2yVerifyCode`, `m2yVerifySession`), `login.dart` (OIDC düğmesine isteğe bağlı metin), `desktop_home_page.dart` (bağlantı: `M2yAuth.instance.start()`, `Obx` ile kapı, ID satırında Hızlı Destek menüsü), `src/ui_interface.rs` + `src/flutter_ffi.rs` (yeni bağlar: `main_m2y_auth_expired`, `main_m2y_mark_auth_ok`, `main_m2y_set_connection_gate`), `libs/hbb_common/src/m2y.rs` (saf yardımcılar + birim testleri), `res/m2y/m2ydesk-qs.json`.
+
+**Akış:** Ana sayfa açılışında `M2yAuth.start()`:
+- `access_token` yoksa ya da `m2y-last-auth-ok` 7 günden eskiyse (veya hiç yoksa) → giriş ekranı, bağlantı kapısı kapanır.
+- Token var ve süre içinde → hemen açılır (çevrimdışı tolerans), `/api/currentUser` arka planda doğrulanır; 200 → `m2y-last-auth-ok` = şimdi; 401 → oturum silinir, giriş ekranı; ağ hatası → süre dolmuşsa giriş ekranı. Doğrulama 30 dakikada bir tekrarlanır. Mevcut `refreshCurrentUser` başarısı da süreyi sıfırlar.
+- Ekran 1: e-posta (hatırlanan `m2y-last-email` dolu gelir; "Başka e-posta kullan", "Bu cihazdan e-postamı unut"), "KVKK aydınlatma metni" bağlantısı (`https://desk.mehmetmesut.com/#kvkk`), açık rıza kutusu (hatırlanan e-posta varsa işaretli gelir), "Doğrulama kodu gönder"; altında sunucunun OIDC seçenekleri ("Google ile giriş yap", mevcut `/api/oidc/auth` akışı, her iki programda). E-posta kırpılır + küçük harfe çevrilir.
+- Ekran 2: 6 haneli kod (6 rakam girilince kendiliğinden gönderilir), "Kodu yeniden gönder" (60 sn geri sayım), "E-postayı değiştir" (solda) / "Doğrula" (sağda), spam notu. Başarıda `access_token` + `user_info` yerel yapılandırmaya yazılır, e-posta `m2y-last-email`'e kaydedilir.
+- Ekran 3 (yalnızca `permanent-password-set` false ise, atlanamaz): 6 rakam × 2, `^[0-9]{6}$`; geçersiz girdi silinmez, hata gösterilir; `main_set_permanent_password_with_result`. Hızlı Destek'te "Sürekli erişime izin ver" (varsayılan açık) + bilgilendirme metni.
+- Hazır → kapı açılır, ana içerik gösterilir. Çıkış (ayarlar ya da Hızlı Destek menüsü) veya 401 → `userName` boşalır → giriş ekranı.
+- Hızlı Destek ID satırında ⋮ menüsü: "Sabit parolayı değiştir", "Sürekli erişimi kapat/aç", "Oturumu kapat". Sürekli erişim açık = `verification-method=use-both-passwords` + `m2y-autostart` boş; kapalı = `use-temporary-password` + `m2y-autostart=N`. Bu yüzden `verification-method` QS yapılandırmasında `override-settings`'ten `default-settings`'e taşındı (değer `use-both-passwords`; Rust `use-both` diye bir değer tanımaz, temp/kalıcı dışındaki her değer "ikisi" sayılır).
+
+**Bağlantı reddi yöntemi — `stop-service` kapısı:** Oturum yokken `ui_interface::m2y_set_connection_gate(true)` mevcut `stop-service=Y` seçeneğini IPC ile yazar. Rendezvous arabulucusu bu seçenekte sunucuya kayıt olmaz (ID çevrimdışı görünür, delik açma/relay isteği gelmez) ve doğrudan IP dinleyicisi (21118) kapanır; seçenek değişince arabulucu kendiliğinden yeniden başlar (`ipc::CheckIfRestart`). Gerekçe: `src/server/**`'a dokunmadan, hazır ve sınanmış bir yolla gelen bağlantının hiç ulaşmaması (bağlantıyı kabul edip reddetmekten daha güvenli; parola denemesi bile yapılamaz). `set_option("stop-service")` kurulu sürümde hizmeti kaldırıp yönetici izni istediği için kullanılmadı; seçenek doğrudan `OPTIONS` + `ipc::set_options` ile yazılır, Windows hizmeti çalışmayı sürdürür. Kullanıcının bilinçli "hizmeti durdur" seçimi korunur: kapıyı bu akış kapattıysa `m2y-gate-stopped=Y` işareti konur, oturum açılınca yalnızca o durumda açılır (`m2y::gate_transition`).
+
+**Bilinen sınırlar / doğrulanmamış varsayımlar:**
+- Derlenmedi, çalıştırılmadı; Rust birim testleri (`m2y.rs`: `auth_expiry_window`, `email_and_password_rules`, `gate_transitions`) çalıştırılamadı.
+- 7 gün denetimi yalnızca ana pencere (Flutter) açıkken yapılır; yalnızca hizmet/tepsi çalışan kurulu M2YDesk'te pencere açılmadan kapı kapanmaz.
+- Uygulama açılışında oturum yoksa kapı kapanana kadar (ilk birkaç yüz ms) arabulucu kayıt olabilir; bir kez kapandıktan sonra `stop-service` yapılandırmada kalıcıdır.
+- `stop-service=Y` iken kurulu sürümde açılıştaki sessiz hizmet başlatma (`m2y_try_start_service_on_launch`) atlanır; hizmet o anda çalışmıyorsa oturum açıldıktan sonra "Servisi başlat" gerekebilir. Tepsideki "Hizmeti başlat" kapıyı elle açabilir (istemci tarafı zorlama; asıl zorlama sunucuda olmalı).
+- Sunucu belirteç ömrü `RUSTDESK_API_APP_TOKEN_EXPIRE` (varsayılan 168 sa) mutlaksa ve `/api/currentUser` yenilemiyorsa düzenli çevrimiçi cihaz da 7 günde bir 401 alıp yeniden giriş ister.
+- `/api/currentUser` 400 dönerse oturum kapatılmaz (yalnızca 401); mevcut `refreshCurrentUser` (tam sürüm) 400'de de çıkış yapar.
+- `web/bridge.dart` yeni bağları içermez; web derlemesi yapılırsa `user_model.dart` derlenmez (CI web derlemiyor).
+- Cihaz bilgisi onay iletişim kutusu (2 sn) giriş ekranının üstünde açılabilir.
