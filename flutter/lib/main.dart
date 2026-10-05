@@ -559,12 +559,12 @@ Widget _keepScaleBuilder(BuildContext context, Widget? child) {
   );
 }
 
-/// M2YDesk: yazı boyutu pencereye oranlanır. Calibri aynı punto değerinde Segoe UI'dan küçük
-/// göründüğü için geniş pencerelerde hafif büyütülür; Hızlı Destek gibi dar pencerelerde
-/// içerik taşmasın diye hafif küçültülür. Ara genişliklerde doğrusal geçiş yapılır.
+/// M2YDesk: yazı boyutu pencereye oranlanır. RustDesk'in punto değerleri bu arayüz için iri
+/// kaldığından (kullanıcı geri bildirimi: ~%30 büyük) genel ölçek 1'in altındadır; Hızlı Destek
+/// gibi dar pencerelerde biraz daha küçülür. Ara genişliklerde doğrusal geçiş yapılır.
 double m2yTextScale(double width) {
-  const narrow = 360.0, wide = 640.0;
-  const minScale = 0.94, maxScale = 1.06;
+  const narrow = 360.0, wide = 1000.0;
+  const minScale = 0.80, maxScale = 0.88;
   if (width <= narrow) return minScale;
   if (width >= wide) return maxScale;
   return minScale + (maxScale - minScale) * (width - narrow) / (wide - narrow);

@@ -10,6 +10,7 @@ import 'package:flutter_hbb/common.dart';
 import 'package:flutter_hbb/common/hbbs/hbbs.dart';
 import 'package:flutter_hbb/common/widgets/login.dart';
 import 'package:flutter_hbb/common/widgets/m2y_auth.dart';
+import 'package:flutter_hbb/common/widgets/m2y_destek.dart';
 import 'package:flutter_hbb/common/widgets/m2y_fixed_password.dart';
 import 'package:flutter_hbb/models/platform_model.dart';
 import 'package:flutter_hbb/models/user_model.dart';
@@ -70,60 +71,74 @@ class _M2yAuthGateState extends State<M2yAuthGate> {
           );
       }
     });
+    final theme = Theme.of(context);
+    // Tam sürümde ortalanmış, çerçeveli kutu; Hızlı Destek'te pencereyi dolduran sade içerik.
     final framed = Container(
       key: _contentKey,
-      width: _qs ? _kQuickSupportWidth : null,
-      padding: const EdgeInsets.all(16),
+      width: _qs ? _kQuickSupportWidth : _kFullWidth,
+      padding: _qs ? const EdgeInsets.all(16) : const EdgeInsets.all(28),
+      decoration: _qs
+          ? null
+          : BoxDecoration(
+              color: theme.cardColor,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: theme.dividerColor),
+            ),
       child: content,
     );
     final page = Container(
-      color: Theme.of(context).colorScheme.background,
+      color: theme.colorScheme.background,
       alignment: _qs ? Alignment.topLeft : Alignment.center,
       child: SingleChildScrollView(
-        child: _qs
-            ? framed
-            : ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: _kFullWidth),
-                child: framed,
-              ),
+        padding: _qs ? EdgeInsets.zero : const EdgeInsets.all(24),
+        child: framed,
       ),
     );
     return _qs ? m2yCompact(context, page) : page;
   }
 }
 
-/// Hızlı Destek'in dar penceresi için sıkı görünüm: küçük yazı, yoğun giriş alanları ve düğmeler.
+/// Hızlı Destek'in dar penceresi için sıkı görünüm: küçük başlık, ikon, giriş alanı ve düğmeler.
 Widget m2yCompact(BuildContext context, Widget child) {
   // Yazı ölçeği pencere genişliğine göre genel olarak ayarlanır (main.dart m2yTextScale);
-  // burada yalnız yoğunluk: sıkı giriş alanları ve düğmeler, biraz küçük başlıklar.
-  final t = Theme.of(context);
-  return Theme(
-    data: t.copyWith(
-      visualDensity: VisualDensity.compact,
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      inputDecorationTheme: t.inputDecorationTheme.copyWith(
-        isDense: true,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
-      ),
-      textTheme: t.textTheme.copyWith(
-        titleLarge: t.textTheme.titleLarge?.copyWith(fontSize: 18),
-        titleMedium: t.textTheme.titleMedium?.copyWith(fontSize: 15),
-      ),
-    ),
-    child: child,
+  // ikon/düğme/alan yoğunluğu m2yCompactDialog ile aynıdır.
+  return m2yCompactDialog(
+    context,
+    Builder(builder: (context) {
+      final t = Theme.of(context);
+      return Theme(
+        data: t.copyWith(
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          textTheme: t.textTheme.copyWith(
+            titleLarge: t.textTheme.titleLarge?.copyWith(fontSize: 17),
+            titleMedium: t.textTheme.titleMedium?.copyWith(fontSize: 14),
+          ),
+        ),
+        child: child,
+      );
+    }),
   );
 }
 
 Widget _section(
     BuildContext context, String title, String subtitle, Widget child) {
+  // Tam sürümde başlık ve açıklama ortalanır (kutu simetrik görünür).
+  final align =
+      M2yAuth.instance.isQuickSupport ? TextAlign.start : TextAlign.center;
   return Column(
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      Text(title, style: Theme.of(context).textTheme.titleLarge),
+      Text(title,
+          textAlign: align,
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge
+              ?.copyWith(fontWeight: FontWeight.w600)),
       const SizedBox(height: 6),
-      Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
-      const SizedBox(height: 12),
+      Text(subtitle,
+          textAlign: align, style: Theme.of(context).textTheme.bodySmall),
+      const SizedBox(height: 16),
       child,
     ],
   );
@@ -393,20 +408,22 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
           const SizedBox(height: 8),
           if (_busy) const LinearProgressIndicator(),
           const SizedBox(height: 4),
-          Align(
-            alignment: Alignment.centerRight,
-            child: ElevatedButton(
-              onPressed: _busy ? null : _sendCode,
-              child: const Text('Doğrulama kodu gönder'),
-            ),
+          ElevatedButton(
+            onPressed: _busy ? null : _sendCode,
+            child: const Text('Doğrulama kodu gönder'),
           ),
           Obx(() => _oidcOptions.isEmpty
               ? const Offstage()
               : Column(
                   mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const SizedBox(height: 12),
-                    const Text('veya'),
+                    Row(children: [
+                      const Expanded(child: Divider()),
+                      Text('veya', style: small).marginSymmetric(horizontal: 8),
+                      const Expanded(child: Divider()),
+                    ]),
                     const SizedBox(height: 8),
                     ..._oidcOptions.map((e) {
                       final op = (e['name'] ?? '').toString();
