@@ -2486,7 +2486,7 @@ pub fn main_m2y_mandatory_update_now() -> String {
 pub fn session_m2y_info(session_id: SessionID) -> SyncReturn<String> {
     let res = match sessions::get_session_by_session_id(&session_id) {
         Some(session) => {
-            let peer_id = session.lc.read().unwrap().id.clone();
+            let peer_id = session.lc.read().unwrap().get_id().to_owned();
             crate::client::m2y_oturum_bilgi(&peer_id)
         }
         None => String::new(),
