@@ -83,6 +83,8 @@ pub struct Remote<T: InvokeUiSession> {
     chroma: Arc<RwLock<Option<Chroma>>>,
     last_record_state: bool,
     sent_close_reason: bool,
+    // M2YDesk: oturum kaydı uuid'si (kayıt başlatıldıysa).
+    m2y_uuid: Option<String>,
 }
 
 #[derive(Default)]
@@ -132,6 +134,7 @@ impl<T: InvokeUiSession> Remote<T> {
             chroma: Default::default(),
             last_record_state: false,
             sent_close_reason: false,
+            m2y_uuid: None,
         }
     }
 
@@ -393,6 +396,10 @@ impl<T: InvokeUiSession> Remote<T> {
             }
         }
         self.handle_disconnected(round);
+        // M2YDesk: oturum kaydı bitişi (her kapanış yolu buradan geçer).
+        if let Some(uuid) = self.m2y_uuid.take() {
+            client::m2y_oturum_bitir(&uuid).await;
+        }
     }
 
     fn handle_disconnected(&self, round: u32) {
@@ -1418,6 +1425,12 @@ impl<T: InvokeUiSession> Remote<T> {
                             }
                         }
                         self.handler.handle_peer_info(pi);
+                        // M2YDesk: oturum gerçekten kuruldu (giriş başarılı, peer info alındı).
+                        if self.m2y_uuid.is_none() {
+                            let conn_type = self.handler.lc.read().unwrap().conn_type;
+                            self.m2y_uuid =
+                                client::m2y_oturum_baslat(&self.handler.get_id(), conn_type);
+                        }
                         #[cfg(all(target_os = "windows", not(feature = "flutter")))]
                         self.check_clipboard_file_context();
                         if self.handler.is_default() {

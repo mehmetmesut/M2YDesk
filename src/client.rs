@@ -3709,6 +3709,115 @@ async fn m2y_fetch_auth(target: &str) -> String {
     }
 }
 
+/// M2YDesk: denetleyen tarafta açık oturum kaydı (anahtar: oturum uuid'si).
+/// Flutter'daki bitiş notu penceresi uuid ve süreyi buradan okur.
+struct M2yOturum {
+    peer_id: String,
+    hedef: String,
+    tur: &'static str,
+    started: Instant,
+}
+
+lazy_static::lazy_static! {
+    static ref M2Y_OTURUMLAR: Mutex<HashMap<String, M2yOturum>> = Default::default();
+}
+
+/// M2YDesk: oturum uçlarına Bearer'lı POST (doğrulanan TLS, 5 sn zaman aşımı).
+/// Hatalar yalnızca günlüğe düşer; yetkisiz hesap (403) ve ağ yokluğu sessizce geçilir, tekrar denenmez.
+async fn m2y_api_post(path: &str, body: String) {
+    let access_token = LocalConfig::get_option("access_token");
+    if access_token.is_empty() {
+        return;
+    }
+    let api = crate::get_api_server(
+        Config::get_option("api-server"),
+        Config::get_option("custom-rendezvous-server"),
+    );
+    if api.is_empty() {
+        return;
+    }
+    let url = format!("{api}{path}");
+    let send = async {
+        for tls in [hbb_common::tls::TlsType::Rustls, hbb_common::tls::TlsType::NativeTls] {
+            let resp = crate::hbbs_http::create_http_client_async(tls, false)
+                .post(&url)
+                .header("Authorization", format!("Bearer {access_token}"))
+                .header("Content-Type", "application/json")
+                .body(body.clone())
+                .send()
+                .await;
+            match resp {
+                Ok(resp) => {
+                    let status = resp.status();
+                    if status.as_u16() == 403 {
+                        log::debug!("M2YDesk: oturum kaydı için yetki yok");
+                    } else if !status.is_success() {
+                        log::warn!("M2YDesk: oturum kaydı gönderilemedi: HTTP {}", status);
+                    }
+                    return;
+                }
+                Err(e) => log::warn!("M2YDesk: oturum sunucusuna ulaşılamadı ({:?}): {}", tls, e),
+            }
+        }
+    };
+    if hbb_common::tokio::time::timeout(Duration::from_secs(5), send)
+        .await
+        .is_err()
+    {
+        log::warn!("M2YDesk: oturum kaydı isteği zaman aşımına uğradı");
+    }
+}
+
+/// M2YDesk: uzak oturum kurulunca çağrılır; `baslangic` olayını arka planda gönderir ve oturum
+/// uuid'sini döndürür. Oturum açık değilse ya da kimlik/tür API kuralına uymuyorsa `None`.
+pub fn m2y_oturum_baslat(peer_id: &str, conn_type: ConnType) -> Option<String> {
+    if LocalConfig::get_option("access_token").is_empty() {
+        return None;
+    }
+    let tur = hbb_common::m2y::oturum_tur(conn_type)?;
+    let hedef = hbb_common::m2y::oturum_hedef_id(peer_id)?;
+    let uuid = Uuid::new_v4().to_string();
+    let body = hbb_common::m2y::oturum_govde("baslangic", &uuid, &hedef, tur);
+    M2Y_OTURUMLAR.lock().unwrap().insert(
+        uuid.clone(),
+        M2yOturum {
+            peer_id: peer_id.to_owned(),
+            hedef,
+            tur,
+            started: Instant::now(),
+        },
+    );
+    tokio::spawn(async move { m2y_api_post("/api/m2y/oturum", body).await });
+    Some(uuid)
+}
+
+/// M2YDesk: oturum kapanırken (her kapanış yolu) `bitis` olayını gönderir.
+pub async fn m2y_oturum_bitir(uuid: &str) {
+    let kayit = M2Y_OTURUMLAR.lock().unwrap().remove(uuid);
+    if let Some(k) = kayit {
+        let body = hbb_common::m2y::oturum_govde("bitis", uuid, &k.hedef, k.tur);
+        m2y_api_post("/api/m2y/oturum", body).await;
+    }
+}
+
+/// M2YDesk: `peer_id` için en yeni açık oturumun `{"uuid","tur","sure_sn"}` JSON'u (yoksa boş).
+#[cfg(feature = "flutter")]
+pub fn m2y_oturum_bilgi(peer_id: &str) -> String {
+    let map = M2Y_OTURUMLAR.lock().unwrap();
+    map.iter()
+        .filter(|(_, k)| k.peer_id == peer_id)
+        .max_by_key(|(_, k)| k.started)
+        .map(|(uuid, k)| {
+            serde_json::json!({
+                "uuid": uuid,
+                "tur": k.tur,
+                "sure_sn": k.started.elapsed().as_secs(),
+            })
+            .to_string()
+        })
+        .unwrap_or_default()
+}
+
 /// Handle login request made from ui.
 ///
 /// # Arguments
