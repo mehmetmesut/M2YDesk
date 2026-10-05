@@ -49,7 +49,7 @@ if [[ ! -f "$ENVF" ]]; then
         echo "M2Y_KOD_SIRRI=$(openssl rand -hex 32)"
         echo "RUSTDESK_API_JWT_KEY=$(openssl rand -hex 32)"
         echo "M2Y_YETKI_ANAHTARI=$YETKI"
-        echo "M2Y_SMTP_HOST=host.docker.internal"
+        echo "M2Y_SMTP_HOST=127.0.0.1"
         echo "M2Y_SMTP_PORT=587"
         echo "M2Y_SMTP_USER=$(oku SMTP_USER)"
         echo "M2Y_SMTP_PASS=$(oku SMTP_PASS)"
