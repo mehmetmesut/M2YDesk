@@ -49,3 +49,11 @@ Açık anahtarlar derleme zamanında `M2Y_UPDATE_PUBKEYS` ortam değişkeninden 
 1. 1.0.0 kurulu; sunucuda `M2Y_SURUM=v1.0.1 … istemci-hazirla.sh` (release 1.0.1 yayımlanmış olmalı).
 2. Bağlantı yokken ≤30 sn sonra güncelleme başlamalı; günlükte `New version available: 1.0.1`.
 3. `surum.json` içinde sha256'yı bozup tekrar dene: `SHA-256 mismatch` günlüğü ve güncelleme yapılmamalı.
+
+## Zorunlu güncelleme (karar 05.10.2026, kodlanacak)
+- `surum.json`'a `"asgari_surum": "x.y.z"` alanı eklenir (imzalı dosyanın içinde → sahtelenemez). `istemci-hazirla.sh`: `M2Y_ASGARI_SURUM` ortam değişkeni (varsayılan: yayınlanan sürüm = herkes en son sürüme geçmek zorunda).
+- İstemci (iki program) açılışta ve 30 dk'da bir `surum.json`'ı imza doğrulamasıyla okur; kendi sürümü `asgari_surum`'dan küçükse **engelleyici pencere**: "Yeni sürüm yayında — devam etmek için güncellemeniz gerekiyor" + "Şimdi güncelle". Bu sırada gelen/giden bağlantı yapılmaz (oturum kapısı gibi `stop-service`), pencere kapatılamaz (yalnızca programdan çıkış).
+  - Kurulu Windows (exe/MSI): mevcut SHA-256 doğrulamalı sessiz güncelleme hemen başlatılır, ilerleme gösterilir.
+  - Hızlı Destek / taşınabilir: yeni exe indirilir, SHA-256 doğrulanır, eski dosyanın yanına `-yeni` olarak konur, program kendini yeniden başlatıp eskisini değiştirir; olmazsa indirme sayfası açılır.
+  - macOS/Linux/Android: indirme sayfası bağlantısı.
+- Sunucu tarafı ek zorlama: `/api/m2y/yetki` istekte istemci sürümünü alır, `M2Y_ASGARI_SURUM`'dan eskiyse belirteç vermez (eski denetleyici bağlanamaz). Ağ yoksa son başarılı `surum.json` kullanılır.
