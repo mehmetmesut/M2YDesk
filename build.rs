@@ -101,4 +101,9 @@ fn main() {
     if std::env::var("M2Y_UPDATE_PUBKEYS").map_or(true, |v| v.trim().is_empty()) {
         println!("cargo:warning=M2Y_UPDATE_PUBKEYS boş: surum.json/engel.json imzası doğrulanamaz; güncelleme yapılmaz, engel listesi uygulanmaz");
     }
+    // Yetkili hesap belirteci açık anahtarları (hbb_common::m2y::auth_pubkeys, option_env!)
+    println!("cargo:rerun-if-env-changed=M2Y_AUTH_PUBKEYS");
+    if std::env::var("M2Y_AUTH_PUBKEYS").map_or(true, |v| v.trim().is_empty()) {
+        println!("cargo:warning=M2Y_AUTH_PUBKEYS boş: m2y-require-auth açıksa tüm gelen bağlantılar reddedilir");
+    }
 }

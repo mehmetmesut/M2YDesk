@@ -3413,6 +3413,10 @@ pub fn handle_login_error(
         }
         interface.msgbox("input-2fa", err, "", "");
         true
+    } else if err == hbb_common::m2y::AUTH_REJECTED {
+        // M2YDesk: karşı taraf yetki belirtecini reddetti (yok, süresi dolmuş ya da yetkisiz hesap).
+        interface.msgbox("error", err, hbb_common::m2y::AUTH_REJECTED_LOCAL, "");
+        false
     } else if LOGIN_ERROR_MAP.contains_key(err) {
         if let Some(msgbox_info) = LOGIN_ERROR_MAP.get(err) {
             interface.msgbox(
@@ -3634,11 +3638,75 @@ async fn send_login(
     password: Vec<u8>,
     peer: &mut Stream,
 ) {
-    let msg_out = lc
+    let mut msg_out = lc
         .read()
         .unwrap()
         .create_login_msg(os_username, os_password, password);
+    // M2YDesk: hedefe bağlı yetki belirteci; alınamazsa boş gider ve zorunlu kılan taraf reddeder.
+    let target = msg_out.login_request().username.clone();
+    msg_out.mut_login_request().m2y_auth = m2y_fetch_auth(&target).await.into();
     allow_err!(peer.send(&msg_out).await);
+}
+
+/// M2YDesk: oturum açıksa `POST /api/m2y/yetki` ile hedefe bağlı (5 dk) yetki belirteci alır.
+/// Oturum yoksa, sunucuya ulaşılamazsa ya da hesap yetkisizse boş döner (5 sn zaman aşımı).
+async fn m2y_fetch_auth(target: &str) -> String {
+    let access_token = LocalConfig::get_option("access_token");
+    if access_token.is_empty() || target.is_empty() {
+        return String::new();
+    }
+    // Gömülü override-settings her süreçte geçerli olduğundan doğrudan Config okunur.
+    let api = crate::get_api_server(
+        Config::get_option("api-server"),
+        Config::get_option("custom-rendezvous-server"),
+    );
+    if api.is_empty() {
+        return String::new();
+    }
+    let url = format!("{api}/api/m2y/yetki");
+    let body = serde_json::json!({ "hedef_id": target }).to_string();
+    let fetch = async {
+        // Taşıyıcı belirteç gönderildiği için geçersiz sertifikaya geri düşülmez (yalnızca doğrulayan TLS).
+        for tls in [hbb_common::tls::TlsType::Rustls, hbb_common::tls::TlsType::NativeTls] {
+            let resp = crate::hbbs_http::create_http_client_async(tls, false)
+                .post(&url)
+                .header("Authorization", format!("Bearer {access_token}"))
+                .header("Content-Type", "application/json")
+                .body(body.clone())
+                .send()
+                .await;
+            let resp = match resp {
+                Ok(resp) => resp,
+                Err(e) => {
+                    log::warn!("M2YDesk: yetki sunucusuna ulaşılamadı ({:?}): {}", tls, e);
+                    continue;
+                }
+            };
+            let status = resp.status();
+            if !status.is_success() {
+                log::warn!("M2YDesk: yetki belirteci verilmedi: HTTP {}", status);
+                return String::new();
+            }
+            return match resp.text().await {
+                Ok(text) => serde_json::from_str::<serde_json::Value>(&text)
+                    .ok()
+                    .and_then(|v| v.get("belirtec").and_then(|b| b.as_str()).map(str::to_owned))
+                    .unwrap_or_default(),
+                Err(e) => {
+                    log::warn!("M2YDesk: yetki yanıtı okunamadı: {}", e);
+                    String::new()
+                }
+            };
+        }
+        String::new()
+    };
+    match hbb_common::tokio::time::timeout(std::time::Duration::from_secs(5), fetch).await {
+        Ok(token) => token,
+        Err(_) => {
+            log::warn!("M2YDesk: yetki belirteci isteği zaman aşımına uğradı");
+            String::new()
+        }
+    }
 }
 
 /// Handle login request made from ui.
