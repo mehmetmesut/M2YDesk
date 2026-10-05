@@ -134,6 +134,13 @@ pub fn core_main() -> Option<Vec<String>> {
         } else if args[0] == "--build-date" {
             println!("{}", crate::BUILD_DATE);
             return None;
+        } else if args[0] == "--m2y-replace" {
+            // M2YDesk: taşınabilir sürümün zorunlu güncelleme yardımcısı (bkz. `common::m2y_mandatory_update_now`).
+            #[cfg(windows)]
+            if let Some(target) = args.get(1) {
+                crate::common::m2y_replace_and_restart(target);
+            }
+            return None;
         }
     }
     #[cfg(windows)]

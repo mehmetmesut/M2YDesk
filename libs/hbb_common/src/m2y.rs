@@ -707,3 +707,61 @@ mod oturum_tests {
         assert_eq!(v["tur"], "dosya");
     }
 }
+
+// --- Zorunlu güncelleme (`surum.json` → `asgari_surum`) ---
+
+/// Son imzası doğrulanmış `surum.json`'daki asgari sürüm (yerel yapılandırma; ağ yokken de geçerli).
+pub const OPT_MIN_VERSION: &str = "m2y-asgari-surum";
+/// Sunucu `/api/m2y/yetki` isteğinde istemci sürümünü eski bulduğunda (HTTP 426) gösterilen ileti.
+pub const OUTDATED_LOCAL: &str = "Programınız eski; bağlanmak için güncelleyin";
+
+/// "x.y.z" (isteğe bağlı "v" öneki, 1–4 sayısal parça) → karşılaştırılabilir dizi; bozuksa `None`.
+fn parse_version(s: &str) -> Option<[u64; 4]> {
+    let s = s.trim();
+    let s = s.strip_prefix(|c: char| c == 'v' || c == 'V').unwrap_or(s);
+    let mut out = [0u64; 4];
+    for (i, part) in s.split('.').enumerate() {
+        if i >= out.len() || part.is_empty() || !part.bytes().all(|b| b.is_ascii_digit()) {
+            return None;
+        }
+        out[i] = part.parse().ok()?;
+    }
+    Some(out)
+}
+
+/// `current` < `minimum` ise güncelleme zorunludur. Boş ya da bozuk girdi zorunluluk doğurmaz
+/// (imzalı dosyadaki bozuk alan bağlantıyı kilitlemez).
+pub fn update_required(current: &str, minimum: &str) -> bool {
+    match (parse_version(current), parse_version(minimum)) {
+        (Some(c), Some(m)) => c < m,
+        _ => false,
+    }
+}
+
+#[cfg(test)]
+mod update_tests {
+    use super::*;
+
+    #[test]
+    fn mandatory_update_compare() {
+        assert!(update_required("1.0.9", "1.0.10"));
+        assert!(!update_required("1.0.10", "1.0.9"));
+        assert!(update_required("1.0.1", "v1.0.2"));
+        assert!(update_required("v1.0.1", " V1.1 "));
+        assert!(!update_required("1.0.1", "1.0.1"));
+        assert!(!update_required("1.0", "1.0.0"));
+        assert!(!update_required("2.0.0", "1.9.99"));
+        assert!(update_required("1.9.99", "2"));
+    }
+
+    #[test]
+    fn mandatory_update_bad_input() {
+        for bad in [
+            "", " ", "v", "abc", "1..2", "1.0.x", "1.0.1-beta", "1.2.3.4.5", "-1.0", "1.0.",
+            "99999999999999999999999",
+        ] {
+            assert!(!update_required("1.0.1", bad), "{bad:?}");
+            assert!(!update_required(bad, "9.9.9"), "{bad:?}");
+        }
+    }
+}

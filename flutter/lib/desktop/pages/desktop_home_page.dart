@@ -13,6 +13,7 @@ import 'package:flutter_hbb/common/widgets/m2y_destek.dart';
 import 'package:flutter_hbb/common/widgets/m2y_fixed_password.dart';
 import 'package:flutter_hbb/common/widgets/m2y_login_gate.dart';
 import 'package:flutter_hbb/common/widgets/m2y_uyelik_karti.dart';
+import 'package:flutter_hbb/common/widgets/m2y_zorunlu_guncelleme.dart';
 import 'package:flutter_hbb/consts.dart';
 import 'package:flutter_hbb/desktop/pages/connection_page.dart';
 import 'package:flutter_hbb/desktop/pages/desktop_setting_page.dart';
@@ -64,8 +65,11 @@ class _DesktopHomePageState extends State<DesktopHomePage>
   Widget build(BuildContext context) {
     super.build(context);
     final isIncomingOnly = bind.isIncomingOnly();
-    // M2YDesk: oturum açılmadan ana içerik (ID/parola) gösterilmez.
-    return Obx(() => !M2yAuth.instance.isReady
+    // M2YDesk: zorunlu güncelleme varsa yalnızca güncelleme katmanı; oturum açılmadan ana içerik
+    // (ID/parola) gösterilmez.
+    return Obx(() => M2yZorunluGuncelleme.instance.required.value
+        ? const M2yZorunluGuncellemeKatmani()
+        : !M2yAuth.instance.isReady
         ? const M2yAuthGate()
         : _buildBlock(
             child: Row(
@@ -771,6 +775,8 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     super.initState();
     // M2YDesk: zorunlu oturum denetimi (oturum yoksa bağlantı kapısı kapanır).
     M2yAuth.instance.start();
+    // M2YDesk: zorunlu güncelleme denetimi (açılışta + 30 dk; eski sürümde bağlantı kapısı kapanır).
+    M2yZorunluGuncelleme.instance.start();
     // M2YDesk: cihaz bilgisi paylaşımı için açık onay (KVKK); onay yoksa hiçbir bilgi gönderilmez.
     Future.delayed(const Duration(seconds: 2), _m2yAskDeviceReportConsent);
     _updateTimer = periodic_immediate(const Duration(seconds: 1), () async {
