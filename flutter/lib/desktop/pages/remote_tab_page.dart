@@ -21,6 +21,7 @@ import 'package:get/get.dart';
 import 'package:bot_toast/bot_toast.dart';
 
 import '../../common/widgets/dialog.dart';
+import '../../common/widgets/m2y_oturum_notu.dart';
 import '../../models/platform_model.dart';
 
 class _MenuTheme {
@@ -87,6 +88,7 @@ class _ConnectionTabPageState extends State<ConnectionTabPage> {
           )) {
             return;
           }
+          await _m2yNotSor(peerId!);
           tabController.closeBy(peerId!);
         },
         page: RemotePage(
@@ -337,6 +339,7 @@ class _ConnectionTabPageState extends State<ConnectionTabPage> {
           )) {
             return;
           }
+          await _m2yNotSor(key);
           tabController.closeBy(key);
           cancelFunc();
         },
@@ -400,6 +403,7 @@ class _ConnectionTabPageState extends State<ConnectionTabPage> {
       }
     }
     if (connLength <= 1) {
+      await _m2yNotSorHepsi();
       tabController.clear();
       return true;
     } else {
@@ -411,9 +415,29 @@ class _ConnectionTabPageState extends State<ConnectionTabPage> {
         res = await closeConfirmDialog();
       }
       if (res) {
+        await _m2yNotSorHepsi();
         tabController.clear();
       }
       return res;
+    }
+  }
+
+  // M2YDesk: kapanış onayından sonra, oturum kapanmadan önce isteğe bağlı not.
+  Future<void> _m2yNotSor(String id) async {
+    try {
+      final page =
+          tabController.state.value.tabs.firstWhere((t) => t.key == id).page;
+      if (page is RemotePage) {
+        await m2yOturumNotuSor(page.ffi);
+      }
+    } catch (e) {
+      debugPrint('M2YDesk: oturum notu atlandı: $e');
+    }
+  }
+
+  Future<void> _m2yNotSorHepsi() async {
+    for (final key in tabController.state.value.tabs.map((t) => t.key).toList()) {
+      await _m2yNotSor(key);
     }
   }
 
@@ -460,6 +484,7 @@ class _ConnectionTabPageState extends State<ConnectionTabPage> {
           )) {
             return;
           }
+          await _m2yNotSor(id);
           tabController.closeBy(id);
         },
         page: RemotePage(

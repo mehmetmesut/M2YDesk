@@ -622,3 +622,88 @@ mod auth_tests {
         assert_eq!(mask_email("yok"), "***");
     }
 }
+
+// ---- Denetleyen taraf oturum kaydı (m2y-api: POST /api/m2y/oturum) ----
+
+/// Bitiş notu penceresi için en kısa oturum süresi (sn).
+pub const OTURUM_NOT_MIN_SECS: u64 = 60;
+
+/// `hedef_id` kuralı (m2y-api): 1–64 karakter `[A-Za-z0-9_-]`. Kimlikteki `@sunucu` ve `/r`
+/// (zorla relay) sonekleri atılır; kurala uymayan kimlik (ör. doğrudan IP erişimi) için `None`.
+pub fn oturum_hedef_id(id: &str) -> Option<String> {
+    let id = id.trim().split('@').next().unwrap_or_default();
+    let id = id.strip_suffix("/r").unwrap_or(id);
+    let ok = !id.is_empty()
+        && id.len() <= 64
+        && id
+            .bytes()
+            .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-');
+    ok.then(|| id.to_owned())
+}
+
+/// Bağlantı türünün API karşılığı; kayıt tutulmayan türler için `None`.
+pub fn oturum_tur(conn_type: crate::rendezvous_proto::ConnType) -> Option<&'static str> {
+    use crate::rendezvous_proto::ConnType;
+    if conn_type == ConnType::DEFAULT_CONN {
+        Some("uzak_masaustu")
+    } else if conn_type == ConnType::FILE_TRANSFER {
+        Some("dosya")
+    } else if conn_type == ConnType::PORT_FORWARD || conn_type == ConnType::RDP {
+        Some("port")
+    } else if conn_type == ConnType::VIEW_CAMERA {
+        Some("kamera")
+    } else {
+        None
+    }
+}
+
+/// `POST /api/m2y/oturum` gövdesi (`olay`: "baslangic" | "bitis").
+pub fn oturum_govde(olay: &str, uuid: &str, hedef_id: &str, tur: &str) -> String {
+    serde_json::json!({
+        "olay": olay,
+        "oturum_uuid": uuid,
+        "hedef_id": hedef_id,
+        "tur": tur,
+    })
+    .to_string()
+}
+
+#[cfg(test)]
+mod oturum_tests {
+    use super::*;
+    use crate::rendezvous_proto::ConnType;
+
+    #[test]
+    fn target_id_rules() {
+        assert_eq!(oturum_hedef_id(" 123456789 "), Some("123456789".to_owned()));
+        assert_eq!(oturum_hedef_id("123456789@public"), Some("123456789".to_owned()));
+        assert_eq!(oturum_hedef_id("123456789/r"), Some("123456789".to_owned()));
+        assert_eq!(oturum_hedef_id("ab_c-9"), Some("ab_c-9".to_owned()));
+        assert_eq!(oturum_hedef_id(""), None);
+        assert_eq!(oturum_hedef_id("@srv"), None);
+        assert_eq!(oturum_hedef_id("1.2.3.4:21118"), None);
+        assert_eq!(oturum_hedef_id("12 34"), None);
+        assert_eq!(oturum_hedef_id(&"a".repeat(64)), Some("a".repeat(64)));
+        assert_eq!(oturum_hedef_id(&"a".repeat(65)), None);
+    }
+
+    #[test]
+    fn conn_type_labels() {
+        assert_eq!(oturum_tur(ConnType::DEFAULT_CONN), Some("uzak_masaustu"));
+        assert_eq!(oturum_tur(ConnType::FILE_TRANSFER), Some("dosya"));
+        assert_eq!(oturum_tur(ConnType::PORT_FORWARD), Some("port"));
+        assert_eq!(oturum_tur(ConnType::RDP), Some("port"));
+        assert_eq!(oturum_tur(ConnType::VIEW_CAMERA), Some("kamera"));
+        assert_eq!(oturum_tur(ConnType::TERMINAL), None);
+    }
+
+    #[test]
+    fn body_shape() {
+        let v: serde_json::Value =
+            serde_json::from_str(&oturum_govde("baslangic", "u-1234567", "42", "dosya")).unwrap();
+        assert_eq!(v["olay"], "baslangic");
+        assert_eq!(v["oturum_uuid"], "u-1234567");
+        assert_eq!(v["hedef_id"], "42");
+        assert_eq!(v["tur"], "dosya");
+    }
+}

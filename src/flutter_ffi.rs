@@ -2419,6 +2419,18 @@ pub fn main_m2y_set_connection_gate(closed: bool) {
     ui_interface::m2y_set_connection_gate(closed)
 }
 
+/// M2YDesk: oturumun kayıt bilgisi `{"uuid","tur","sure_sn"}`; kayıt yoksa boş (bitiş notu penceresi için).
+pub fn session_m2y_info(session_id: SessionID) -> SyncReturn<String> {
+    let res = match sessions::get_session_by_session_id(&session_id) {
+        Some(session) => {
+            let peer_id = session.lc.read().unwrap().id.clone();
+            crate::client::m2y_oturum_bilgi(&peer_id)
+        }
+        None => String::new(),
+    };
+    SyncReturn(res)
+}
+
 pub fn main_on_main_window_close() {
     // may called more than one times
     #[cfg(windows)]
