@@ -154,6 +154,12 @@ flutter:
     - assets/
 
   fonts:
+    # M2YDesk: Calibri ile ölçüsü birebir aynı açık lisanslı yazı tipi (OFL). Windows'ta sistemdeki Calibri kullanılır.
+    - family: Carlito
+      fonts:
+        - asset: assets/fonts/carlito/Carlito-Regular.ttf
+        - asset: assets/fonts/carlito/Carlito-Bold.ttf
+          weight: 700
     - family: GestureIcons
       fonts:
         - asset: assets/gestures.ttf

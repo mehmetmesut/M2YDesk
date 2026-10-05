@@ -967,6 +967,24 @@ jobs:
           cargo -V
           rustc -V
 
+      - name: Apply M2Y icon set (macOS)
+        # Masaüstü simge seti + macOS uygulama simgesi (AppIcon.icns) M2Y tasarımından üretilir.
+        shell: bash
+        env:
+          PYTHONIOENCODING: utf-8
+        run: |
+          pip3 install --break-system-packages pillow || pip3 install pillow
+          python3 res/m2y/icons/uret.py --uygula desk
+          SET=$(mktemp -d)/AppIcon.iconset
+          mkdir -p "$SET"
+          for n in 16 32 128 256 512; do
+            sips -z $n $n res/m2y/icons/desk/icon.png --out "$SET/icon_${n}x${n}.png" >/dev/null
+            d=$((n * 2))
+            sips -z $d $d res/m2y/icons/desk/icon.png --out "$SET/icon_${n}x${n}@2x.png" >/dev/null
+          done
+          iconutil -c icns "$SET" -o flutter/macos/Runner/AppIcon.icns
+          ls -l flutter/macos/Runner/AppIcon.icns
+
       - name: Build rustdesk
         run: |
           if [ "${{ matrix.job.target }}" = "aarch64-apple-darwin" ]; then
@@ -977,6 +995,13 @@ jobs:
             sed -i -e "s/MACOSX_DEPLOYMENT_TARGET = [0-9]*.[0-9]*;/MACOSX_DEPLOYMENT_TARGET = ${MIN_MACOS_VERSION};/" flutter/macos/Runner.xcodeproj/project.pbxproj
           fi
           ./build.py --flutter --hwcodec --unix-file-copy-paste ${{ matrix.job.extra-build-args }}
+
+      - name: Ad-hoc sign app (Apple Silicon)
+        # Apple Silicon imzasız ikiliyi hiç çalıştırmaz; geliştirici sertifikası olmadan geçici (ad-hoc) imza atılır.
+        # Gatekeeper uyarısı yine çıkar; sitedeki kurulum betiği (mac-kur.sh) karantinayı kaldırır.
+        run: |
+          codesign --force --deep --sign - ./flutter/build/macos/Build/Products/Release/M2YDesk.app
+          codesign --verify --verbose=2 ./flutter/build/macos/Build/Products/Release/M2YDesk.app
 
       - name: create unsigned dmg
         run: |

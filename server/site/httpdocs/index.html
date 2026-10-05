@@ -100,6 +100,9 @@
   .not{background:var(--uyari-bg);border:1px solid var(--uyari-k);border-radius:14px;padding:10px 14px;font-size:.9rem;margin:0}
   .ios{display:grid;gap:16px;align-items:center;grid-template-columns:1fr}
   @media(min-width:600px){.ios{grid-template-columns:1fr auto}}
+  .komut{display:flex;align-items:center;gap:8px;margin:10px 0;padding:10px 12px;border-radius:12px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.12)}
+  .komut code{flex:1;min-width:0;overflow-x:auto;white-space:nowrap;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.85rem}
+  .komut .kopyala{flex:none;padding:6px 12px;border-radius:9px;border:0;cursor:pointer;font-weight:600;color:#fff;background:linear-gradient(180deg,var(--vurgu),var(--vurgu2))}
   #qr{display:grid;place-items:center;padding:12px;background:#fff;border-radius:16px;width:fit-content;justify-self:center}
   code{background:var(--cam-ic);border:1px solid var(--cam-cerceve);padding:2px 8px;border-radius:8px;font-size:.86rem;overflow-wrap:anywhere}
   .satir{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:6px 0;font-size:.9rem}
@@ -198,9 +201,10 @@
     { id: 'win', ad: 'Windows', alt: 'Kurulum', ac: 'Sık kullandığınız bilgisayarlar için kalıcı kurulum.',
       d: [['windows_install', 'Kurulum dosyasını indir'], ['windows', 'Taşınabilir sürüm (kurulumsuz)'], ['windows_msi', 'MSI paketi (kurumsal dağıtım)']],
       not: 'Windows “PC’nizi korudu” uyarısı verirse: Ek bilgi → Yine de çalıştır.' },
-    { id: 'mac', ad: 'macOS', alt: 'Apple Silicon · Intel', ac: 'Mac’iniz için doğru dosyayı seçin: Apple menüsü → Bu Mac Hakkında bölümünde “Çip” (M1 ve üzeri) veya “İşlemci” (Intel) yazar.',
-      d: [['macos_apple', 'Apple Silicon için indir'], ['macos_intel', 'Intel için indir']],
-      not: '“Geliştirici doğrulanamadı” uyarısında uygulamaya sağ tıklayıp Aç’ı seçin. Ekran paylaşımı için Sistem Ayarları → Gizlilik ve Güvenlik altında Ekran Kaydı ve Erişilebilirlik izinlerini verin.' },
+    { id: 'mac', ad: 'macOS', alt: 'Apple Silicon (M1 ve üzeri)', ac: 'En kolay yol: Terminal’i açın (Spotlight’ta “Terminal” yazın), aşağıdaki komutu yapıştırıp Enter’a basın. İndirir, doğrular ve kurar; “Geliştirici doğrulanamadı” uyarısı çıkmaz.',
+      komut: 'curl -fsSL https://desk.mehmetmesut.com/mac-kur.sh | bash',
+      d: [['macos_apple', 'Ya da .dmg dosyasını indir']],
+      not: 'Uygulama açılınca Ekran Kaydı ve Erişilebilirlik izinlerini nasıl vereceğinizi adım adım gösterir; bu izinleri macOS gereği yalnızca siz verebilirsiniz. .dmg ile kurarsanız ilk açılışta Sistem Ayarları → Gizlilik ve Güvenlik → “Yine de aç” gerekir.' },
     { id: 'linux', ad: 'Linux', alt: 'Debian / Ubuntu (.deb)', ac: 'Debian tabanlı dağıtımlar için paket.',
       d: [['linux_deb', '.deb paketini indir']], not: 'Kurulum: sudo apt install ./dosya-adı.deb' },
     { id: 'android', ad: 'Android', alt: 'APK', ac: 'Uygulama sunucu ayarlarıyla hazır gelir; ek ayar gerekmez.',
@@ -284,6 +288,16 @@
     if (p.ios) iosPanel(panel);
     else {
       panel.appendChild(h('p', 'ikincil', p.ac));
+      if (p.komut) {
+        var k = h('div', 'komut');
+        k.appendChild(h('code', null, p.komut));
+        var kb = h('button', 'kopyala', 'Kopyala'); kb.type = 'button';
+        kb.addEventListener('click', function () {
+          navigator.clipboard.writeText(p.komut).then(function () { kb.textContent = 'Kopyalandı'; setTimeout(function () { kb.textContent = 'Kopyala'; }, 1600); });
+        });
+        k.appendChild(kb);
+        panel.appendChild(k);
+      }
       var b = h('div', 'btnlar');
       p.dosya.forEach(function (x, i) { b.appendChild(indirmeBaglantisi(p, x, i)); });
       panel.appendChild(b);
