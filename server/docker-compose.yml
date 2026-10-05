@@ -81,11 +81,14 @@ services:
     # Sırlar (M2Y_KOD_SIRRI, RUSTDESK_API_JWT_KEY, M2Y_YETKI_ANAHTARI, M2Y_SMTP_*): yalnızca sunucuda, 600
     env_file:
       - .env.m2yapi
-    # SMTP sunucunun kendi Postfix'i (587): kapsayıcıdan ana makineye erişim
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    # Ana makine ağı: "Sunucu komutu" hbbs/hbbr'nin yalnız 127.0.0.1'den kabul ettiği yönetim
+    # portlarına (21115/21117) bağlanır; köprü ağda 127.0.0.1 kapsayıcının kendisi olduğundan
+    # "dial tcp 127.0.0.1:21117: connection refused" hatası veriyordu (05.10.2026).
+    # API yine yalnız yerelde dinler (dışarıya Plesk nginx açar). SMTP: 127.0.0.1:587.
+    network_mode: host
     environment:
       - TZ=${TZ:-Europe/Istanbul}
+      - RUSTDESK_API_GIN_API_ADDR=127.0.0.1:21114
       # Yönetim paneli ve API mesajları yalnız Türkçe (m2y-api resources/i18n/tr.toml)
       - RUSTDESK_API_LANG=tr
       # nginx (Plesk) ters vekili yerelden gelir → gerçek istemci IP'si X-Forwarded-For'dan okunur
@@ -100,8 +103,6 @@ services:
       # Herkese açık kayıt kapalı; kullanıcılar Google girişiyle oluşur
       - RUSTDESK_API_APP_REGISTER=false
       - RUSTDESK_API_APP_WEB_CLIENT=0
-    ports:
-      - "127.0.0.1:21114:21114"
     volumes:
       # Açık anahtar salt okunur (özel anahtar bu kapsayıcıya bağlanmaz)
       - ./data/id_ed25519.pub:/data/id_ed25519.pub:ro
