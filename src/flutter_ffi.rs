@@ -2405,6 +2405,20 @@ pub fn main_account_auth_result() -> String {
     account_auth_result()
 }
 
+// M2YDesk: zorunlu e-posta + kod oturumu.
+pub fn main_m2y_auth_expired() -> SyncReturn<bool> {
+    SyncReturn(ui_interface::m2y_auth_expired())
+}
+
+pub fn main_m2y_mark_auth_ok() -> SyncReturn<()> {
+    ui_interface::m2y_mark_auth_ok();
+    SyncReturn(())
+}
+
+pub fn main_m2y_set_connection_gate(closed: bool) {
+    ui_interface::m2y_set_connection_gate(closed)
+}
+
 pub fn main_on_main_window_close() {
     // may called more than one times
     #[cfg(windows)]

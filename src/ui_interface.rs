@@ -1705,3 +1705,54 @@ pub fn is_remote_modify_enabled_by_control_permissions() -> Option<bool> {
         .lock()
         .unwrap()
 }
+
+// M2YDesk: zorunlu e-posta + kod oturumu (7 gün kayan çevrimdışı tolerans).
+pub fn m2y_auth_expired() -> bool {
+    let now = (hbb_common::get_time() / 1000).max(0) as u64;
+    hbb_common::m2y::auth_expired_str(
+        now,
+        &LocalConfig::get_option(hbb_common::m2y::OPT_LAST_AUTH_OK),
+    )
+}
+
+/// Sunucuya her başarılı erişimde 7 günlük süre sıfırlanır.
+pub fn m2y_mark_auth_ok() {
+    let now = (hbb_common::get_time() / 1000).max(0) as u64;
+    LocalConfig::set_option(
+        hbb_common::m2y::OPT_LAST_AUTH_OK.to_owned(),
+        now.to_string(),
+    );
+}
+
+/// M2YDesk: oturum yokken gelen bağlantı kapısı. `stop-service` mevcut mekanizmasıyla
+/// rendezvous kaydı ve doğrudan dinleyici durdurulur (ID sunucuda çevrimdışı görünür).
+/// `set_option("stop-service")` kurulu sürümde hizmeti kaldırıp yönetici izni istediği için
+/// seçenek doğrudan (IPC ile) yazılır; Windows hizmeti çalışmaya devam eder.
+pub fn m2y_set_connection_gate(closed: bool) {
+    let key = "stop-service";
+    let marker = LocalConfig::get_option(hbb_common::m2y::OPT_GATE_STOPPED);
+    let Some((stop, mark)) =
+        hbb_common::m2y::gate_transition(closed, &get_option(key), &marker)
+    else {
+        return;
+    };
+    log::info!("M2YDesk: bağlantı kapısı {}", if closed { "kapalı" } else { "açık" });
+    LocalConfig::set_option(
+        hbb_common::m2y::OPT_GATE_STOPPED.to_owned(),
+        mark.to_owned(),
+    );
+    #[cfg(not(any(target_os = "android", target_os = "ios")))]
+    {
+        let mut options = OPTIONS.lock().unwrap();
+        if stop.is_empty() {
+            options.remove(key);
+        } else {
+            options.insert(key.to_owned(), stop.to_owned());
+        }
+        if let Err(e) = ipc::set_options(options.clone()) {
+            log::error!("M2YDesk: bağlantı kapısı yazılamadı: {e}");
+        }
+    }
+    #[cfg(any(target_os = "android", target_os = "ios"))]
+    Config::set_option(key.to_owned(), stop.to_owned());
+}
