@@ -314,3 +314,10 @@ Sunucu komutu kartları (gerçek işlev rustdesk-server kaynağından doğruland
 - Google OIDC: sağlayıcı kayıtlı (`/api/login-options` → google), `/api/oidc/auth` doğru client_id/redirect/PKCE ile Google URL'si üretiyor. Gerçek oturum denemesi kullanıcıda.
 - #10 (4132d50): **Rust derlemesi geçti** (Android lib 4m41s). Android Dart adımı düştü: `bind.mainM2y…` tanımsız — **frb rakamdan sonraki harfi büyütür** (`session_send2fa`→`sessionSend2Fa`), yani `main_m2y_*` → `mainM2Y*`, `session_m2y_info` → `sessionM2YInfo`. Düzeltme `dd148b5` (tüm `bind.*M2y*` çağrıları). KURAL: yeni Rust FFI adı + rakam içeriyorsa Dart adını buna göre yaz.
 - **#11: koşu 37315821669** (tag v1.0.2, Win+Android+Linux, commit dd148b5).
+
+## Y2 — 1.0.2 YAYINDA (yerel, 05.10.2026 akşam)
+- Derleme #11 (koşu 37315821669, commit dd148b5) başarılı, 1 sa 9 dk: Windows (desk + Hızlı Destek, exe/install/msi), Android APK, Linux deb. Release `v1.0.2` yayımlandı.
+- Sunucuda güncel `istemci-hazirla.sh` (asgari sürüm destekli) ile `indir/` ve `ayar.js` 1.0.2'ye geçti; `guncelleme/surum.json` (sürüm 1.0.2, `asgari_surum` 1.0.2).
+- Doğrulama: 6 dosyanın SHA-256'sı GitHub API `digest` = `surum.json` = diskteki dosya (hepsi eşleşti; exe ile install.exe aynı ikili). `surum.json` PC'de `imzala.py` ile imzalandı, `dogrula` GEÇERLİ, `.sig` yüklendi; `dogrula.sh` hiç ✘ yok.
+- `asgari_surum` yalnız ≥1.0.2 istemcilerince okunur (eskiler alanı bilmez) → şu an kimseyi kesmez. **Eski istemcileri kesen ayar API'deki `M2Y_ASGARI_SURUM` (yetki isteğine 426) — kullanıcı onayı bekliyor, AYARLANMADI.**
+- Sırada: gerçek cihaz testi (giriş kapısı/e-posta kodu, Google girişi, ekran kenarı çerçevesi, Destek iste, oturum notu, zorunlu güncelleme penceresi), sonra onayla `M2Y_ASGARI_SURUM=1.0.2`.
