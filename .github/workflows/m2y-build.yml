@@ -319,6 +319,26 @@ jobs:
           fi
           ls -l ./out
 
+      - name: Build Microsoft Store package (MSIX, Hızlı Destek)
+        # Yalnızca QS; Partner Center kimlik değerleri GitHub Variables'ta tanımlıysa üretilir.
+        # Paket imzasızdır; Store yüklemede Microsoft imzalar (SmartScreen uyarısı çıkmaz).
+        if: matrix.variant == 'qs' && vars.M2Y_MSIX_NAME != ''
+        shell: pwsh
+        env:
+          PYTHONIOENCODING: utf-8
+          M2Y_MSIX_NAME: ${{ vars.M2Y_MSIX_NAME }}
+          M2Y_MSIX_PUBLISHER: ${{ vars.M2Y_MSIX_PUBLISHER }}
+          M2Y_MSIX_PUBLISHER_DISPLAY: ${{ vars.M2Y_MSIX_PUBLISHER_DISPLAY }}
+        run: |
+          python3 res/m2y/msix/hazirla.py --kaynak ./rustdesk --hedef ./msix --surum "${{ env.VERSION }}" `
+            --ad "$env:M2Y_MSIX_NAME" --yayinci "$env:M2Y_MSIX_PUBLISHER" --yayinci-adi "$env:M2Y_MSIX_PUBLISHER_DISPLAY"
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          $makeappx = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin\*\x64\makeappx.exe" | Sort-Object FullName -Descending | Select-Object -First 1
+          if (-not $makeappx) { Write-Error "makeappx.exe bulunamadı"; exit 1 }
+          & $makeappx.FullName pack /d ./msix /p "./out/M2YDesk-QS-${{ env.VERSION }}-x86_64.msix" /o
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          Get-Item ./out/*.msix | Format-List Name, Length
+
       - name: Add MSBuild to PATH
         if: matrix.variant == 'desk'
         uses: microsoft/setup-msbuild@6fb02220983dee41ce7ae257b6f4d8f9bf5ed4ce # v2
@@ -343,6 +363,7 @@ jobs:
           path: |
             out/M2YDesk-*.exe
             out/M2YDesk-*.msi
+            out/M2YDesk-*.msix
           if-no-files-found: error
 
   # flutter-build.yml build-rustdesk-android (satır 911-1201), yalnızca aarch64
