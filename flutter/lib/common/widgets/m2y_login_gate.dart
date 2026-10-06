@@ -425,22 +425,44 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
                       const Expanded(child: Divider()),
                     ]),
                     const SizedBox(height: 8),
-                    ..._oidcOptions.map((e) {
-                      final op = (e['name'] ?? '').toString();
-                      return WidgetOP(
-                        config: ConfigOP(op: op, icon: e['icon']),
-                        curOP: _curOP,
-                        cbLogin: _onOidcLogin,
-                        label: op.toLowerCase() == 'google'
-                            ? 'Google ile giriş yap'
-                            : null,
-                      ).marginOnly(bottom: 6);
-                    }),
+                    _buildOidcButtons(),
                   ],
                 )),
         ],
       ),
     );
+  }
+
+  /// Harici giriş düğmeleri (Google, Webauth…) tek satırda, ortalı ve eşit genişlikte;
+  /// sığmazsa alt satıra sarar. Tek seçenek varsa standart genişlikte ortalanır.
+  Widget _buildOidcButtons() {
+    const gap = 8.0, minWidth = 130.0, maxWidth = 200.0;
+    return LayoutBuilder(builder: (context, c) {
+      final n = _oidcOptions.length;
+      final w = n == 1
+          ? maxWidth
+          : ((c.maxWidth - gap * (n - 1)) / n).clamp(minWidth, maxWidth);
+      return Wrap(
+        alignment: WrapAlignment.center,
+        spacing: gap,
+        runSpacing: 6,
+        children: _oidcOptions.map((e) {
+          final op = (e['name'] ?? '').toString();
+          return SizedBox(
+            width: w,
+            child: WidgetOP(
+              config: ConfigOP(op: op, icon: e['icon']),
+              curOP: _curOP,
+              cbLogin: _onOidcLogin,
+              width: w,
+              label: op.toLowerCase() == 'google'
+                  ? 'Google ile giriş yap'
+                  : null,
+            ),
+          );
+        }).toList(),
+      );
+    });
   }
 
   Widget _buildCodeStep(BuildContext context) {

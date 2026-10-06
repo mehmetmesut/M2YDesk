@@ -90,8 +90,10 @@ class ButtonOP extends StatelessWidget {
   final Color primaryColor;
   final double height;
   final Function() onTap;
-  // M2YDesk: isteğe bağlı sabit düğme metni (ör. "Google ile giriş yap").
+  // M2YDesk: isteğe bağlı sabit düğme metni (ör. "Google ile giriş yap") ve genişlik
+  // (giriş kapısında düğmeler tek satırda yan yana dizilir).
   final String? label;
+  final double width;
 
   const ButtonOP({
     Key? key,
@@ -102,6 +104,7 @@ class ButtonOP extends StatelessWidget {
     required this.height,
     required this.onTap,
     this.label,
+    this.width = 200,
   }) : super(key: key);
 
   @override
@@ -112,7 +115,7 @@ class ButtonOP extends StatelessWidget {
     return Row(children: [
       Container(
         height: height,
-        width: 200,
+        width: width,
         child: Obx(() => ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: curOP.value.isEmpty || curOP.value == op
@@ -153,14 +156,16 @@ class WidgetOP extends StatefulWidget {
   final ConfigOP config;
   final RxString curOP;
   final Function(Map<String, dynamic>) cbLogin;
-  // M2YDesk: isteğe bağlı sabit düğme metni.
+  // M2YDesk: isteğe bağlı sabit düğme metni ve genişlik.
   final String? label;
+  final double width;
   const WidgetOP({
     Key? key,
     required this.config,
     required this.curOP,
     required this.cbLogin,
     this.label,
+    this.width = 200,
   }) : super(key: key);
 
   @override
@@ -243,6 +248,7 @@ class _WidgetOPState extends State<WidgetOP> {
           primaryColor: str2color(widget.config.op, 0x7f),
           height: 36,
           label: widget.label,
+          width: widget.width,
           onTap: () async {
             _resetState();
             widget.curOP.value = widget.config.op;
