@@ -69,3 +69,6 @@ server/site/httpdocs/ayar.js
 # Yerel indirilen sürüm dosyaları
 *.msi
 RustDesk-*.zip
+
+# Yerel ön izleme: CI'dan indirilen çekirdek ve köprü dosyaları (depoya girmez)
+/yerel-onizleme/

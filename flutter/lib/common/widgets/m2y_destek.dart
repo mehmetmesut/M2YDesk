@@ -67,31 +67,36 @@ Widget m2ySideButton({
   required String label,
   required VoidCallback onPressed,
 }) {
-  return Container(
-    margin: const EdgeInsets.only(left: 20, right: 16, bottom: 6),
-    width: double.infinity,
-    child: Tooltip(
-      message: tooltip,
-      child: OutlinedButton.icon(
-        onPressed: onPressed,
-        style: OutlinedButton.styleFrom(
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          minimumSize: const Size(0, 32),
-          visualDensity: VisualDensity.compact,
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-        ),
-        icon: IconTheme.merge(
-            data: const IconThemeData(size: 16), child: icon),
-        label: FittedBox(
-          fit: BoxFit.scaleDown,
-          alignment: Alignment.centerLeft,
-          child: Text(label, maxLines: 1, softWrap: false),
+  return Builder(builder: (context) {
+    // Yazı ailesi temadan gelir (Calibri/Carlito); yalnız boyut ve kalınlık ezilir.
+    final base = Theme.of(context).textTheme.labelLarge;
+    return Container(
+      margin: const EdgeInsets.only(left: 20, right: 16, bottom: 6),
+      width: double.infinity,
+      child: Tooltip(
+        message: tooltip,
+        child: OutlinedButton.icon(
+          onPressed: onPressed,
+          style: OutlinedButton.styleFrom(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            minimumSize: const Size(0, 32),
+            visualDensity: VisualDensity.compact,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            textStyle: (base ?? const TextStyle())
+                .copyWith(fontSize: 13, fontWeight: FontWeight.w600),
+          ),
+          icon: IconTheme.merge(
+              data: const IconThemeData(size: 16), child: icon),
+          label: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(label, maxLines: 1, softWrap: false),
+          ),
         ),
       ),
-    ),
-  );
+    );
+  });
 }
 
 /// Sol paneldeki "Destek iste" düğmesi.
@@ -114,11 +119,14 @@ class M2yDestekButton extends StatelessWidget {
 /// Diyaloglar için sıkı görünüm: küçük başlık, yoğun alanlar ve düğmeler.
 Widget m2yCompactDialog(BuildContext context, Widget child) {
   final t = Theme.of(context);
+  // Yazı ailesi temadan gelir; yalnız boyut küçülür. Uygulamanın genel düğme teması ÖNCE gelir,
+  // sıkı değerler üstüne biner (`merge`: sağdaki kazanır).
   final buttonStyle = ButtonStyle(
     padding: const MaterialStatePropertyAll(
         EdgeInsets.symmetric(horizontal: 14, vertical: 8)),
     minimumSize: const MaterialStatePropertyAll(Size(0, 32)),
-    textStyle: const MaterialStatePropertyAll(TextStyle(fontSize: 13)),
+    textStyle: MaterialStatePropertyAll(
+        (t.textTheme.labelLarge ?? const TextStyle()).copyWith(fontSize: 13)),
     visualDensity: VisualDensity.compact,
   );
   return Theme(
@@ -135,11 +143,14 @@ Widget m2yCompactDialog(BuildContext context, Widget child) {
         contentTextStyle: t.textTheme.bodyMedium?.copyWith(fontSize: 13),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
-          style: buttonStyle.merge(t.elevatedButtonTheme.style)),
+          style: (t.elevatedButtonTheme.style ?? const ButtonStyle())
+              .merge(buttonStyle)),
       outlinedButtonTheme: OutlinedButtonThemeData(
-          style: buttonStyle.merge(t.outlinedButtonTheme.style)),
+          style: (t.outlinedButtonTheme.style ?? const ButtonStyle())
+              .merge(buttonStyle)),
       textButtonTheme: TextButtonThemeData(
-          style: buttonStyle.merge(t.textButtonTheme.style)),
+          style: (t.textButtonTheme.style ?? const ButtonStyle())
+              .merge(buttonStyle)),
     ),
     child: child,
   );
