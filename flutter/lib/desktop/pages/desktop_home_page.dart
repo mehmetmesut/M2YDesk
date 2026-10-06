@@ -158,13 +158,17 @@ class _DesktopHomePageState extends State<DesktopHomePage>
           children: [
             Column(
               children: [
-                SingleChildScrollView(
-                  controller: _leftPaneScrollController,
-                  child: Column(
-                    key: _childKey,
-                    children: children,
+                // Hızlı Destek'te kaydırma YOK: pencere içeriğe göre büyür (`_updateWindowSize`).
+                if (isIncomingOnly)
+                  Column(key: _childKey, children: children)
+                else
+                  SingleChildScrollView(
+                    controller: _leftPaneScrollController,
+                    child: Column(
+                      key: _childKey,
+                      children: children,
+                    ),
                   ),
-                ),
                 Expanded(child: Container()),
                 // M2YDesk: üyelik kartı yalnız tam sürümde (Hızlı Destek'te yok)
                 if (!isIncomingOnly && !isOutgoingOnly) const M2yUyelikKarti(),

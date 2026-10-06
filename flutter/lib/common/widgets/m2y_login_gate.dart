@@ -11,6 +11,7 @@ import 'package:flutter_hbb/common/hbbs/hbbs.dart';
 import 'package:flutter_hbb/common/widgets/login.dart';
 import 'package:flutter_hbb/common/widgets/m2y_auth.dart';
 import 'package:flutter_hbb/common/widgets/m2y_destek.dart';
+import 'package:flutter_hbb/common/widgets/m2y_pencere.dart';
 import 'package:flutter_hbb/common/widgets/m2y_fixed_password.dart';
 import 'package:flutter_hbb/models/platform_model.dart';
 import 'package:flutter_hbb/models/user_model.dart';
@@ -19,7 +20,12 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 
 const _kResendSeconds = 60;
-const _kQuickSupportWidth = 360.0;
+
+/// Harici giriş seçeneklerini (Google…) sunucudan okur; testte sahtesi takılabilir.
+@visibleForTesting
+Future<List<dynamic>> Function() m2yOidcYukleyici = UserModel.queryOidcLoginOptions;
+// 360 px'ti; kullanıcı isteğiyle %20 daraltıldı (ana pencere içeriğiyle aynı hizada: 280–288 px).
+const _kQuickSupportWidth = 288.0;
 const _kFullWidth = 380.0;
 
 class M2yAuthGate extends StatefulWidget {
@@ -86,13 +92,22 @@ class _M2yAuthGateState extends State<M2yAuthGate> {
             ),
       child: content,
     );
+    // Hızlı Destek penceresi içeriğe göre boyutlanır: adım değişince (e-posta → kod → sabit parola)
+    // ya da hata iletisi çıkınca içerik yüksekliği değişir; yalnız dış build'e güvenmek pencerenin
+    // eski boyutta kalmasına ("Kaydet" düğmesi kesiliyordu) yol açıyordu.
+    final sized = _qs
+        ? M2yBoyutIzleyici(onChanged: _fitWindow, child: framed)
+        : framed;
     final page = Container(
       color: theme.colorScheme.background,
       alignment: _qs ? Alignment.topLeft : Alignment.center,
-      child: SingleChildScrollView(
-        padding: _qs ? EdgeInsets.zero : const EdgeInsets.all(24),
-        child: framed,
-      ),
+      // Hızlı Destek'te kaydırma YOK: pencere içeriğe göre büyür.
+      child: _qs
+          ? sized
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: sized,
+            ),
     );
     return _qs ? m2yCompact(context, page) : page;
   }
@@ -174,7 +189,7 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
     // Hatırlanan e-posta daha önce verilmiş açık rızayı gösterir.
     _consent = _remembered.isNotEmpty;
     Future.microtask(() async {
-      _oidcOptions.value = await UserModel.queryOidcLoginOptions();
+      _oidcOptions.value = await m2yOidcYukleyici();
     });
   }
 
@@ -346,16 +361,40 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
 
   Widget _buildEmailStep(BuildContext context) {
     final small = Theme.of(context).textTheme.bodySmall;
-    return _section(
-      context,
-      'Oturum açın',
-      'Devam etmek için e-posta adresinize gönderilecek doğrulama kodunu '
-          'girmeniz gerekir.',
-      Column(
+    final qs = M2yAuth.instance.isQuickSupport;
+    final veya = Row(children: [
+      const Expanded(child: Divider()),
+      Text('veya', style: small).marginSymmetric(horizontal: 8),
+      const Expanded(child: Divider()),
+    ]);
+    // Hızlı Destek: iki seçenek — yalnız Google ve e-posta kodu (Google üstte, tek dokunuş).
+    // Tam sürüm: e-posta üstte, harici seçenekler (Google, Webauth) altta yan yana.
+    final oidc = Obx(() {
+      final options = qs
+          ? _oidcOptions
+              .where((e) => (e['name'] ?? '').toString().toLowerCase() == 'google')
+              .toList()
+          : _oidcOptions.toList();
+      if (options.isEmpty) return const Offstage();
+      final buttons = M2yOidcButtons(
+        options: options,
+        curOP: _curOP,
+        onLogin: _onOidcLogin,
+        tamGenislik: qs,
+      );
+      return Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          TextField(
+        children: qs
+            ? [buttons, const SizedBox(height: 12), veya, const SizedBox(height: 8)]
+            : [const SizedBox(height: 12), veya, const SizedBox(height: 8), buttons],
+      );
+    });
+    final eposta = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        TextField(
             controller: _email,
             autofocus: _remembered.isEmpty,
             enabled: !_busy,
@@ -412,27 +451,20 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
             onPressed: _busy ? null : _sendCode,
             child: const Text('Doğrulama kodu gönder'),
           ),
-          Obx(() => _oidcOptions.isEmpty
-              ? const Offstage()
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const SizedBox(height: 12),
-                    Row(children: [
-                      const Expanded(child: Divider()),
-                      Text('veya', style: small).marginSymmetric(horizontal: 8),
-                      const Expanded(child: Divider()),
-                    ]),
-                    const SizedBox(height: 8),
-                    M2yOidcButtons(
-                      options: _oidcOptions.toList(),
-                      curOP: _curOP,
-                      onLogin: _onOidcLogin,
-                    ),
-                  ],
-                )),
-        ],
+      ],
+    );
+    return _section(
+      context,
+      'Oturum açın',
+      qs
+          ? 'Google hesabınızla ya da e-posta adresinize gönderilecek '
+              'doğrulama koduyla giriş yapabilirsiniz.'
+          : 'Devam etmek için e-posta adresinize gönderilecek doğrulama kodunu '
+              'girmeniz gerekir.',
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: qs ? [oidc, eposta] : [eposta, oidc],
       ),
     );
   }
@@ -503,11 +535,15 @@ class M2yOidcButtons extends StatelessWidget {
   final RxString curOP;
   final Function(Map<String, dynamic>) onLogin;
 
+  /// Kutunun tüm genişliğini kullanır (Hızlı Destek'te tek Google düğmesi).
+  final bool tamGenislik;
+
   const M2yOidcButtons({
     Key? key,
     required this.options,
     required this.curOP,
     required this.onLogin,
+    this.tamGenislik = false,
   }) : super(key: key);
 
   @override
@@ -515,9 +551,11 @@ class M2yOidcButtons extends StatelessWidget {
     const gap = 8.0, minWidth = 130.0, maxWidth = 200.0;
     return LayoutBuilder(builder: (context, c) {
       final n = options.length;
-      final w = n <= 1
-          ? maxWidth
-          : ((c.maxWidth - gap * (n - 1)) / n).clamp(minWidth, maxWidth);
+      final w = tamGenislik && n == 1
+          ? c.maxWidth
+          : n <= 1
+              ? maxWidth
+              : ((c.maxWidth - gap * (n - 1)) / n).clamp(minWidth, maxWidth);
       return Wrap(
         alignment: WrapAlignment.center,
         spacing: gap,

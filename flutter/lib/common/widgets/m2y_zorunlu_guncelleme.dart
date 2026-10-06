@@ -10,6 +10,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hbb/common.dart';
+import 'package:flutter_hbb/common/widgets/m2y_pencere.dart';
 import 'package:flutter_hbb/models/platform_model.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -190,14 +191,15 @@ class _M2yZorunluGuncellemeKatmaniState
       child: Container(
         color: theme.colorScheme.background,
         alignment: _qs ? Alignment.topLeft : Alignment.center,
-        child: SingleChildScrollView(
-          child: _qs
-              ? framed
-              : ConstrainedBox(
+        // Hızlı Destek'te kaydırma YOK: pencere içeriğe göre büyür.
+        child: _qs
+            ? M2yBoyutIzleyici(onChanged: _fitWindow, child: framed)
+            : SingleChildScrollView(
+                child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: _kFullWidth),
                   child: framed,
                 ),
-        ),
+              ),
       ),
     );
   }

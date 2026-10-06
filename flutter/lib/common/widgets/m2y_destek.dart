@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hbb/common.dart';
+import 'package:flutter_hbb/common/widgets/m2y_pencere.dart';
 import 'package:flutter_hbb/models/platform_model.dart';
 import 'package:http/http.dart' as http;
 
@@ -109,9 +110,12 @@ class M2yDestekButton extends StatelessWidget {
       tooltip: 'Danışmanınızdan bağlanmasını isteyin',
       icon: const Icon(Icons.support_agent),
       label: 'Destek iste',
-      onPressed: () => showDialog(
-          context: context,
-          builder: (ctx) => m2yCompactDialog(ctx, const _M2yDestekDialog())),
+      onPressed: () => m2yPencereBuyutup(
+          const Size(480, 460),
+          () => showDialog(
+              context: context,
+              builder: (ctx) =>
+                  m2yCompactDialog(ctx, const _M2yDestekDialog()))),
     );
   }
 }
@@ -260,8 +264,8 @@ class _M2yDestekDialogState extends State<_M2yDestekDialog> {
       title: const Text('Destek iste'),
       content: SizedBox(
         width: 340,
-        child: SingleChildScrollView(
-          child: Column(
+        child: m2yKaydirmaGerekirse(
+          Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
