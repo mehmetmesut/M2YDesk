@@ -42,6 +42,9 @@ class PlatformFFI {
   final _toAndroidChannel = const MethodChannel('mChannel');
 
   RustdeskImpl get ffiBind => _ffiBind;
+  // M2YDesk: yerel arayüz testlerinde (Rust çekirdeği olmadan) sahte köprü takmak için.
+  @visibleForTesting
+  set ffiBind(RustdeskImpl value) => _ffiBind = value;
   F3? _session_get_rgba;
 
   static get localeName => Platform.localeName;

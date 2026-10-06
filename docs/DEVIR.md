@@ -354,3 +354,6 @@ Amaç (kullanıcı): her geliştirmede ≈1 saatlik GitHub derlemesini beklemede
 - **Testin yakaladığı gerçek hata:** `m2ySideButton`/`m2yCompactDialog` düğme `textStyle`'ı sabit `TextStyle` ile verilince yazı ailesi (Calibri) kayboluyordu; ayrıca `buttonStyle.merge(tema)` sırası genel düğme temasını sıkı değerlerin üstüne bindiriyordu. İkisi düzeltildi (`c5db50b`).
 - **Kural (bundan sonra):** her UI değişikliğinde `flutter analyze` + `flutter test` + (mümkünse) ön izleme; GitHub derlemesi son onaydan sonra.
 - Not: 1.4.9 dosyaları `m2y-test` sürümünden silindi (4 dosya).
+- **Ön izleme DOĞRULANDI (06.10, 10:04):** `R:\flutter` üzerinden `flutter build windows --debug` başarılı (ilk derleme ≈1,5 dk, sonrası ≈20–40 sn); uygulama açıldı, güncel kaynak koddan sol panel/bağlantı kartı/üyelik kartı ekran görüntüsüyle görüldü (computer-use ile `m2ydesk.exe` penceresi). TUZAK: proje yolundaki `ı` (ASCII dışı) shader derlemesini bozar → `subst R:`; ayrıca CMake `install` adımı `target\debug\librustdesk.dll` ister.
+- Testler: `m2y_gorunum_test.dart` 14 test (yan düğmeler, diyalog, giriş ekranı Google/Webauth düğmeleri). Test için `PlatformFFI.ffiBind` setter'ı eklendi (`@visibleForTesting`, sahte köprü).
+- `M2yOidcButtons` ayrı bileşen oldu; düğme metinleri sabit Türkçe (Google ile giriş yap / Webauth ile devam et).

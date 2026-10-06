@@ -5,6 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hbb/common.dart';
 import 'package:flutter_hbb/common/widgets/m2y_destek.dart';
+import 'package:flutter_hbb/common/widgets/m2y_login_gate.dart';
+import 'package:flutter_hbb/generated_bridge.dart';
+import 'package:flutter_hbb/models/platform_model.dart';
+import 'package:get/get.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Sol panel genişlikleri: tam sürüm 224, Hızlı Destek 280.
@@ -39,8 +43,18 @@ Widget _app(Widget child, {double textScale = 0.88}) {
   );
 }
 
+/// Rust çekirdeği olmadan çalışan sahte köprü: `translate` anahtarı olduğu gibi döndürür,
+/// diğer çağrılar sessizce boş döner (test yalnız yerleşimi denetler).
+class _SahteKopru extends Fake implements RustdeskImpl {
+  @override
+  String translate({required String name, required String locale, dynamic hint}) => name;
+}
+
 void main() {
-  setUpAll(_loadCarlito);
+  setUpAll(() async {
+    platformFFI.ffiBind = _SahteKopru();
+    await _loadCarlito();
+  });
 
   group('Sol panel düğmesi (m2ySideButton)', () {
     for (final width in _panelWidths) {
@@ -126,6 +140,60 @@ void main() {
       expect(gonder.left, greaterThan(iptal.right), reason: 'birincil eylem sağda olmalı');
       expect((gonder.center.dy - iptal.center.dy).abs(), lessThan(1), reason: 'aynı satırda');
       expect(gonder.height, lessThanOrEqualTo(40));
+    });
+  });
+
+  group('Giriş ekranı harici düğmeleri (M2yOidcButtons)', () {
+    final options = [
+      {'name': 'google', 'icon': null},
+      {'name': 'webauth', 'icon': null},
+    ];
+
+    for (final boxWidth in [324.0, 304.0, 360.0]) {
+      testWidgets('iki düğme ${boxWidth.toInt()} px kutuda aynı satırda, eşit genişlikte ve ortalı',
+          (tester) async {
+        await tester.pumpWidget(_app(
+          SizedBox(
+            width: boxWidth,
+            child: M2yOidcButtons(
+              options: options,
+              curOP: ''.obs,
+              onLogin: (_) {},
+            ),
+          ),
+        ));
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+
+        final buttons = find.byType(ElevatedButton);
+        expect(buttons, findsNWidgets(2));
+        final a = tester.getRect(buttons.at(0));
+        final b = tester.getRect(buttons.at(1));
+
+        expect((a.center.dy - b.center.dy).abs(), lessThan(1), reason: 'aynı satırda olmalı');
+        expect((a.width - b.width).abs(), lessThan(1), reason: 'eşit genişlikte olmalı');
+        // Kutuya göre ortalı: sol ve sağ boşluklar eşit.
+        final solBosluk = a.left;
+        final sagBosluk = boxWidth - b.right;
+        expect((solBosluk - sagBosluk).abs(), lessThan(1), reason: 'ortalı olmalı');
+        expect(b.right, lessThanOrEqualTo(boxWidth));
+      });
+    }
+
+    testWidgets('tek seçenek ortalanır', (tester) async {
+      await tester.pumpWidget(_app(
+        SizedBox(
+          width: 324,
+          child: M2yOidcButtons(
+            options: [options.first],
+            curOP: ''.obs,
+            onLogin: (_) {},
+          ),
+        ),
+      ));
+      await tester.pumpAndSettle();
+      final a = tester.getRect(find.byType(ElevatedButton));
+      expect((a.left - (324 - a.right)).abs(), lessThan(1));
     });
   });
 }
