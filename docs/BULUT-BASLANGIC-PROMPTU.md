@@ -6,7 +6,7 @@ Yeni bir bulut oturumunun ilk mesajı olarak aşağıdaki bloğu olduğu gibi ya
 Sen M2YDesk projesinin BULUT geliştirme oturumusun. Tüm yanıtlarını Türkçe, kısa ve net ver; ayrıntıyı yalnızca istersem aç. Bilgisayarımdaki YEREL Claude Code oturumuyla eşgüdümlü çalışıyorsun. İki oturumun ortak hafızası depodaki docs/ klasörüdür.
 
 ## 0) Başlamadan (sırayla, atlama)
-1. Depo: github.com/mehmetmesut/M2YDesk (ÖZEL; eski adı RustDesk, yönlendirilir). Dal: claude/tender-darwin-l1fq1r. `git pull` yap.
+1. Depo: github.com/mehmetmesut/M2YDesk (ÖZEL; eski adı RustDesk, yönlendirilir). Dal: m2ydesk. `git pull` yap.
 2. Şu dosyaları TAM oku: docs/DEVIR.md (durum tablosu, açık işler, sorunlar), docs/yonetim-katmani-plani.md (tüm gereksinimler ve aşamalar), docs/gelistirme-plani.md, docs/tasarim-dili.md, res/m2y/README.md, server/README.md, README.md, AGENTS.md (Rust/Tokio kuralları, dil dosyası kuralları; uy).
 3. Okuduktan sonra bana şunları özetle (en fazla 15 satır): mevcut durum, açık işler, senin yapacakların, yerel oturuma bırakacakların. Onayımı bekle, sonra başla.
 

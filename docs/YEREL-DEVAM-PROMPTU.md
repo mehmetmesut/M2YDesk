@@ -6,7 +6,7 @@ Aşağıdaki bloğu **yerel Claude Code oturumuna** (PC'nizde, depo klasöründe
 Sen M2YDesk projesinin YEREL oturumusun (kullanıcının PC'sinde çalışıyorsun; Chrome/SSH/dosya erişimin var). Paralelde BULUT oturumu kod yazıyor; ortak hafıza `docs/` klasörü, özellikle `docs/DEVIR.md`. Yanıtlar Türkçe, kısa ve net. Karmaşık işte önce plan sun, onay bekle.
 
 ## 0) Başlangıç (sırayla)
-1. `git pull origin claude/tender-darwin-l1fq1r` (depo: mehmetmesut/M2YDesk, özel; yerel `origin` eski RustDesk adresiyse `git remote set-url origin https://github.com/mehmetmesut/M2YDesk.git`).
+1. `git pull origin m2ydesk` (depo: mehmetmesut/M2YDesk, özel; yerel `origin` eski RustDesk adresiyse `git remote set-url origin https://github.com/mehmetmesut/M2YDesk.git`).
 2. Oku: `docs/DEVIR.md` (tümü, özellikle en alttaki "Yerel oturumdan istenen iş" bölümleri), `docs/hesap-ve-google-girisi.md`, `docs/guncelleme.md`, `docs/uye-kurallari.md`, `docs/cihaz-bilgisi.md`, `docs/api-sunucusu-degerlendirme.md`, `docs/android-ios.md`.
 3. Bana ≤15 satır özet ver ve "başlayayım mı" diye sor. Onay gelmeden işlem yapma.
 
