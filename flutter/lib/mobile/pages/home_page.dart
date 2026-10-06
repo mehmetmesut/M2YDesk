@@ -5,6 +5,9 @@ import 'package:flutter_hbb/web/settings_page.dart';
 import 'package:get/get.dart';
 import '../../common.dart';
 import '../../common/widgets/chat_page.dart';
+import '../../common/widgets/m2y_auth.dart';
+import '../../common/widgets/m2y_login_gate.dart';
+import '../../common/widgets/m2y_zorunlu_guncelleme.dart';
 import '../../models/platform_model.dart';
 import '../../models/state_model.dart';
 import 'connection_page.dart';
@@ -43,6 +46,9 @@ class HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     initPages();
+    // M2YDesk: zorunlu oturum ve zorunlu güncelleme denetimi (masaüstü ana sayfasıyla aynı akış).
+    M2yAuth.instance.start();
+    M2yZorunluGuncelleme.instance.start();
   }
 
   void initPages() {
@@ -61,6 +67,15 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // M2YDesk: güncelleme gerekiyorsa yalnızca güncelleme katmanı; oturum açılmadan ana içerik gösterilmez.
+    return Obx(() => M2yZorunluGuncelleme.instance.required.value
+        ? const Scaffold(body: SafeArea(child: M2yZorunluGuncellemeKatmani()))
+        : !M2yAuth.instance.isReady
+            ? const Scaffold(body: SafeArea(child: M2yAuthGate()))
+            : _buildHome(context));
+  }
+
+  Widget _buildHome(BuildContext context) {
     return WillPopScope(
         onWillPop: () async {
           if (_selectedIndex != 0) {

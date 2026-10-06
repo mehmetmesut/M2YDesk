@@ -4,6 +4,7 @@
 // Ekran 3: sabit parola (yoksa; atlanamaz).
 // M2YDesk: Türkçe sabit metin (çeviri anahtarı kullanılmaz).
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hbb/common.dart';
@@ -83,8 +84,13 @@ class _M2yAuthGateState extends State<M2yAuthGate> {
     // Tam sürümde ortalanmış, çerçeveli kutu; Hızlı Destek'te pencereyi dolduran sade içerik.
     final framed = Container(
       key: _contentKey,
-      width: _qs ? m2yQsIcerikGenisligi() : _kFullWidth,
-      padding: _qs ? const EdgeInsets.all(12) : const EdgeInsets.all(28),
+      // Dar ekranlarda (telefon) kutu ekrana sığacak kadar daralır (380 dp'yi aşmaz; 24 dp kenar boşluğu).
+      width: _qs
+          ? m2yQsIcerikGenisligi()
+          : math.min(_kFullWidth, MediaQuery.of(context).size.width - 48),
+      padding: _qs
+          ? const EdgeInsets.all(12)
+          : EdgeInsets.all(MediaQuery.of(context).size.width < 420 ? 18 : 28),
       constraints: _qs ? const BoxConstraints(minHeight: kM2yQsGirisYuksekligi) : null,
       decoration: _qs
           ? null

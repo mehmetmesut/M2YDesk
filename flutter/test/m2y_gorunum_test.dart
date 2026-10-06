@@ -329,6 +329,25 @@ void main() {
       expect(google.top, greaterThan(eposta.bottom));
       expect((google.center.dy - webauth.center.dy).abs(), lessThan(1), reason: 'aynı satırda');
     });
+
+    for (final boyut in const [Size(320, 568), Size(360, 640), Size(412, 915)]) {
+      testWidgets('telefon ${boyut.width.toInt()}x${boyut.height.toInt()}: giriş kutusu taşmaz, ekrana sığar', (tester) async {
+        kopru.hizli = false;
+        tester.view.physicalSize = boyut;
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        await tester.pumpWidget(_app(const M2yAuthGate()));
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull, reason: 'yatay/dikey taşma olmamalı');
+
+        final kutu = tester.getRect(find.byType(TextField));
+        expect(kutu.left, greaterThanOrEqualTo(0));
+        expect(kutu.right, lessThanOrEqualTo(boyut.width));
+        final google = tester.getRect(find.widgetWithText(ElevatedButton, 'Google ile giriş yap'));
+        expect(google.right, lessThanOrEqualTo(boyut.width));
+      });
+    }
   });
 
   group('Açılışta başlat anahtarı (M2yAcilisAnahtari)', () {
