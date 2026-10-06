@@ -17,7 +17,7 @@ class _M2yUyelikKartiState extends State<M2yUyelikKarti> {
   String _email = '';
   String _kurulus = '';
   bool _isAdmin = false;
-  bool _isYetkili = false;
+  bool _isDanisman = false;
 
   @override
   void initState() {
@@ -28,23 +28,13 @@ class _M2yUyelikKartiState extends State<M2yUyelikKarti> {
   Future<void> _load() async {
     final user = await M2yApi.currentUser();
     if (user == null || !mounted) return;
-    final admin = user['is_admin'] == true;
-    var yetkili = user['m2y_yetkili'] == true;
-    if (!admin && !yetkili) {
-      // Yetkili danışman bilgisi kullanıcı yanıtında yok: liste ucu yalnız
-      // admin/yetkiliye açıktır (200 = yetkili, 403 = değil).
-      try {
-        yetkili = (await M2yApi.get('/api/m2y/talepler')).statusCode == 200;
-      } catch (e) {
-        debugPrint('M2YDesk: yetki denetlenemedi: $e');
-      }
-    }
-    if (!mounted) return;
+    final email = (user['email'] ?? '').toString();
     setState(() {
-      _email = (user['email'] ?? '').toString();
+      _email = email;
       _kurulus = (user['m2y_kurulus'] ?? '').toString();
-      _isAdmin = admin;
-      _isYetkili = yetkili;
+      _isAdmin = user['is_admin'] == true;
+      // Yetkili danışman yalnız sistem sahibidir (sunucuda da aynı kural; m2y-api M2ySistemSahibiEposta).
+      _isDanisman = m2yNormalizeEmail(email) == kM2ySistemSahibiEposta;
     });
   }
 
@@ -125,10 +115,8 @@ class _M2yUyelikKartiState extends State<M2yUyelikKarti> {
               Expanded(
                 child: Wrap(spacing: 4, runSpacing: 4, children: [
                   _badge('Üye', MyTheme.accent),
-                  if (_isAdmin)
-                    _badge('Yönetici', Colors.deepOrange)
-                  else if (_isYetkili)
-                    _badge('Yetkili', Colors.teal),
+                  if (_isAdmin) _badge('Yönetici', Colors.deepOrange),
+                  if (_isDanisman) _badge('Danışman', Colors.amber.shade700),
                 ]),
               ),
               IconButton(

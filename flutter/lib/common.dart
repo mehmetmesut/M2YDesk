@@ -1941,20 +1941,31 @@ Future _saveSessionWindowPosition(WindowType windowType, int windowId,
   }
 }
 
-Future<Size> _adjustRestoreMainWindowSize(double? width, double? height) async {
+Future<Size> _adjustRestoreMainWindowSize(double? width, double? height,
+    {bool anaPencere = false}) async {
   const double minWidth = 1;
   const double minHeight = 1;
   const double maxWidth = 6480;
   const double maxHeight = 6480;
 
-  final defaultWidth =
-      ((isDesktop || isWebDesktop) ? 1280 : kMobileDefaultDisplayWidth)
-          .toDouble();
-  final defaultHeight =
-      ((isDesktop || isWebDesktop) ? 720 : kMobileDefaultDisplayHeight)
-          .toDouble();
+  // M2YDesk: ana pencere içeriğe göre kompakt açılır (kullanıcı: "yüksekliği gereksiz fazla");
+  // uzak masaüstü/dosya pencereleri etkilenmez.
+  final kompakt = anaPencere && (isDesktop || isWebDesktop);
+  final defaultWidth = ((isDesktop || isWebDesktop)
+          ? (kompakt ? kM2yAnaPencere.width : 1280)
+          : kMobileDefaultDisplayWidth)
+      .toDouble();
+  final defaultHeight = ((isDesktop || isWebDesktop)
+          ? (kompakt ? kM2yAnaPencere.height : 720)
+          : kMobileDefaultDisplayHeight)
+      .toDouble();
   double restoreWidth = width ?? defaultWidth;
   double restoreHeight = height ?? defaultHeight;
+  // Kaydedilmiş yükseklik üst sınırı aşıyorsa açılışta kompakt yüksekliğe döner (kullanıcı oturum içinde
+  // pencereyi büyütebilir; bir sonraki açılış yine kompakt).
+  if (kompakt && restoreHeight > kM2yAnaPencereAzamiYukseklik) {
+    restoreHeight = defaultHeight;
+  }
 
   if (restoreWidth < minWidth) {
     restoreWidth = defaultWidth;
@@ -2105,7 +2116,8 @@ Future<bool> restoreWindowPosition(WindowType type,
     }
   }
 
-  final size = await _adjustRestoreMainWindowSize(lpos.width, lpos.height);
+  final size = await _adjustRestoreMainWindowSize(lpos.width, lpos.height,
+      anaPencere: type == WindowType.Main);
   final offsetLeftTop = await _adjustRestoreMainWindowOffset(
     lpos.offsetWidth,
     lpos.offsetHeight,
@@ -3869,6 +3881,10 @@ Size getIncomingOnlyHomeSize() {
   return imcomingOnlyHomeSize +
       Offset(magicWidth, kDesktopRemoteTabBarHeight + magicHeight);
 }
+
+/// M2YDesk tam sürüm ana penceresinin açılış boyutu ve açılışta izin verilen en büyük yükseklik.
+const Size kM2yAnaPencere = Size(960, 580);
+const double kM2yAnaPencereAzamiYukseklik = 640;
 
 Size getIncomingOnlySettingsSize() {
   return Size(768, 600);
