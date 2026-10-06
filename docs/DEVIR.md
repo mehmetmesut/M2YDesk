@@ -357,4 +357,4 @@ Amaç (kullanıcı): her geliştirmede ≈1 saatlik GitHub derlemesini beklemede
 - **Ön izleme DOĞRULANDI (06.10, 10:04):** `R:\flutter` üzerinden `flutter build windows --debug` başarılı (ilk derleme ≈1,5 dk, sonrası ≈20–40 sn); uygulama açıldı, güncel kaynak koddan sol panel/bağlantı kartı/üyelik kartı ekran görüntüsüyle görüldü (computer-use ile `m2ydesk.exe` penceresi). TUZAK: proje yolundaki `ı` (ASCII dışı) shader derlemesini bozar → `subst R:`; ayrıca CMake `install` adımı `target\debug\librustdesk.dll` ister.
 - Testler: `m2y_gorunum_test.dart` 14 test (yan düğmeler, diyalog, giriş ekranı Google/Webauth düğmeleri). Test için `PlatformFFI.ffiBind` setter'ı eklendi (`@visibleForTesting`, sahte köprü).
 - `M2yOidcButtons` ayrı bileşen oldu; düğme metinleri sabit Türkçe (Google ile giriş yap / Webauth ile devam et).
-- Not: yerel  'u değiştirir (Flutter 3.24.5 çözümlemesi); CI'yı etkilememesi için commit'e ALMA ().
+- Not: yerel `flutter pub get`, `flutter/pubspec.lock` dosyasını değiştirir (Flutter 3.24.5 çözümlemesi); CI'yı etkilememesi için commit'e ALMA (`git checkout flutter/pubspec.lock`).
