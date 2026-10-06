@@ -772,7 +772,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("m2y-nonmember-wait", "Üye olmayan kullanıcılar için bekleme süresi devam ediyor. Lütfen bekleyin veya giriş yapın."),
         ("m2y-blocked", "Bu cihazın erişimi engellendi. Yanlışlık olduğunu düşünüyorsanız yöneticiyle iletişime geçin."),
         ("m2y-consent-title", "Cihaz bilgisi paylaşımı"),
-        ("m2y-consent-text", "Uzaktan destek hizmeti için bu cihazın ID'si, IP adresi, MAC adresi, bilgisayar ve kullanıcı adı, işletim sistemi ve çevrimiçi durumu M2YDesk sunucusuna gönderilir. Amaç: destek verenin cihazı tanıması ve kötüye kullanımın önlenmesi. Kabul etmezseniz bağlantı yine çalışır, ancak bu bilgiler paylaşılmaz. Ayrıntı: desk.mehmetmesut.com"),
+        ("m2y-consent-text", "Uzaktan destek hizmeti için bu cihazın ID'si, IP adresi, MAC adresi, bilgisayar ve kullanıcı adı, işletim sistemi ve çevrimiçi durumu M2YDesk sunucusuna gönderilir. Amaç: destek verenin cihazı tanıması ve kötüye kullanımın önlenmesi. Kabul etmezseniz bağlantı yine çalışır, ancak bu bilgiler paylaşılmaz. Ayrıntı: desk.mehmetmesut.com/kvkk"),
         ("m2y-consent-accept", "Kabul ediyorum"),
         ("m2y-consent-decline", "Şimdi değil"),
     ].iter().cloned().collect();

@@ -38,6 +38,18 @@ location = /_admin {
     return 301 /yonetici/;
 }
 
+# KVKK metinleri: temiz adres /kvkk (dosya kvkk.html)
+location = /kvkk {
+    try_files /kvkk.html =404;
+    add_header Cache-Control "no-cache" always;
+}
+location = /kvkk/ {
+    return 301 /kvkk;
+}
+location = /kvkk.html {
+    return 301 /kvkk;
+}
+
 # Kurulum betikleri (Windows PowerShell / macOS): UTF-8 olarak sunulur; aksi hâlde PowerShell 5.1
 # Türkçe karakterleri bozar.
 location ~ ^/(win-kur\.ps1|mac-kur\.sh)$ {
