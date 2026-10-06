@@ -65,7 +65,8 @@ void main() {
     testWidgets('Hızlı Destek ekran görüntüsü: ${asama.name}', (tester) async {
       final key = GlobalKey();
       M2yAuth.instance.stage.value = asama;
-      await tester.pumpWidget(MaterialApp(
+      var yukseklik = 1200.0; // ilk geçiş: içeriği ölçmek için bol yükseklik
+      Widget uygulama() => MaterialApp(
         theme: MyTheme.darkTheme.copyWith(
           textTheme: MyTheme.darkTheme.textTheme.apply(fontFamily: 'Carlito'),
         ),
@@ -79,13 +80,23 @@ void main() {
             alignment: Alignment.topLeft,
             child: RepaintBoundary(
               key: key,
-              // Pencere içerik genişliği; yükseklik içeriğe göre (kaydırmasız).
-              child: SizedBox(width: m2yQsIcerikGenisligi(), child: const M2yAuthGate()),
+              // Pencere içerik boyutu: genişlik sabit, yükseklik uygulamanın ölçtüğü içerik yüksekliği
+              // (`imcomingOnlyHomeSize`; ilk geçişte ölçülür, kaydırmasız).
+              child: SizedBox(
+                  width: m2yQsIcerikGenisligi(),
+                  height: yukseklik,
+                  child: const M2yAuthGate()),
             ),
           ),
         ),
-      ));
+      );
+      await tester.pumpWidget(uygulama());
       await tester.pumpAndSettle();
+      yukseklik = imcomingOnlyHomeSize.height; // uygulamanın pencereyi uydurduğu içerik yüksekliği
+      await tester.pumpWidget(uygulama());
+      await tester.pumpAndSettle();
+      // ignore: avoid_print
+      print('QS ${asama.name}: içerik ${m2yQsIcerikGenisligi()} x $yukseklik (pencere yüksekliği ≈ ${getIncomingOnlyHomeSize().height})');
       await _kaydet(tester, key, 'qs-${asama.name}');
     });
   }
