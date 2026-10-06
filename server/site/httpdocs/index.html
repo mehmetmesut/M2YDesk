@@ -177,7 +177,7 @@
 
 <footer>
   <p>Sürüm <span id="surum">—</span> · Güncelleme <span id="guncelleme">—</span></p>
-  <p><a href="/gizlilik-politikasi">Gizlilik Politikası</a> · <a href="/kvkk">KVKK Metinleri</a> · <a href="/ios-ayarlar">iPhone/iPad ayarları</a></p>
+  <p><a href="/gizlilik-politikasi">Gizlilik Politikası</a> · <a href="/kvkk">KVKK Metinleri</a> · <a href="/ios-ayarlar">Mobil (iPhone, iPad, Android) ayarları</a></p>
   <a href="https://mehmetmesut.com">Yeşil Dönüşüm Mühendisi © Creator M2Y</a>
 </footer>
 
@@ -192,7 +192,6 @@
     ['onay-bolum', 'indir', 'adimlar'].forEach(function (i) { $(i).hidden = true; });
     return;
   }
-  var STORE = 'https://apps.apple.com/app/rustdesk-remote-desktop/id1581225015';
   var IKON = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
   // Platform tablosu: d = [ayar anahtarı, düğme metni]
@@ -211,15 +210,18 @@
       not: 'Uygulama açılınca Ekran Kaydı ve Erişilebilirlik izinlerini nasıl vereceğinizi adım adım gösterir; bu izinleri macOS gereği yalnızca siz verebilirsiniz. .dmg ile kurarsanız ilk açılışta Sistem Ayarları → Gizlilik ve Güvenlik → “Yine de aç” gerekir.' },
     { id: 'linux', ad: 'Linux', alt: 'Debian / Ubuntu (.deb)', ac: 'Debian tabanlı dağıtımlar için paket.',
       d: [['linux_deb', '.deb paketini indir']], not: 'Kurulum: sudo apt install ./dosya-adı.deb' },
-    { id: 'android', ad: 'Android', alt: 'APK', ac: 'Uygulama sunucu ayarlarıyla hazır gelir; ek ayar gerekmez.',
-      d: [['android', 'APK’yı indir']],
-      not: 'Kurarken tarayıcınız veya dosya yöneticiniz için “bilinmeyen kaynaklardan yüklemeye izin ver” seçeneğini açmanız gerekebilir.' },
-    { id: 'ios', ad: 'iOS', alt: 'iPhone · iPad', ios: true }
+    { id: 'android', ad: 'Android', alt: 'Telefon · Tablet', mobil: true,
+      magaza: 'https://play.google.com/store/apps/details?id=com.carriez.flutter_hbb', magazaAd: 'Google Play’den RustDesk’i kur',
+      bilgi: 'Android’de uygulama hem bağlanabilir hem de ekranını paylaşabilir (Paylaş sekmesi → Hizmeti başlat). Bağlantılarda karşı cihazın parolası sorulur.',
+      d: [['android', 'M2YDesk APK (alternatif)']] },
+    { id: 'ios', ad: 'iOS', alt: 'iPhone · iPad', mobil: true,
+      magaza: 'https://apps.apple.com/app/rustdesk-remote-desktop/id1581225015', magazaAd: 'App Store’dan RustDesk’i kur',
+      bilgi: 'iOS’ta uygulama yalnızca bağlanan (kontrol eden) taraf olarak kullanılır; iPhone/iPad ekranı paylaşılamaz.' }
   ];
 
   PL.forEach(function (p) {
     p.dosya = (p.d || []).filter(function (x) { return a.dosyalar[x[0]]; });
-    p.var = p.ios || p.dosya.length > 0;
+    p.var = p.mobil || p.dosya.length > 0;
   });
 
   function h(tag, cls, text) {
@@ -252,13 +254,16 @@
     return link;
   }
 
-  function iosPanel(panel) {
-    var sol = h('div'), qr = h('div'), l = h('a', 'btn ana', 'App Store’dan RustDesk’i kur');
-    l.href = STORE; l.rel = 'noopener';
+  // Mobil (iOS ve Android): resmî RustDesk uygulaması + sunucu ayarı QR'ı.
+  function mobilPanel(panel, p) {
+    var sol = h('div'), qr = h('div'), l = h('a', 'btn ana', p.magazaAd);
+    l.href = p.magaza; l.rel = 'noopener';
     sol.appendChild(h('p', 'ikincil', 'Resmî RustDesk uygulamasını kurun; ardından Ayarlar → ID/Relay Sunucusu → QR tara ile aşağıdaki/yandaki QR kodu okutun.'));
-    var b = h('div', 'btnlar'); b.appendChild(l); sol.appendChild(b);
-    sol.appendChild(h('p', 'not', 'iOS’ta uygulama yalnızca bağlanan (kontrol eden) taraf olarak kullanılır; iPhone/iPad ekranı paylaşılamaz.'));
-    var rehber = h('a', null, 'Tüm iPhone/iPad ayarları ve önerilen değerler →'); rehber.href = '/ios-ayarlar';
+    var b = h('div', 'btnlar'); b.appendChild(l);
+    p.dosya.forEach(function (x) { b.appendChild(indirmeBaglantisi(p, x, 1)); });
+    sol.appendChild(b);
+    sol.appendChild(h('p', 'not', p.bilgi));
+    var rehber = h('a', null, 'Tüm uygulama ayarları ve önerilen değerler →'); rehber.href = '/ios-ayarlar';
     var rp = h('p'); rp.appendChild(rehber); sol.appendChild(rp);
     var det = h('details'), s = h('summary', null, 'QR okutamıyorsanız elle girin');
     det.appendChild(s);
@@ -277,7 +282,7 @@
     });
     det.appendChild(h('p', 'kucuk', 'Relay ve API alanlarını boş bırakın.'));
     sol.appendChild(det);
-    qr.id = 'qr'; qr.setAttribute('role', 'img'); qr.setAttribute('aria-label', 'iOS sunucu ayarı QR kodu');
+    qr.id = 'qr'; qr.setAttribute('role', 'img'); qr.setAttribute('aria-label', 'RustDesk sunucu ayarı QR kodu');
     var kap = h('div', 'ios'); kap.appendChild(sol); kap.appendChild(qr); panel.appendChild(kap);
     if (window.QRCode) {
       new QRCode(qr, { text: 'config=' + JSON.stringify({ host: a.sunucu, relay: '', api: 'https://' + a.sunucu, key: a.anahtar }), width: 176, height: 176, correctLevel: QRCode.CorrectLevel.M });
@@ -291,7 +296,7 @@
     panel.setAttribute('aria-labelledby', 'sekme-' + p.id);
     panel.textContent = '';
     panel.appendChild(h('h3', null, p.ad + ' · ' + p.alt));
-    if (p.ios) iosPanel(panel);
+    if (p.mobil) mobilPanel(panel, p);
     else {
       panel.appendChild(h('p', 'ikincil', p.ac));
       if (p.komut) {
@@ -309,7 +314,7 @@
       panel.appendChild(b);
       panel.appendChild(h('p', 'not', p.not));
     }
-    $('adimlar').hidden = !!p.ios;
+    $('adimlar').hidden = !!p.mobil;
     kilit();
     if (odak) sekmeler[p.id].focus();
   }

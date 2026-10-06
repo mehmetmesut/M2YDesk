@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>iPhone ve iPad Ayarları | M2YDesk</title>
-<meta name="description" content="iPhone/iPad'deki RustDesk uygulamasını M2YDesk sunucusuyla kullanmak için tüm ayarların Türkçe açıklaması ve önerilen değerler.">
+<title>Mobil Ayarlar (iPhone, iPad, Android) | M2YDesk</title>
+<meta name="description" content="iPhone, iPad ve Android'deki RustDesk uygulamasını M2YDesk sunucusuyla kullanmak için tüm ayarların Türkçe açıklaması ve önerilen değerler.">
 <meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#eef3f9" media="(prefers-color-scheme: light)">
 <link rel="canonical" href="https://desk.mehmetmesut.com/ios-ayarlar">
@@ -71,15 +71,16 @@
 <main>
   <section class="cam">
     <a class="geri" href="/">← M2YDesk ana sayfası</a>
-    <h1>iPhone ve iPad’de RustDesk ayarları</h1>
-    <p>iPhone/iPad için M2YDesk uygulaması yoktur; App Store’daki resmî <strong>RustDesk</strong> uygulaması M2YDesk sunucusuyla çalışır. Bu sayfa uygulamadaki her ayarı Türkçe açıklar ve hangisinin açık, hangisinin kapalı olması gerektiğini gösterir.</p>
-    <div class="kutu uyari"><strong>Bilmeniz gereken:</strong> iOS’ta uygulama yalnızca <strong>bağlanan</strong> taraftır: iPhone/iPad’den bilgisayarlarınıza bağlanırsınız, ancak iPhone/iPad ekranı paylaşılamaz (Apple izin vermez). Bağlanırken karşı cihazın <strong>sabit parolası</strong> sorulur.</div>
+    <h1>Mobil cihazlarda RustDesk ayarları</h1>
+    <p class="not">iPhone · iPad · Android telefon ve tablet</p>
+    <p>Mobil cihazlarda App Store ve Google Play’deki resmî <strong>RustDesk</strong> uygulaması M2YDesk sunucusuyla çalışır; iki platformda ekranlar ve ayarlar aynıdır. Bu sayfa uygulamadaki her ayarı Türkçe açıklar ve hangisinin açık, hangisinin kapalı olması gerektiğini gösterir.</p>
+    <div class="kutu uyari"><strong>Bilmeniz gereken:</strong> Bağlanırken karşı cihazın <strong>sabit parolası</strong> sorulur. iPhone/iPad yalnızca <strong>bağlanan</strong> taraftır (Apple ekran paylaşımına izin vermez); Android ise hem bağlanabilir hem de ekranını paylaşabilir (bkz. Bölüm 6).</div>
   </section>
 
   <section class="cam" aria-labelledby="kurulum">
     <h2 id="kurulum">1. Kurulum ve sunucu ayarı</h2>
     <ol>
-      <li>App Store’dan <strong>RustDesk</strong> uygulamasını kurun.</li>
+      <li>iPhone/iPad: <a href="https://apps.apple.com/app/rustdesk-remote-desktop/id1581225015" rel="noopener">App Store’dan RustDesk</a>; Android: <a href="https://play.google.com/store/apps/details?id=com.carriez.flutter_hbb" rel="noopener">Google Play’den RustDesk</a> uygulamasını kurun.</li>
       <li>Uygulamada <strong>Ayarlar → ID/Relay Sunucusu</strong>’na girin. Sağ üstteki QR simgesiyle <a href="/#indir">ana sayfadaki iOS QR kodunu</a> okutun ya da alanları elle doldurun:</li>
     </ol>
     <ul class="liste">
@@ -119,7 +120,7 @@
       <li><span class="ad">Bağlantı bittiğinde not sorulsun</span><span class="acik-kapali kap">Kapalı</span>
         <span class="acik-lama">Her oturum sonunda not penceresi açar. Destek kaydı tutan danışmanlar açabilir; kişisel kullanımda gereksiz.</span></li>
       <li><span class="ad">Giden oturumlar süresince ekranı açık tutun</span><span class="acik-kapali ac">Açık</span>
-        <span class="acik-lama">Bağlıyken iPhone ekranı kararıp kilitlenmez; oturum kopmaz.</span></li>
+        <span class="acik-lama">Bağlıyken telefon/tablet ekranı kararıp kilitlenmez; oturum kopmaz.</span></li>
     </ul>
   </section>
 
@@ -166,6 +167,17 @@
       <li><strong>“Giriş Hatalı – Bu cihaza yalnızca yetkili danışmanlar bağlanabilir”:</strong> Karşı cihazdaki M2YDesk eski sürümdür; güncellendiğinde iPhone/iPad’den sabit parolayla bağlanılabilir.</li>
       <li><strong>Parola soruluyor:</strong> Karşı cihazda M2YDesk’in ilk açılışında belirlenen 6 haneli <strong>sabit parolayı</strong> girin.</li>
     </ul>
+  </section>
+  <section class="cam" aria-labelledby="android">
+    <h2 id="android">6. Android: ekranını paylaşmak (destek almak)</h2>
+    <p>Android telefon/tablete danışmanınızın bağlanabilmesi için:</p>
+    <ol>
+      <li>Uygulamada alttaki <strong>Paylaş</strong> (Ekranı paylaş) sekmesine geçin ve <strong>Hizmeti başlat</strong>’a dokunun.</li>
+      <li>Android’in sorduğu izinleri verin: <strong>Ekran kaydı/yayını</strong> (görüntü), <strong>Erişilebilirlik → RustDesk Input</strong> (uzaktan dokunma ve klavye), <strong>Bildirim</strong> (bağlantı uyarıları). İsteğe bağlı: dosya aktarımı için dosya erişimi.</li>
+      <li>Sekmede görünen <strong>ID</strong> ve parolayı danışmanınıza iletin. Kalıcı erişim için sağ üst menüden <strong>kalıcı (sabit) parola</strong> belirleyin; aksi hâlde geçici parola her oturumda değişir.</li>
+      <li>Bağlantı kesilmesin diye RustDesk için <strong>pil optimizasyonunu kapatın</strong> (Android uygulamayı arka planda durdurabilir).</li>
+    </ol>
+    <p class="not">Ekran paylaşımı yalnızca siz başlattığınızda çalışır; bağlantı sırasında ekranın üstünde bildirim görünür ve paylaşımı her an durdurabilirsiniz.</p>
   </section>
 </main>
 <footer>© M2YDesk · <a href="/">Ana sayfa</a> · <a href="/kvkk">KVKK</a></footer>
