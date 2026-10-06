@@ -1,6 +1,6 @@
 # Bulut Oturumu Uygulama Planı (kod doğrulamalı, onay bekliyor)
 
-Tarih: 29.09.2026. Bu plan `docs/BULUT-BASLANGIC-PROMPTU.md` §4'teki 1–8 görevlerin kaynak koda göre gözden geçirilmiş halidir. Satır numaraları `claude/tender-darwin-l1fq1r` dalına aittir.
+Tarih: 29.09.2026. Bu plan `docs/BULUT-BASLANGIC-PROMPTU.md` §4'teki 1–8 görevlerin kaynak koda göre gözden geçirilmiş halidir. Satır numaraları `m2ydesk` dalına aittir.
 
 ## 0. İlk plandaki hatalar ve düzeltmeler
 

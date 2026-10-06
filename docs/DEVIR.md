@@ -5,7 +5,7 @@ Bu dosya iki Claude oturumu arasındaki ortak hafızadır. **Yerel oturum ilk i�
 ## Proje
 M2YDesk: RustDesk 1.4.9 tabanlı, kendi sunucuda barındırılan uzaktan destek sistemi. Sürüm **1.0.0**.
 - Sunucu/alan adı: **desk.mehmetmesut.com** (Plesk, IP `217.195.207.159`, Plesk paneli `https://217.195.207.159:8443`)
-- Depo: `mehmetmesut/M2YDesk` (özel), dal `claude/tender-darwin-l1fq1r`
+- Depo: `mehmetmesut/M2YDesk` (özel), dal `m2ydesk`
 - Ürünler: **M2YDesk** (tam istemci), **M2YDesk QS** (yalnızca ID + şifre, danışanlar için)
 - Kullanıcı tercihleri: Türkçe, kısa/net yanıt; Plesk (Linux) + FTP/SFTP; footer kredisi "Yeşil Dönüşüm Mühendisi © Creator M2Y" → https://mehmetmesut.com
 
@@ -28,7 +28,7 @@ M2YDesk: RustDesk 1.4.9 tabanlı, kendi sunucuda barındırılan uzaktan destek 
 1. Chrome ile Plesk → `desk.mehmetmesut.com` → SSL/TLS → Let's Encrypt (yalnızca ana alan adı). Sonra `https://desk.mehmetmesut.com` sertifikasını doğrula.
 2. SSH ile sunucuda:
    ```bash
-   sudo git clone https://github.com/mehmetmesut/M2YDesk.git -b claude/tender-darwin-l1fq1r /opt/m2ydesk
+   sudo git clone https://github.com/mehmetmesut/M2YDesk.git -b m2ydesk /opt/m2ydesk
    cd /opt/m2ydesk/server && sudo bash scripts/kurulum.sh
    ```
    (Depo özel: GitHub kullanıcı adı + PAT gerekir.) Çıktıdaki **Anahtar** satırını not al.
