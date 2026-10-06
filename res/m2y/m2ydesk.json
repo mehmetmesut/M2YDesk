@@ -16,7 +16,16 @@
   },
   "default-settings": {
     "lang": "tr",
-    "image-quality": "balanced",
-    "codec-preference": "auto"
+    "view-style": "adaptive",
+    "scroll-style": "scrollauto",
+    "image-quality": "best",
+    "codec-preference": "auto",
+    "show-monitors-toolbar": "Y",
+    "collapse-toolbar": "Y",
+    "show-remote-cursor": "Y",
+    "follow-remote-cursor": "Y",
+    "follow-remote-window": "Y",
+    "enable-file-copy-paste": "Y",
+    "terminal-persistent": "Y"
   }
 }
