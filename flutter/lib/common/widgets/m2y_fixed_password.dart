@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hbb/common.dart';
 import 'package:flutter_hbb/common/widgets/m2y_auth.dart';
+import 'package:flutter_hbb/common/widgets/m2y_pencere.dart';
 import 'package:flutter_hbb/models/platform_model.dart';
 
 const _kAccessInfo =
@@ -135,10 +136,17 @@ class _M2yFixedPasswordFormState extends State<M2yFixedPasswordForm> {
 /// Dar (280 px) pencereye sığan sade iletişim kutusu.
 Future<void> _m2yShowDialog(BuildContext context, String title,
     Widget Function(VoidCallback close) body) {
+  // Hızlı Destek'te kaydırma yok: diyalog sığsın diye pencere geçici büyütülür.
+  return m2yPencereBuyutup<void>(
+      const Size(420, 420), () => _m2yShowDialogGoster(context, title, body));
+}
+
+Future<void> _m2yShowDialogGoster(BuildContext context, String title,
+    Widget Function(VoidCallback close) body) {
   return showDialog<void>(
     context: context,
     builder: (ctx) => AlertDialog(
-      scrollable: true,
+      scrollable: !bind.isIncomingOnly(),
       insetPadding: const EdgeInsets.all(8),
       titlePadding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
       contentPadding: const EdgeInsets.all(12),

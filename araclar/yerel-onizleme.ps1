@@ -5,8 +5,10 @@
 #   yerel-onizleme\rust-cekirdek\librustdesk.dll  (son derlemenin paketinden: yerel-onizleme\paket-ac.py)
 #   flutter\lib\generated_bridge.dart            (derlemenin "bridge-artifact" çıktısından)
 #
-# Kullanım:  powershell -ExecutionPolicy Bypass -File araclar\yerel-onizleme.ps1
+# Kullanım:  powershell -ExecutionPolicy Bypass -File araclar\yerel-onizleme.ps1 [-Hizli]
+#   -Hizli: Hızlı Destek (yalnız gelen bağlantı) çekirdeğiyle açar; yerel-onizlemeust-cekirdek-qs gerekir.
 # Sınır: Rust'a gömülü şeyler (varsayılan ayar dosyası, servis başlatma) çekirdek yeniden derlenmeden değişmez.
+param([switch]$Hizli)
 $ErrorActionPreference = 'Stop'
 $kok = Split-Path $PSScriptRoot -Parent
 # Flutter'ın gölge (shader) derleyicisi ASCII olmayan yollarda ("Yazılım…" gibi) dosya yazamaz; proje yolunda

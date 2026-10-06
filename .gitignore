@@ -72,3 +72,6 @@ RustDesk-*.zip
 
 # Yerel ön izleme: CI'dan indirilen çekirdek ve köprü dosyaları (depoya girmez)
 /yerel-onizleme/
+
+# Araç oturum durumu (OMC)
+**/.omc/
