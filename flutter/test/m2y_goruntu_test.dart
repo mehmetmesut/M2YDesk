@@ -10,6 +10,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hbb/common.dart';
 import 'package:flutter_hbb/common/widgets/m2y_auth.dart';
+import 'package:flutter_hbb/common/widgets/m2y_bilgi_karti.dart';
 import 'package:flutter_hbb/common/widgets/m2y_login_gate.dart';
 import 'package:flutter_hbb/common/widgets/m2y_zorunlu_guncelleme.dart';
 import 'package:flutter_hbb/generated_bridge.dart';
@@ -147,6 +148,26 @@ void main() {
     await _ciz(tester, '4-zorunlu-guncelleme-tam-surum',
         genislik: 800, yukseklik: 600, icerik: const M2yZorunluGuncellemeKatmani());
   });
+
+  for (final koyu in [true, false]) {
+    testWidgets('5-bilgi-kartlari-${koyu ? 'koyu' : 'acik'}', (tester) async {
+      _kopru.hizli = false;
+      await _ciz(tester, '5-bilgi-kartlari-${koyu ? 'koyu' : 'acik'}',
+          genislik: 260,
+          yukseklik: 520,
+          koyu: koyu,
+          icerik: SingleChildScrollView(
+            child: Column(children: [
+              M2yBilgiKarti.rustdesk(title: '', content: 'install_tip', btnText: 'Install', onPressed: () {}),
+              M2yBilgiKarti.rustdesk(
+                  title: 'Status', content: 'Your installation is lower version.', btnText: 'Click to upgrade', onPressed: () {}),
+              M2yBilgiKarti.rustdesk(
+                  title: 'Warning', content: 'wayland_experiment_tip', btnText: '', help: 'Help', link: 'https://x', onKapat: () {}),
+              M2yBilgiKarti.rustdesk(title: '', content: 'Hizmet başlatılamadı.', btnText: '', hata: true),
+            ]),
+          ));
+    });
+  }
 
   testWidgets('4-zorunlu-guncelleme-android', (tester) async {
     _kopru.hizli = false;
