@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gizlilik Politikası | M2YDesk</title>
+<meta name="description" content="M2YDesk uzaktan destek yazılımı ve desk.mehmetmesut.com gizlilik politikası: hangi verilerin neden işlendiği, ekran içeriğinin kaydedilmemesi, şifreleme, izinler ve haklarınız.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#eef3f9" media="(prefers-color-scheme: light)">
+<link rel="canonical" href="https://desk.mehmetmesut.com/gizlilik-politikasi">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#eef3f9; --bg2:#f7f9fc;
+    --metin:#0f172a; --ikincil:#51617a; --vurgu:#0e7cff;
+    --cam:rgba(255,255,255,.62); --cam-cerceve:rgba(255,255,255,.78);
+    --cizgi:rgba(15,23,42,.12); --satir:rgba(15,23,42,.04);
+    --golge:0 10px 40px rgba(15,23,42,.10), 0 1px 0 rgba(255,255,255,.8) inset;
+    --blob1:#9fc6ff; --blob2:#b8f0e4; --blob3:#e2d4ff;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0b1220; --bg2:#0f172a;
+      --metin:#f1f5f9; --ikincil:#a0aec0; --vurgu:#3b9dff;
+      --cam:rgba(30,41,59,.58); --cam-cerceve:rgba(255,255,255,.12);
+      --cizgi:rgba(255,255,255,.14); --satir:rgba(255,255,255,.05);
+      --golge:0 10px 40px rgba(0,0,0,.45), 0 1px 0 rgba(255,255,255,.08) inset;
+      --blob1:#1e4fa3; --blob2:#0f6b5c; --blob3:#4b2f9e;
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:16px}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Inter,Roboto,system-ui,sans-serif;
+       background:var(--bg);color:var(--metin);line-height:1.62;-webkit-font-smoothing:antialiased}
+  :focus-visible{outline:3px solid var(--vurgu);outline-offset:2px}
+  a{color:var(--vurgu)}
+  .arka{position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,var(--bg),var(--bg2));overflow:hidden}
+  .arka i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.7}
+  .arka i:nth-child(1){width:50vw;height:50vw;max-width:520px;max-height:520px;background:var(--blob1);top:-12%;left:-10%}
+  .arka i:nth-child(2){width:42vw;height:42vw;max-width:440px;max-height:440px;background:var(--blob2);top:40%;right:-12%}
+  .arka i:nth-child(3){width:38vw;height:38vw;max-width:400px;max-height:400px;background:var(--blob3);bottom:-10%;left:16%}
+  main{max-width:820px;margin:0 auto;padding:clamp(16px,3vw,40px) 16px 40px;display:grid;gap:14px}
+  .cam{background:var(--cam);border:1px solid var(--cam-cerceve);border-radius:22px;box-shadow:var(--golge);padding:clamp(16px,3vw,28px);
+       -webkit-backdrop-filter:blur(26px) saturate(170%);backdrop-filter:blur(26px) saturate(170%)}
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.cam{background:var(--bg2)}}
+  h1{font-size:clamp(1.5rem,4.6vw,2.2rem);letter-spacing:-.03em;line-height:1.15;margin:0 0 6px}
+  h2{font-size:1.15rem;margin:0 0 10px}
+  p{margin:0 0 10px;text-wrap:pretty}
+  ul{margin:0 0 10px;padding-left:1.25rem}
+  li{margin:3px 0}
+  .not{color:var(--ikincil);font-size:.92rem}
+  .geri{display:inline-block;margin-bottom:6px;font-size:.92rem;text-decoration:none}
+  .kutu{border-left:4px solid var(--vurgu);background:var(--satir);padding:10px 14px;border-radius:0 12px 12px 0;margin:10px 0}
+  .tablo{overflow-x:auto;margin:6px 0 12px;border:1px solid var(--cizgi);border-radius:12px}
+  table{border-collapse:collapse;width:100%;font-size:.93rem}
+  th,td{padding:9px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--cizgi)}
+  th{background:var(--satir);font-weight:600}
+  tr:last-child td{border-bottom:0}
+  footer{max-width:820px;margin:0 auto;padding:0 16px 32px;color:var(--ikincil);font-size:.88rem}
+  @media print{.arka{display:none}.cam{box-shadow:none;border:0;background:none;backdrop-filter:none}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+<div class="arka" aria-hidden="true"><i></i><i></i><i></i></div>
+<main>
+  <section class="cam">
+    <a class="geri" href="/">← M2YDesk ana sayfası</a>
+    <h1>Gizlilik Politikası</h1>
+    <p class="not">M2YDesk Uzaktan Destek · Sürüm 1.0 · Yürürlük tarihi: 06.10.2026</p>
+    <p>Bu politika; M2YDesk ve M2YDesk Hızlı Destek uygulamalarını (Windows, macOS, Linux, Android), <strong>desk.mehmetmesut.com</strong> sitesini ve M2YDesk sunucu hizmetini kapsar. Kişisel verilerin işlenmesine ilişkin yasal bilgilendirme ve açık rıza metinleri <a href="/kvkk">KVKK Metinleri</a> sayfasındadır; bu politika onların yerine geçmez, onları özetler ve tamamlar.</p>
+    <div class="kutu"><strong>Kısaca:</strong> Ekranınızı, klavye ve fare girdilerinizi, kopyaladıklarınızı ve aktardığınız dosyaları <strong>kaydetmeyiz</strong>. Reklam, izleme ve analiz yoktur. Verileriniz satılmaz; Türkiye’deki sunucumuzda, gerektiği kadar tutulur.</div>
+  </section>
+
+  <section class="cam" aria-labelledby="b1">
+    <h2 id="b1">1. Biz kimiz</h2>
+    <p>M2YDesk, Mehmet Mesut YILMAZ (M²Y) tarafından sunulan, açık kaynaklı RustDesk yazılımına dayanan bir uzaktan destek hizmetidir. Bağlantılar hizmet sağlayıcının kendi sunucusu üzerinden kurulur; RustDesk’in genel sunucuları kullanılmaz. İletişim: <a href="mailto:mehmetmesut@gmail.com">mehmetmesut@gmail.com</a></p>
+  </section>
+
+  <section class="cam" aria-labelledby="b2">
+    <h2 id="b2">2. Hangi verileri neden işliyoruz</h2>
+    <div class="tablo">
+      <table>
+        <thead><tr><th>Veri</th><th>Neden</th></tr></thead>
+        <tbody>
+          <tr><td>E-posta adresi; Google ile girişte ad ve e-posta</td><td>Oturum açma ve hesabınızı tanıma</td></tr>
+          <tr><td>Cihaz kimliği (ID), IP adresi, işletim sistemi; onay verirseniz MAC adresi, bilgisayar ve kullanıcı adı</td><td>Cihazın bağlantı için bulunması, destek verenin cihazı tanıması, kötüye kullanımın önlenmesi</td></tr>
+          <tr><td>Oturum ve bağlantı kayıtları (kim, hangi cihaza, ne zaman, ne kadar süre)</td><td>Güvenlik, hizmet kaydı, olası uyuşmazlıkların çözümü</td></tr>
+          <tr><td>“Destek iste” ile yazdığınız açıklama, adınız ve kuruluşunuz</td><td>Talebinizin danışmana iletilmesi ve sonuçlandırılması</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Saklama süreleri, hukuki sebepler ve ayrıntılı liste için: <a href="/kvkk#saklama">KVKK – Saklama ve İmha</a>. Süresi dolan kayıtlar sunucuda her gün otomatik silinir.</p>
+  </section>
+
+  <section class="cam" aria-labelledby="b3">
+    <h2 id="b3">3. İşlemediğimiz veriler</h2>
+    <ul>
+      <li>Uzak bağlantı sırasında ekran görüntüsü, video, ses, klavye ve fare girdileri, pano içeriği ve aktarılan dosyalar <strong>sunucuda kaydedilmez ve saklanmaz</strong>; yalnızca iki cihaz arasında şifreli olarak iletilir.</li>
+      <li>Parolalarınız sunucuya gönderilmez; sabit parola yalnızca kendi cihazınızda tutulur.</li>
+      <li>Konum, rehber, fotoğraf arşivi gibi bağlantıyla ilgisiz cihaz verilerine erişilmez.</li>
+    </ul>
+  </section>
+
+  <section class="cam" aria-labelledby="b4">
+    <h2 id="b4">4. Bağlantı güvenliği</h2>
+    <ul>
+      <li>Uzak oturum içeriği uçtan uca şifrelenir; sunucu yalnızca bağlantıyı aktarır, içeriği çözemez.</li>
+      <li>Sunucunun kimliği uygulamaya gömülü anahtarla doğrulanır; site ve hesap hizmeti HTTPS ile çalışır.</li>
+      <li>Bir cihaza bağlanabilmek için o cihazın parolası (ya da sistem sahibinin imzalı yetki belirteci) gerekir; oturum açılmamış cihazlar gelen bağlantı kabul etmez.</li>
+      <li>Bağlantı süresince karşı ekranda kimin bağlı olduğu görünür ve bağlantı her an sonlandırılabilir.</li>
+      <li>Program güncellemeleri dijital imzayla doğrulanır.</li>
+    </ul>
+  </section>
+
+  <section class="cam" aria-labelledby="b5">
+    <h2 id="b5">5. Uygulama izinleri</h2>
+    <ul>
+      <li><strong>Windows / macOS / Linux:</strong> ekran kaydı, erişilebilirlik (fare/klavye denetimi) ve isteğe bağlı mikrofon izinleri yalnızca uzak desteğin çalışması için istenir; macOS’ta bu izinleri siz verirsiniz.</li>
+      <li><strong>Android:</strong> ekran yakalama, erişilebilirlik hizmeti (uzaktan dokunma), bildirim ve isteğe bağlı dosya erişimi; yalnızca siz ekran paylaşımını başlattığınızda kullanılır.</li>
+      <li><strong>Açılışta başlat:</strong> Hızlı Destek’in bilgisayar açılışında arka planda başlaması isteğe bağlıdır ve uygulamadan kapatılabilir.</li>
+    </ul>
+  </section>
+
+  <section class="cam" aria-labelledby="b6">
+    <h2 id="b6">6. Üçüncü taraflar</h2>
+    <ul>
+      <li><strong>Google:</strong> “Google ile giriş” seçerseniz kimlik doğrulama Google üzerinden yapılır ve Google’ın gizlilik politikasına tabidir.</li>
+      <li><strong>Anlık bildirim (ntfy):</strong> danışmana giden bildirimde <strong>kişisel veri bulunmaz</strong>, yalnızca talep numarası iletilir.</li>
+      <li><strong>iPhone/iPad:</strong> iOS’ta resmî RustDesk uygulaması kullanılır; uygulamanın kendisi RustDesk’in, App Store ise Apple’ın politikalarına tabidir. Bağlantı yine M2YDesk sunucusu üzerinden kurulur.</li>
+      <li>Verileriniz pazarlama amacıyla hiçbir üçüncü kişiye aktarılmaz veya satılmaz; yasal zorunluluk hâlinde yetkili mercilerle paylaşılabilir.</li>
+    </ul>
+  </section>
+
+  <section class="cam" aria-labelledby="b7">
+    <h2 id="b7">7. Web sitesi ve çerezler</h2>
+    <p>Bu sitede reklam, izleme veya analiz çerezi ve üçüncü taraf betik bulunmaz. Tarayıcınızda yalnızca indirme onayınız saklanır. Sunucu, güvenli işletim için standart erişim kayıtlarını (IP adresi, tarih-saat, istenen sayfa) tutar.</p>
+  </section>
+
+  <section class="cam" aria-labelledby="b8">
+    <h2 id="b8">8. Verilerin saklandığı yer</h2>
+    <p>Veriler, hizmet sağlayıcının yönettiği ve Türkiye’de (İstanbul) bulunan sunucuda saklanır ve yurt dışına aktarılmaz. Tek istisna, sizin başlattığınız Google ile giriş işlemidir.</p>
+  </section>
+
+  <section class="cam" aria-labelledby="b9">
+    <h2 id="b9">9. Haklarınız ve tercihleriniz</h2>
+    <ul>
+      <li>Verilerinize erişme, düzeltme, silme ve rızanızı geri alma haklarınız vardır: <a href="/kvkk#basvuru">KVKK – Haklarınız ve Başvuru</a>.</li>
+      <li>Cihaz bilgisi paylaşımı isteğe bağlıdır; reddetseniz de bağlantı çalışır.</li>
+      <li>Uygulamada “Bu cihazdan e-postamı unut” ile kayıtlı e-postayı silebilir, “Çıkış yap” ile oturumu kapatabilirsiniz.</li>
+    </ul>
+  </section>
+
+  <section class="cam" aria-labelledby="b10">
+    <h2 id="b10">10. Çocuklar</h2>
+    <p>Hizmet çocuklara yönelik değildir; 18 yaşından küçükler veli veya vasilerinin gözetiminde kullanmalıdır.</p>
+  </section>
+
+  <section class="cam" aria-labelledby="b11">
+    <h2 id="b11">11. Değişiklikler</h2>
+    <p>Bu politika güncellenebilir; güncel sürüm her zaman bu adreste yayımlanır ve esaslı değişiklikler uygulamada duyurulur.</p>
+    <p class="not">Sürüm 1.0 · Yürürlük: 06.10.2026</p>
+  </section>
+</main>
+<footer>© M2YDesk · <a href="/">Ana sayfa</a> · <a href="/kvkk">KVKK Metinleri</a> · Yeşil Dönüşüm Mühendisi © Creator M²Y</footer>
+</body>
+</html>
