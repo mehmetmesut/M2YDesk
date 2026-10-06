@@ -10,6 +10,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hbb/common.dart';
+import 'package:flutter_hbb/common/widgets/m2y_login_gate.dart' show m2yCompact;
 import 'package:flutter_hbb/common/widgets/m2y_pencere.dart';
 import 'package:flutter_hbb/models/platform_model.dart';
 import 'package:get/get.dart';
@@ -143,7 +144,7 @@ class _M2yZorunluGuncellemeKatmaniState
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Icon(Icons.system_update_alt,
-              size: 40, color: theme.colorScheme.primary),
+              size: _qs ? 28 : 40, color: theme.colorScheme.primary),
           const SizedBox(height: 10),
           Text('Yeni sürüm yayında', style: theme.textTheme.titleLarge),
           const SizedBox(height: 6),
@@ -161,20 +162,33 @@ class _M2yZorunluGuncellemeKatmaniState
             const SizedBox(height: 12),
             _status(context, stage),
           ],
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              OutlinedButton(
-                onPressed: stage == M2yUpdateStage.working ? null : c.quit,
-                child: const Text('Programdan çık'),
-              ),
-              const Spacer(),
-              ElevatedButton(
-                onPressed: busy ? null : c.updateNow,
-                child: const Text('Şimdi güncelle'),
-              ),
-            ],
-          ),
+          SizedBox(height: _qs ? 12 : 16),
+          // Hızlı Destek'in dar penceresinde düğmeler yan yana sığmaz (taşıyordu): alt alta, tam genişlik,
+          // birincil eylem üstte. Tam sürümde yan yana.
+          if (_qs) ...[
+            ElevatedButton(
+              onPressed: busy ? null : c.updateNow,
+              child: const Text('Şimdi güncelle'),
+            ),
+            const SizedBox(height: 6),
+            OutlinedButton(
+              onPressed: stage == M2yUpdateStage.working ? null : c.quit,
+              child: const Text('Programdan çık'),
+            ),
+          ] else
+            Row(
+              children: [
+                OutlinedButton(
+                  onPressed: stage == M2yUpdateStage.working ? null : c.quit,
+                  child: const Text('Programdan çık'),
+                ),
+                const Spacer(),
+                ElevatedButton(
+                  onPressed: busy ? null : c.updateNow,
+                  child: const Text('Şimdi güncelle'),
+                ),
+              ],
+            ),
         ],
       );
     });
@@ -185,7 +199,7 @@ class _M2yZorunluGuncellemeKatmaniState
       child: content,
     );
     // Kapatılamaz: arka plandaki içeriğin yerine geçer, geri/kapat eylemi yoktur.
-    return PopScope(
+    final sayfa = PopScope(
       canPop: false,
       child: Container(
         color: theme.colorScheme.background,
@@ -201,6 +215,8 @@ class _M2yZorunluGuncellemeKatmaniState
               ),
       ),
     );
+    // Hızlı Destek: giriş ekranlarıyla aynı sabit, kompakt yazı/düğme ölçeği.
+    return _qs ? m2yCompact(context, sayfa) : sayfa;
   }
 
   Widget _status(BuildContext context, M2yUpdateStage stage) {

@@ -169,6 +169,19 @@ void main() {
     });
   }
 
+  testWidgets('4-zorunlu-guncelleme-hizli-destek', (tester) async {
+    // 210 px Hızlı Destek penceresinde düğmeler taşmamalı (06.10: 54 px taşma hatası).
+    _kopru.hizli = true;
+    M2yZorunluGuncelleme.instance
+      ..current = '1.0.3'
+      ..minimum = '1.0.4';
+    final w = m2yQsIcerikGenisligi();
+    await _ciz(tester, '_olcum', genislik: w, yukseklik: 1200, icerik: const M2yZorunluGuncellemeKatmani());
+    final h = imcomingOnlyHomeSize.height;
+    await _ciz(tester, '4-zorunlu-guncelleme-hizli-destek',
+        genislik: w, yukseklik: h, icerik: const M2yZorunluGuncellemeKatmani());
+  });
+
   testWidgets('4-zorunlu-guncelleme-android', (tester) async {
     _kopru.hizli = false;
     M2yZorunluGuncelleme.instance
