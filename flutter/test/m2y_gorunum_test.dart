@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hbb/common.dart';
 import 'package:flutter_hbb/common/widgets/m2y_destek.dart';
+import 'package:flutter_hbb/common/widgets/m2y_acilis.dart';
 import 'package:flutter_hbb/common/widgets/m2y_auth.dart';
 import 'package:flutter_hbb/common/widgets/m2y_login_gate.dart';
 import 'package:flutter_hbb/common/widgets/m2y_pencere.dart';
@@ -57,8 +58,20 @@ class _SahteKopru extends Fake implements RustdeskImpl {
   @override
   bool isIncomingOnly({dynamic hint}) => hizli;
 
+  /// Yerel seçenekler (ör. `m2y-autostart`).
+  final yerel = <String, String>{};
+
   @override
-  String mainGetLocalOption({required String key, dynamic hint}) => '';
+  String mainGetLocalOption({required String key, dynamic hint}) => yerel[key] ?? '';
+
+  @override
+  Future<void> mainSetLocalOption(
+      {required String key, required String value, dynamic hint}) async {
+    yerel[key] = value;
+  }
+
+  @override
+  String mainGetAppNameSync({dynamic hint}) => 'M2YDeskQS';
 }
 
 void main() {
@@ -67,7 +80,10 @@ void main() {
     platformFFI.ffiBind = kopru;
     await _loadCarlito();
   });
-  tearDown(() => kopru.hizli = false);
+  tearDown(() {
+    kopru.hizli = false;
+    kopru.yerel.clear();
+  });
 
   group('Sol panel düğmesi (m2ySideButton)', () {
     for (final width in _panelWidths) {
@@ -293,8 +309,12 @@ void main() {
       final google = tester.getRect(find.widgetWithText(ElevatedButton, 'Google ile giriş yap'));
       final eposta = tester.getRect(find.byType(TextField));
       expect(google.bottom, lessThan(eposta.top), reason: 'Google seçeneği e-posta alanının üstünde');
-      // Google düğmesi içerik genişliğini doldurur (288 − 2×16 dolgu = 256).
-      expect(google.width, closeTo(256, 1));
+      // Google düğmesi içerik genişliğini doldurur (içerik genişliği − 2×12 dolgu).
+      expect(google.width, closeTo(m2yQsIcerikGenisligi() - 24, 1));
+
+      // Hızlı Destek penceresi 210 px genişliğinde (içerik + çerçeve payı).
+      expect(imcomingOnlyHomeSize.width, closeTo(m2yQsIcerikGenisligi(), 0.5));
+      expect(getIncomingOnlyHomeSize().width, closeTo(210, 0.5));
     });
 
     testWidgets('tam sürüm: e-posta üstte, Google ve Webauth altta aynı satırda', (tester) async {
@@ -308,6 +328,32 @@ void main() {
       final webauth = tester.getRect(find.widgetWithText(ElevatedButton, 'Webauth ile devam et'));
       expect(google.top, greaterThan(eposta.bottom));
       expect((google.center.dy - webauth.center.dy).abs(), lessThan(1), reason: 'aynı satırda');
+    });
+  });
+
+  group('Açılışta başlat anahtarı (M2yAcilisAnahtari)', () {
+    testWidgets('varsayılan açık; kapatınca seçenek ve kayıt güncellenir, sığar', (tester) async {
+      final cagrilar = <bool>[];
+      m2yAcilisKaydedici = (ac) async {
+        cagrilar.add(ac);
+        return true;
+      };
+      await tester.pumpWidget(_app(const SizedBox(width: 120, child: M2yAcilisAnahtari())));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: '120 px alana sığmalı');
+
+      expect(tester.widget<Switch>(find.byType(Switch)).value, isTrue, reason: 'varsayılan açık');
+      await tester.tap(find.byType(Switch));
+      await tester.pumpAndSettle();
+
+      expect(tester.widget<Switch>(find.byType(Switch)).value, isFalse);
+      expect(kopru.yerel['m2y-autostart'], 'N');
+      expect(cagrilar, [false]);
+
+      await tester.tap(find.text('Açılışta başlat'));
+      await tester.pumpAndSettle();
+      expect(kopru.yerel['m2y-autostart'], '');
+      expect(cagrilar, [false, true]);
     });
   });
 }

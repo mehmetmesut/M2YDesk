@@ -19,6 +19,7 @@ const kM2yOptLastEmail = 'm2y-last-email';
 const kM2yOptAutostart = 'm2y-autostart';
 const kM2yKvkkUrl = 'https://desk.mehmetmesut.com/#kvkk';
 const kM2yCodeLength = 6;
+const _kGirisOnizleme = bool.fromEnvironment('M2Y_GIRIS_ONIZLEME');
 
 final _fixedPasswordRe = RegExp(r'^[0-9]{6}$');
 final _codeRe = RegExp(r'^[0-9]{6}$');
@@ -55,6 +56,12 @@ class M2yAuth {
   Future<void> start() async {
     if (_started) return;
     _started = true;
+    // Yalnız yerel ön izleme (--dart-define=M2Y_GIRIS_ONIZLEME=1): oturumu silmeden/kapıyı kapatmadan
+    // giriş ekranını gösterir. Sürüm derlemesinde (kDebugMode=false) hiçbir etkisi yoktur.
+    if (kDebugMode && _kGirisOnizleme) {
+      stage.value = M2yAuthStage.login;
+      return;
+    }
     // Çıkış ya da 401 (UserModel.reset) → giriş ekranı.
     ever<String>(gFFI.userModel.userName, (name) {
       final active = stage.value == M2yAuthStage.ready ||

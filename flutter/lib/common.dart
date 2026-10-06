@@ -3854,9 +3854,17 @@ Widget loadIcon(double size) {
 final String kM2yFontFamily = isWindows ? 'Calibri' : 'Carlito';
 const List<String> kM2yFontFallback = ['Carlito', 'Segoe UI', 'Roboto'];
 
-var imcomingOnlyHomeSize = Size(280, 300);
+/// M2YDesk Hızlı Destek penceresinin DIŞ genişliği (kullanıcı isteği: 210 px). İçerik genişliği, pencere
+/// çerçevesi payı (`getIncomingOnlyHomeSize` içindeki magicWidth) çıkarılarak bulunur.
+const double kM2yQsPencereGenislik = 210.0;
+/// Pencere dış genişliği ile Flutter içerik genişliği arasındaki fark (çerçeve). Başlangıçta tahmin,
+/// ilk çizimden sonra gerçek değer öğrenilir (`m2yKenarPayiniOgren`).
+double m2yKenarPayi = isWindows ? 11.0 : 2.0;
+double m2yQsIcerikGenisligi() => kM2yQsPencereGenislik - m2yKenarPayi;
+
+var imcomingOnlyHomeSize = Size(m2yQsIcerikGenisligi(), 300);
 Size getIncomingOnlyHomeSize() {
-  final magicWidth = isWindows ? 11.0 : 2.0;
+  final magicWidth = m2yKenarPayi;
   final magicHeight = 10.0;
   return imcomingOnlyHomeSize +
       Offset(magicWidth, kDesktopRemoteTabBarHeight + magicHeight);

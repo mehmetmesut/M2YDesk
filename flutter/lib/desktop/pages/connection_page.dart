@@ -132,10 +132,11 @@ class _OnlineStatusWidgetState extends State<OnlineStatusWidget> {
                         : Color.fromARGB(255, 224, 79, 95)),
               ),
             ).marginSymmetric(horizontal: em),
-            Container(
-              width: isIncomingOnly ? 226 : null,
-              child: _buildConnStatusMsg(),
-            ),
+            // Hızlı Destek'in dar penceresinde durum metni kalan genişliğe sığar.
+            if (isIncomingOnly)
+              Expanded(child: _buildConnStatusMsg())
+            else
+              Container(child: _buildConnStatusMsg()),
             // stop
             if (!isIncomingOnly) startServiceWidget(),
             // ready && public
