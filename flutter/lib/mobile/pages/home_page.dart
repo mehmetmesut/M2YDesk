@@ -8,6 +8,7 @@ import '../../common/widgets/chat_page.dart';
 import '../../common/widgets/m2y_auth.dart';
 import '../../common/widgets/m2y_login_gate.dart';
 import '../../common/widgets/m2y_zorunlu_guncelleme.dart';
+import '../widgets/m2y_mobil.dart';
 import '../../models/platform_model.dart';
 import '../../models/state_model.dart';
 import 'connection_page.dart';
@@ -49,6 +50,8 @@ class HomePageState extends State<HomePage> {
     // M2YDesk: zorunlu oturum ve zorunlu güncelleme denetimi (masaüstü ana sayfasıyla aynı akış).
     M2yAuth.instance.start();
     M2yZorunluGuncelleme.instance.start();
+    // M2YDesk: cihaz bilgisi paylaşımı için açık onay (KVKK); onay yoksa hiçbir bilgi gönderilmez.
+    Future.delayed(const Duration(seconds: 2), () => m2yMobilCihazOnayiSor(() => mounted));
   }
 
   void initPages() {
