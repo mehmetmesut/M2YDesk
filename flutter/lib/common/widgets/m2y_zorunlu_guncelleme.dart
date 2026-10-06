@@ -17,7 +17,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 
 const _kEvent = 'm2y_zorunlu_guncelleme';
-const _kQuickSupportWidth = 280.0;
 const _kFullWidth = 380.0;
 
 /// Güncelleme düğmesinin durumu. `method` (Rust `yontem`): kurulu (Windows kurulum),
@@ -181,8 +180,8 @@ class _M2yZorunluGuncellemeKatmaniState
     });
     final framed = Container(
       key: _contentKey,
-      width: _qs ? _kQuickSupportWidth : null,
-      padding: const EdgeInsets.all(16),
+      width: _qs ? m2yQsIcerikGenisligi() : null,
+      padding: EdgeInsets.all(_qs ? 12 : 16),
       child: content,
     );
     // Kapatılamaz: arka plandaki içeriğin yerine geçer, geri/kapat eylemi yoktur.

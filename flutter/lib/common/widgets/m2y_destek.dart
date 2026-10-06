@@ -72,7 +72,9 @@ Widget m2ySideButton({
     // Yazı ailesi temadan gelir (Calibri/Carlito); yalnız boyut ve kalınlık ezilir.
     final base = Theme.of(context).textTheme.labelLarge;
     return Container(
-      margin: const EdgeInsets.only(left: 20, right: 16, bottom: 6),
+      margin: bind.isIncomingOnly()
+          ? const EdgeInsets.only(left: 12, right: 8, bottom: 4)
+          : const EdgeInsets.only(left: 20, right: 16, bottom: 6),
       width: double.infinity,
       child: Tooltip(
         message: tooltip,

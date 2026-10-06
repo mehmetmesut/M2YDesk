@@ -24,8 +24,6 @@ const _kResendSeconds = 60;
 /// Harici giriş seçeneklerini (Google…) sunucudan okur; testte sahtesi takılabilir.
 @visibleForTesting
 Future<List<dynamic>> Function() m2yOidcYukleyici = UserModel.queryOidcLoginOptions;
-// 360 px'ti; kullanıcı isteğiyle %20 daraltıldı (ana pencere içeriğiyle aynı hizada: 280–288 px).
-const _kQuickSupportWidth = 288.0;
 const _kFullWidth = 380.0;
 
 class M2yAuthGate extends StatefulWidget {
@@ -81,8 +79,8 @@ class _M2yAuthGateState extends State<M2yAuthGate> {
     // Tam sürümde ortalanmış, çerçeveli kutu; Hızlı Destek'te pencereyi dolduran sade içerik.
     final framed = Container(
       key: _contentKey,
-      width: _qs ? _kQuickSupportWidth : _kFullWidth,
-      padding: _qs ? const EdgeInsets.all(16) : const EdgeInsets.all(28),
+      width: _qs ? m2yQsIcerikGenisligi() : _kFullWidth,
+      padding: _qs ? const EdgeInsets.all(12) : const EdgeInsets.all(28),
       decoration: _qs
           ? null
           : BoxDecoration(

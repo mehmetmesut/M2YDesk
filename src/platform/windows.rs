@@ -3821,7 +3821,12 @@ fn m2y_sync_autostart_() -> ResultType<()> {
         }
         return Ok(());
     }
-    let value = format!("\"{}\"", std::env::current_exe()?.to_string_lossy());
+    // `--m2y-arkaplan`: arayüz, oturum hazır olunca pencereyi küçültüp arka planda çalışır
+    // (flutter/lib/common/widgets/m2y_acilis.dart ile aynı değer).
+    let value = format!(
+        "\"{}\" --m2y-arkaplan",
+        std::env::current_exe()?.to_string_lossy()
+    );
     let current: Option<String> = run.get_value(&name).ok();
     if current.as_deref() != Some(value.as_str()) {
         run.set_value(&name, &value)?;

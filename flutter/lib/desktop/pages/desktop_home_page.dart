@@ -9,10 +9,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hbb/common.dart';
 import 'package:flutter_hbb/common/widgets/animated_rotation_widget.dart';
 import 'package:flutter_hbb/common/widgets/custom_password.dart';
+import 'package:flutter_hbb/common/widgets/m2y_acilis.dart';
+import 'package:flutter_hbb/main.dart' show kBootArgs;
 import 'package:flutter_hbb/common/widgets/m2y_auth.dart';
 import 'package:flutter_hbb/common/widgets/m2y_destek.dart';
 import 'package:flutter_hbb/common/widgets/m2y_fixed_password.dart';
 import 'package:flutter_hbb/common/widgets/m2y_login_gate.dart';
+import 'package:flutter_hbb/common/widgets/m2y_pencere.dart';
 import 'package:flutter_hbb/common/widgets/m2y_uyelik_karti.dart';
 import 'package:flutter_hbb/common/widgets/m2y_zorunlu_guncelleme.dart';
 import 'package:flutter_hbb/consts.dart';
@@ -136,7 +139,7 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     ];
     if (isIncomingOnly) {
       children.addAll([
-        Divider(),
+        Divider(height: 8),
         OnlineStatusWidget(
           onSvcStatusChanged: () {
             if (isInHomePage()) {
@@ -152,7 +155,7 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     return ChangeNotifierProvider.value(
       value: gFFI.serverModel,
       child: Container(
-        width: isIncomingOnly ? 280.0 : 224.0,
+        width: isIncomingOnly ? m2yQsIcerikGenisligi() : 224.0,
         color: Theme.of(context).colorScheme.background,
         child: Stack(
           children: [
@@ -160,7 +163,14 @@ class _DesktopHomePageState extends State<DesktopHomePage>
               children: [
                 // Hızlı Destek'te kaydırma YOK: pencere içeriğe göre büyür (`_updateWindowSize`).
                 if (isIncomingOnly)
-                  Column(key: _childKey, children: children)
+                  M2yBoyutIzleyici(
+                    onChanged: _updateWindowSize,
+                    bagimsizOlc: false,
+                    child: SizedBox(
+                      width: m2yQsIcerikGenisligi(),
+                      child: Column(key: _childKey, children: children),
+                    ),
+                  )
                 else
                   SingleChildScrollView(
                     controller: _leftPaneScrollController,
@@ -217,8 +227,10 @@ class _DesktopHomePageState extends State<DesktopHomePage>
   buildIDBoard(BuildContext context) {
     final model = gFFI.serverModel;
     return Container(
-      margin: const EdgeInsets.only(left: 20, right: 11),
-      height: 57,
+      margin: bind.isIncomingOnly()
+          ? const EdgeInsets.only(left: 12, right: 8)
+          : const EdgeInsets.only(left: 20, right: 11),
+      height: bind.isIncomingOnly() ? 46 : 57,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.baseline,
         textBaseline: TextBaseline.alphabetic,
@@ -363,14 +375,16 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     final showOneTime = model.approveMode != 'click' &&
         model.verificationMethod != kUsePermanentPassword;
     return Container(
-      margin: EdgeInsets.only(left: 20.0, right: 16, top: 10, bottom: 12),
+      margin: bind.isIncomingOnly()
+          ? EdgeInsets.only(left: 12.0, right: 8, top: 0, bottom: 6)
+          : EdgeInsets.only(left: 20.0, right: 16, top: 10, bottom: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.baseline,
         textBaseline: TextBaseline.alphabetic,
         children: [
           Container(
             width: 2,
-            height: 52,
+            height: bind.isIncomingOnly() ? 42 : 52,
             decoration: BoxDecoration(color: MyTheme.accent),
           ),
           Expanded(
@@ -457,8 +471,9 @@ class _DesktopHomePageState extends State<DesktopHomePage>
   buildTip(BuildContext context) {
     final isOutgoingOnly = bind.isOutgoingOnly();
     return Padding(
-      padding:
-          const EdgeInsets.only(left: 20.0, right: 16, top: 16.0, bottom: 5),
+      padding: bind.isIncomingOnly()
+          ? const EdgeInsets.only(left: 12.0, right: 8, top: 6.0, bottom: 2)
+          : const EdgeInsets.only(left: 20.0, right: 16, top: 16.0, bottom: 5),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -476,7 +491,7 @@ class _DesktopHomePageState extends State<DesktopHomePage>
             ],
           ),
           SizedBox(
-            height: 10.0,
+            height: bind.isIncomingOnly() ? 3.0 : 10.0,
           ),
           if (!isOutgoingOnly)
             Text(
@@ -609,19 +624,22 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       }
     }
     if (bind.isIncomingOnly()) {
-      return Align(
-        alignment: Alignment.centerRight,
-        child: OutlinedButton(
-          onPressed: () {
-            SystemNavigator.pop(); // Close the application
-            // https://github.com/flutter/flutter/issues/66631
-            if (isWindows) {
-              exit(0);
-            }
-          },
-          child: Text(translate('Quit')),
-        ),
-      ).marginAll(14);
+      // Solda "Açılışta başlat" anahtarı, sağda Çıkış.
+      return Row(
+        children: [
+          const Expanded(child: M2yAcilisAnahtari()),
+          OutlinedButton(
+            onPressed: () {
+              SystemNavigator.pop(); // Close the application
+              // https://github.com/flutter/flutter/issues/66631
+              if (isWindows) {
+                exit(0);
+              }
+            },
+            child: Text(translate('Quit')),
+          ),
+        ],
+      ).marginOnly(left: 8, right: 8, top: 0, bottom: 4);
     }
     return Container();
   }
@@ -747,6 +765,17 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     );
   }
 
+  Future<void> _m2yArkaPlanaKucult() async {
+    // Oturum/parola adımları kullanıcı gerektirir: hazır olana dek (en çok 2 dk) pencere görünür kalır.
+    for (var i = 0; i < 120 && mounted; i++) {
+      if (M2yAuth.instance.stage.value == M2yAuthStage.ready) {
+        await windowManager.minimize();
+        return;
+      }
+      await Future.delayed(const Duration(seconds: 1));
+    }
+  }
+
   Future<void> _m2yAskDeviceReportConsent() async {
     if (!mounted) return;
     if (bind.mainGetOptionSync(key: 'm2y-report-device') != 'Y') return;
@@ -800,6 +829,10 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     M2yZorunluGuncelleme.instance.start();
     // M2YDesk: cihaz bilgisi paylaşımı için açık onay (KVKK); onay yoksa hiçbir bilgi gönderilmez.
     Future.delayed(const Duration(seconds: 2), _m2yAskDeviceReportConsent);
+    // Açılışta başlatma kaydıyla (`--m2y-arkaplan`) açıldıysa oturum hazır olunca arka plana küçül.
+    if (bind.isIncomingOnly() && kBootArgs.contains(kM2yArkaPlanArg)) {
+      _m2yArkaPlanaKucult();
+    }
     _updateTimer = periodic_immediate(const Duration(seconds: 1), () async {
       await gFFI.serverModel.fetchID();
       final error = await bind.mainGetError();
