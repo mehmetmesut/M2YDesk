@@ -9,6 +9,12 @@
 # Sınır: Rust'a gömülü şeyler (varsayılan ayar dosyası, servis başlatma) çekirdek yeniden derlenmeden değişmez.
 $ErrorActionPreference = 'Stop'
 $kok = Split-Path $PSScriptRoot -Parent
+# Flutter'ın gölge (shader) derleyicisi ASCII olmayan yollarda ("Yazılım…" gibi) dosya yazamaz; proje yolunda
+# ASCII dışı karakter varsa aynı klasör R: sanal sürücüsü olarak bağlanır (kalıcı değil, oturum başına bir kez).
+if ($kok -match '[^\x00-\x7F]') {
+    if (-not (Test-Path 'R:\')) { subst R: $kok }
+    $kok = 'R:\'
+}
 $flutter = Join-Path $kok 'flutter'
 $cekirdek = Join-Path $kok 'yerel-onizleme\rust-cekirdek'
 
@@ -23,13 +29,11 @@ if (-not (Test-Path $kopru)) {
     Copy-Item (Join-Path $kaynak.DirectoryName 'generated_bridge.freezed.dart') (Join-Path $flutter 'lib') -Force
 }
 
-# Derleme çıktısına çekirdeği önceden koy: `flutter run` bu klasöre yazar, mevcut dosyaları silmez.
+# CMake kurulum adımı çekirdeği depo kökündeki target\debug\librustdesk.dll yolundan alır (CI'da Rust derlemesi oraya yazar).
 $env:M2Y_BINARY_NAME = 'M2YDesk'
-$hedef = Join-Path $flutter 'build\windows\x64\runner\Debug'
+$hedef = Join-Path $kok 'target\debug'
 New-Item -ItemType Directory -Force $hedef | Out-Null
-Get-ChildItem $cekirdek -File -Filter '*.dll' |
-    Where-Object { $_.Name -in @('librustdesk.dll', 'dylib_virtual_display.dll') } |
-    ForEach-Object { Copy-Item $_.FullName $hedef -Force }
+Copy-Item (Join-Path $cekirdek 'librustdesk.dll') (Join-Path $hedef 'librustdesk.dll') -Force
 
 Set-Location $flutter
 flutter run -d windows
