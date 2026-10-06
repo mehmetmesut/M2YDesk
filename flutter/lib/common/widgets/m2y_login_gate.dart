@@ -131,7 +131,7 @@ Widget m2yCompact(BuildContext context, Widget child) {
     Builder(builder: (context) {
       final t = Theme.of(context);
       // Hızlı Destek için SABİT yazı/ikon ölçeği (ekranlar arası tutarlı; genel ölçek 0.80 üstüne biner):
-      // başlık 16, giriş/düğme 13, gövde 11.5, etiket 11, simge 16.
+      // başlık 17, giriş/düğme 14, gövde 12.5, etiket 12, simge 16 (06.10: kullanıcı isteğiyle +1 pt).
       TextStyle? boyut(TextStyle? s, double px, [FontWeight? w]) =>
           s?.copyWith(fontSize: px, fontWeight: w);
       return Theme(
@@ -139,17 +139,17 @@ Widget m2yCompact(BuildContext context, Widget child) {
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           iconTheme: t.iconTheme.copyWith(size: 16),
           textTheme: t.textTheme.copyWith(
-            titleLarge: boyut(t.textTheme.titleLarge, 16, FontWeight.w600),
-            titleMedium: boyut(t.textTheme.titleMedium, 13),
-            bodyLarge: boyut(t.textTheme.bodyLarge, 13),
-            bodyMedium: boyut(t.textTheme.bodyMedium, 11.5),
-            bodySmall: boyut(t.textTheme.bodySmall, 11.5),
-            labelLarge: boyut(t.textTheme.labelLarge, 13),
+            titleLarge: boyut(t.textTheme.titleLarge, 17, FontWeight.w600),
+            titleMedium: boyut(t.textTheme.titleMedium, 14),
+            bodyLarge: boyut(t.textTheme.bodyLarge, 14),
+            bodyMedium: boyut(t.textTheme.bodyMedium, 12.5),
+            bodySmall: boyut(t.textTheme.bodySmall, 12.5),
+            labelLarge: boyut(t.textTheme.labelLarge, 14),
           ),
           inputDecorationTheme: t.inputDecorationTheme.copyWith(
-            labelStyle: boyut(t.textTheme.bodyMedium, 12),
-            floatingLabelStyle: boyut(t.textTheme.bodySmall, 11),
-            hintStyle: boyut(t.textTheme.bodyMedium, 12),
+            labelStyle: boyut(t.textTheme.bodyMedium, 13),
+            floatingLabelStyle: boyut(t.textTheme.bodySmall, 12),
+            hintStyle: boyut(t.textTheme.bodyMedium, 13),
           ),
           checkboxTheme: const CheckboxThemeData(
             visualDensity: VisualDensity(horizontal: -4, vertical: -4),
@@ -429,8 +429,7 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
               labelText: 'E-posta',
-              // Hızlı Destek'te simge yok (dar alanda kutu gibi görünüyordu); alan sade kalır.
-              prefixIcon: qs ? null : const Icon(Icons.email_outlined),
+              // Simge yok (tüm sürümlerde; kullanıcı kuralı: kutu gibi görünüyordu), alan sade kalır.
               errorText: _emailError,
               errorMaxLines: 3,
             ),
@@ -448,20 +447,32 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
               ),
             ]),
           SizedBox(height: qs ? 0 : 4),
+          // KVKK bağlantısı rıza metninin ÜSTÜNDE (kullanıcı isteği, tüm sürümler): önce oku, sonra onayla.
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton(
+              style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  minimumSize: const Size(0, 24),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+              onPressed: () => launchUrl(Uri.parse(kM2yKvkkUrl),
+                  mode: LaunchMode.externalApplication),
+              child: const Text('KVKK aydınlatma metni'),
+            ),
+          ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Hızlı Destek'te küçük onay kutusu (16 px); FittedBox yerleşim boyutunu da küçültür.
+              // Küçük onay kutusu (tüm sürümlerde; kullanıcı kuralı); FittedBox yerleşim boyutunu da küçültür.
               SizedBox(
-                width: qs ? 22 : null,
-                height: qs ? 22 : null,
+                width: 22,
+                height: 22,
                 child: FittedBox(
                   fit: BoxFit.contain,
                   child: Checkbox(
                     value: _consent,
-                    visualDensity: qs ? VisualDensity.compact : null,
-                    materialTapTargetSize:
-                        qs ? MaterialTapTargetSize.shrinkWrap : null,
+                    visualDensity: VisualDensity.compact,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     onChanged: _busy
                         ? null
                         : (v) => setState(() => _consent = v ?? false),
@@ -476,25 +487,11 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
                       : 'Aydınlatma metnini okudum; e-posta adresimin oturum açma '
                           'amacıyla işlenmesine açık rıza veriyorum.',
                   style: small,
-                ).marginOnly(top: qs ? 3 : 6),
+                ).marginOnly(left: 6, top: 3),
               ),
             ],
           ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton(
-              style: qs
-                  ? TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      minimumSize: const Size(0, 24),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap)
-                  : null,
-              onPressed: () => launchUrl(Uri.parse(kM2yKvkkUrl),
-                  mode: LaunchMode.externalApplication),
-              child: const Text('KVKK aydınlatma metni'),
-            ),
-          ),
-          SizedBox(height: qs ? 2 : 8),
+          SizedBox(height: qs ? 6 : 12),
           if (_busy) const LinearProgressIndicator(),
           SizedBox(height: qs ? 2 : 4),
           ElevatedButton(

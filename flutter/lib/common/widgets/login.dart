@@ -12,6 +12,19 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../common.dart';
 import './dialog.dart';
 
+/// M2YDesk: harici (Google…) giriş durum/hata iletileri Türkçe gösterilir; çekirdekten İngilizce anahtar gelir
+/// (`hbbs_http/account.rs`). Bilinmeyen ileti çeviri tablosuna düşer.
+const _kM2yGirisDurumlari = {
+  'Requesting account auth': 'Giriş isteği hazırlanıyor…',
+  'Waiting account auth': 'Tarayıcıda girişin tamamlanması bekleniyor…',
+  'Login account auth': 'Giriş yapılıyor…',
+  'timeout': 'Süre doldu, lütfen yeniden deneyin.',
+  'Invalid auth response': 'Sunucudan geçersiz yanıt alındı.',
+};
+
+String m2yGirisDurumu(String ileti) =>
+    _kM2yGirisDurumlari[ileti] ?? translate(ileti);
+
 const kOpSvgList = [
   'github',
   'gitlab',
@@ -286,7 +299,7 @@ class _WidgetOPState extends State<WidgetOP> {
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: SelectableText(
-                      translate(_stateMsg),
+                      m2yGirisDurumu(_stateMsg),
                       style: DefaultTextStyle.of(context)
                           .style
                           .copyWith(fontSize: 12),
@@ -317,7 +330,7 @@ class _WidgetOPState extends State<WidgetOP> {
                             const SizedBox(width: 6),
                             Flexible(
                               child: SelectableText(
-                                translate(_failedMsg),
+                                m2yGirisDurumu(_failedMsg),
                                 style: DefaultTextStyle.of(context)
                                     .style
                                     .copyWith(

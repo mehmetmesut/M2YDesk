@@ -775,5 +775,8 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("m2y-consent-text", "Uzaktan destek hizmeti için bu cihazın ID'si, IP adresi, MAC adresi, bilgisayar ve kullanıcı adı, işletim sistemi ve çevrimiçi durumu M2YDesk sunucusuna gönderilir. Amaç: destek verenin cihazı tanıması ve kötüye kullanımın önlenmesi. Kabul etmezseniz bağlantı yine çalışır, ancak bu bilgiler paylaşılmaz. Ayrıntı: desk.mehmetmesut.com/kvkk"),
         ("m2y-consent-accept", "Kabul ediyorum"),
         ("m2y-consent-decline", "Şimdi değil"),
+        ("Requesting account auth", "Giriş isteği hazırlanıyor…"),
+        ("Waiting account auth", "Tarayıcıda girişin tamamlanması bekleniyor…"),
+        ("Login account auth", "Giriş yapılıyor…"),
     ].iter().cloned().collect();
 }
