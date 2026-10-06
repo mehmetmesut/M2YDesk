@@ -26,6 +26,10 @@ const _kResendSeconds = 60;
 Future<List<dynamic>> Function() m2yOidcYukleyici = UserModel.queryOidcLoginOptions;
 const _kFullWidth = 380.0;
 
+/// Hızlı Destek giriş/sabit parola kutusunun en az içerik yüksekliği: giriş ve sabit parola
+/// ekranları aynı pencere ölçüsünü kullanır (kullanıcı isteği; ölçü sabit parola ekranından alındı).
+const double kM2yQsGirisYuksekligi = 281.0;
+
 class M2yAuthGate extends StatefulWidget {
   const M2yAuthGate({Key? key}) : super(key: key);
 
@@ -81,6 +85,7 @@ class _M2yAuthGateState extends State<M2yAuthGate> {
       key: _contentKey,
       width: _qs ? m2yQsIcerikGenisligi() : _kFullWidth,
       padding: _qs ? const EdgeInsets.all(12) : const EdgeInsets.all(28),
+      constraints: _qs ? const BoxConstraints(minHeight: kM2yQsGirisYuksekligi) : null,
       decoration: _qs
           ? null
           : BoxDecoration(
@@ -151,7 +156,7 @@ Widget _section(
       const SizedBox(height: 6),
       Text(subtitle,
           textAlign: align, style: Theme.of(context).textTheme.bodySmall),
-      const SizedBox(height: 16),
+      SizedBox(height: M2yAuth.instance.isQuickSupport ? 8 : 16),
       child,
     ],
   );
@@ -384,7 +389,7 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: qs
-            ? [buttons, const SizedBox(height: 12), veya, const SizedBox(height: 8)]
+            ? [buttons, const SizedBox(height: 6), veya, const SizedBox(height: 6)]
             : [const SizedBox(height: 12), veya, const SizedBox(height: 8), buttons],
       );
     });
@@ -416,35 +421,47 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
                 child: const Text('Bu cihazdan e-postamı unut'),
               ),
             ]),
-          const SizedBox(height: 4),
+          SizedBox(height: qs ? 0 : 4),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Checkbox(
                 value: _consent,
+                visualDensity: qs ? VisualDensity.compact : null,
+                materialTapTargetSize:
+                    qs ? MaterialTapTargetSize.shrinkWrap : null,
                 onChanged:
                     _busy ? null : (v) => setState(() => _consent = v ?? false),
               ),
               Expanded(
                 child: Text(
-                  'Aydınlatma metnini okudum; e-posta adresimin oturum açma '
-                  'amacıyla işlenmesine açık rıza veriyorum.',
+                  qs
+                      ? 'Aydınlatma metnini okudum; e-posta adresimin '
+                          'işlenmesine açık rıza veriyorum.'
+                      : 'Aydınlatma metnini okudum; e-posta adresimin oturum açma '
+                          'amacıyla işlenmesine açık rıza veriyorum.',
                   style: small,
-                ).marginOnly(top: 6),
+                ).marginOnly(top: qs ? 3 : 6),
               ),
             ],
           ),
           Align(
             alignment: Alignment.centerLeft,
             child: TextButton(
+              style: qs
+                  ? TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      minimumSize: const Size(0, 24),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap)
+                  : null,
               onPressed: () => launchUrl(Uri.parse(kM2yKvkkUrl),
                   mode: LaunchMode.externalApplication),
               child: const Text('KVKK aydınlatma metni'),
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: qs ? 2 : 8),
           if (_busy) const LinearProgressIndicator(),
-          const SizedBox(height: 4),
+          SizedBox(height: qs ? 2 : 4),
           ElevatedButton(
             onPressed: _busy ? null : _sendCode,
             child: const Text('Doğrulama kodu gönder'),
@@ -455,8 +472,7 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
       context,
       'Oturum açın',
       qs
-          ? 'Google hesabınızla ya da e-posta adresinize gönderilecek '
-              'doğrulama koduyla giriş yapabilirsiniz.'
+          ? 'Google ya da e-posta koduyla giriş yapın.'
           : 'Devam etmek için e-posta adresinize gönderilecek doğrulama kodunu '
               'girmeniz gerekir.',
       Column(
