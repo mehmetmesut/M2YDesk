@@ -18,7 +18,7 @@ enum M2yAuthStage { checking, login, setPassword, ready }
 
 const kM2yOptLastEmail = 'm2y-last-email';
 const kM2yOptAutostart = 'm2y-autostart';
-const kM2yKvkkUrl = 'https://desk.mehmetmesut.com/#kvkk';
+const kM2yKvkkUrl = 'https://desk.mehmetmesut.com/kvkk';
 const kM2yCodeLength = 6;
 const _kGirisOnizleme = bool.fromEnvironment('M2Y_GIRIS_ONIZLEME');
 
