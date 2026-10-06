@@ -423,9 +423,8 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
               labelText: 'E-posta',
-              prefixIcon: const Icon(Icons.email_outlined),
-              prefixIconConstraints:
-                  qs ? const BoxConstraints(minWidth: 32, minHeight: 28) : null,
+              // Hızlı Destek'te simge yok (dar alanda kutu gibi görünüyordu); alan sade kalır.
+              prefixIcon: qs ? null : const Icon(Icons.email_outlined),
               errorText: _emailError,
               errorMaxLines: 3,
             ),
@@ -446,13 +445,22 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Checkbox(
-                value: _consent,
-                visualDensity: qs ? VisualDensity.compact : null,
-                materialTapTargetSize:
-                    qs ? MaterialTapTargetSize.shrinkWrap : null,
-                onChanged:
-                    _busy ? null : (v) => setState(() => _consent = v ?? false),
+              // Hızlı Destek'te küçük onay kutusu (16 px); FittedBox yerleşim boyutunu da küçültür.
+              SizedBox(
+                width: qs ? 22 : null,
+                height: qs ? 22 : null,
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: Checkbox(
+                    value: _consent,
+                    visualDensity: qs ? VisualDensity.compact : null,
+                    materialTapTargetSize:
+                        qs ? MaterialTapTargetSize.shrinkWrap : null,
+                    onChanged: _busy
+                        ? null
+                        : (v) => setState(() => _consent = v ?? false),
+                  ),
+                ),
               ),
               Expanded(
                 child: Text(
