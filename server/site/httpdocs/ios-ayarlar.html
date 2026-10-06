@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>iPhone ve iPad Ayarları | M2YDesk</title>
+<meta name="description" content="iPhone/iPad'deki RustDesk uygulamasını M2YDesk sunucusuyla kullanmak için tüm ayarların Türkçe açıklaması ve önerilen değerler.">
+<meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#eef3f9" media="(prefers-color-scheme: light)">
+<link rel="canonical" href="https://desk.mehmetmesut.com/ios-ayarlar">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#eef3f9; --bg2:#f7f9fc;
+    --metin:#0f172a; --ikincil:#51617a; --vurgu:#0e7cff;
+    --cam:rgba(255,255,255,.62); --cam-cerceve:rgba(255,255,255,.78);
+    --cizgi:rgba(15,23,42,.12); --satir:rgba(15,23,42,.04);
+    --acik:#16a34a; --kapali:#94a3b8; --uyari:#b45309;
+    --golge:0 10px 40px rgba(15,23,42,.10), 0 1px 0 rgba(255,255,255,.8) inset;
+    --blob1:#9fc6ff; --blob2:#b8f0e4; --blob3:#e2d4ff;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0b1220; --bg2:#0f172a;
+      --metin:#f1f5f9; --ikincil:#a0aec0; --vurgu:#3b9dff;
+      --cam:rgba(30,41,59,.58); --cam-cerceve:rgba(255,255,255,.12);
+      --cizgi:rgba(255,255,255,.14); --satir:rgba(255,255,255,.05);
+      --acik:#34d399; --kapali:#64748b; --uyari:#fbbf24;
+      --golge:0 10px 40px rgba(0,0,0,.45), 0 1px 0 rgba(255,255,255,.08) inset;
+      --blob1:#1e4fa3; --blob2:#0f6b5c; --blob3:#4b2f9e;
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:16px}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Inter,Roboto,system-ui,sans-serif;
+       background:var(--bg);color:var(--metin);line-height:1.6;-webkit-font-smoothing:antialiased}
+  :focus-visible{outline:3px solid var(--vurgu);outline-offset:2px}
+  a{color:var(--vurgu)}
+  .arka{position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,var(--bg),var(--bg2));overflow:hidden}
+  .arka i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.7}
+  .arka i:nth-child(1){width:50vw;height:50vw;max-width:520px;max-height:520px;background:var(--blob1);top:-12%;left:-10%}
+  .arka i:nth-child(2){width:42vw;height:42vw;max-width:440px;max-height:440px;background:var(--blob2);top:40%;right:-12%}
+  .arka i:nth-child(3){width:38vw;height:38vw;max-width:400px;max-height:400px;background:var(--blob3);bottom:-10%;left:16%}
+  main{max-width:760px;margin:0 auto;padding:clamp(16px,3vw,40px) 16px 40px;display:grid;gap:14px}
+  .cam{background:var(--cam);border:1px solid var(--cam-cerceve);border-radius:22px;box-shadow:var(--golge);padding:clamp(16px,3vw,26px);
+       -webkit-backdrop-filter:blur(26px) saturate(170%);backdrop-filter:blur(26px) saturate(170%)}
+  h1{font-size:clamp(1.5rem,4.6vw,2.1rem);letter-spacing:-.03em;line-height:1.15;margin:0 0 6px;text-wrap:balance}
+  h2{font-size:1.15rem;margin:0 0 10px}
+  p{margin:0 0 10px;text-wrap:pretty}
+  ol,ul{margin:0 0 10px;padding-left:1.25rem}
+  li{margin:3px 0}
+  .not{color:var(--ikincil);font-size:.92rem}
+  .geri{display:inline-block;margin-bottom:6px;font-size:.92rem;text-decoration:none}
+  .liste{list-style:none;padding:0;margin:4px 0 0;border:1px solid var(--cizgi);border-radius:14px;overflow:hidden}
+  .liste li{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:11px 14px;border-bottom:1px solid var(--cizgi);margin:0}
+  .liste li:last-child{border-bottom:0}
+  .ad{font-weight:600}
+  .acik-kapali{font-size:.82rem;font-weight:700;padding:2px 10px;border-radius:999px;align-self:start;white-space:nowrap}
+  .ac{background:color-mix(in srgb,var(--acik) 18%,transparent);color:var(--acik)}
+  .kap{background:color-mix(in srgb,var(--kapali) 20%,transparent);color:var(--ikincil)}
+  .deg{background:var(--satir);color:var(--metin)}
+  .acik-lama{grid-column:1/-1;color:var(--ikincil);font-size:.92rem}
+  .kutu{border-left:4px solid var(--vurgu);background:var(--satir);padding:10px 14px;border-radius:0 12px 12px 0;margin:10px 0}
+  .kutu.uyari{border-left-color:var(--uyari)}
+  code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9em;background:var(--satir);padding:1px 6px;border-radius:6px;word-break:break-all}
+  footer{max-width:760px;margin:0 auto;padding:0 16px 32px;color:var(--ikincil);font-size:.88rem}
+</style>
+</head>
+<body>
+<div class="arka" aria-hidden="true"><i></i><i></i><i></i></div>
+<main>
+  <section class="cam">
+    <a class="geri" href="/">← M2YDesk ana sayfası</a>
+    <h1>iPhone ve iPad’de RustDesk ayarları</h1>
+    <p>iPhone/iPad için M2YDesk uygulaması yoktur; App Store’daki resmî <strong>RustDesk</strong> uygulaması M2YDesk sunucusuyla çalışır. Bu sayfa uygulamadaki her ayarı Türkçe açıklar ve hangisinin açık, hangisinin kapalı olması gerektiğini gösterir.</p>
+    <div class="kutu uyari"><strong>Bilmeniz gereken:</strong> iOS’ta uygulama yalnızca <strong>bağlanan</strong> taraftır: iPhone/iPad’den bilgisayarlarınıza bağlanırsınız, ancak iPhone/iPad ekranı paylaşılamaz (Apple izin vermez). Bağlanırken karşı cihazın <strong>sabit parolası</strong> sorulur.</div>
+  </section>
+
+  <section class="cam" aria-labelledby="kurulum">
+    <h2 id="kurulum">1. Kurulum ve sunucu ayarı</h2>
+    <ol>
+      <li>App Store’dan <strong>RustDesk</strong> uygulamasını kurun.</li>
+      <li>Uygulamada <strong>Ayarlar → ID/Relay Sunucusu</strong>’na girin. Sağ üstteki QR simgesiyle <a href="/#indir">ana sayfadaki iOS QR kodunu</a> okutun ya da alanları elle doldurun:</li>
+    </ol>
+    <ul class="liste">
+      <li><span class="ad">ID Sunucu</span><span class="acik-kapali deg">desk.mehmetmesut.com</span></li>
+      <li><span class="ad">API Sunucu</span><span class="acik-kapali deg">https://desk.mehmetmesut.com</span>
+        <span class="acik-lama">Hesapla giriş (Google) ve adres defteri için gerekir. Yalnızca ID + parola ile bağlanacaksanız boş bırakabilirsiniz.</span></li>
+      <li><span class="ad">Key (Anahtar)</span><span class="acik-kapali deg">Ana sayfadaki anahtar</span>
+        <span class="acik-lama"><code>W0UwY9Z3Lfn3qO971yHdEJTebBkSt+OplwOzZDWBC4g=</code> — sunucunun kimliğini doğrular; tek karakter bile yanlışsa bağlantı “güvenli olmayan” uyarısı verir ya da kurulamaz.</span></li>
+    </ul>
+    <p class="not">“Relay Sunucusu” alanı boş kalabilir; sunucumuz aktarmayı kendisi yönetir. Sağ üstteki iki simge: <strong>panodan yapıştır</strong> ve <strong>panoya kopyala</strong> (ayarları başka cihaza taşımak için).</p>
+  </section>
+
+  <section class="cam" aria-labelledby="hesap">
+    <h2 id="hesap">2. Hesap: Giriş yap</h2>
+    <p><strong>Ayarlar → Hesap → Giriş yap</strong> ile <strong>Google ile giriş</strong> yapabilirsiniz (API Sunucu alanı dolu olmalı). Girişin faydası: cihazlarınız adres defterinde listelenir, her seferinde ID yazmazsınız. Bağlanmak için giriş şart değildir.</p>
+  </section>
+
+  <section class="cam" aria-labelledby="ag">
+    <h2 id="ag">3. Ağ ayarları (Ayarlar ekranı)</h2>
+    <ul class="liste">
+      <li><span class="ad">Socks5/Http(s) Proxy</span><span class="acik-kapali kap">Boş</span>
+        <span class="acik-lama">Yalnızca kurumunuz internete vekil sunucuyla çıkıyorsa doldurulur.</span></li>
+      <li><span class="ad">WebSocket’ı kullan</span><span class="acik-kapali kap">Kapalı</span>
+        <span class="acik-lama">Bağlantıyı web portu üzerinden tüneller; yalnızca katı güvenlik duvarı arkasında bağlantı hiç kurulamıyorsa açın. Sunucumuz bunu gerektirmez.</span></li>
+      <li><span class="ad">Güvensiz TLS geri dönüşüne izin ver</span><span class="acik-kapali kap">Kapalı</span>
+        <span class="acik-lama">Sunucu sertifikası doğrulanamazsa şifreli olmayan yola düşmeye izin verir. Sunucumuzun geçerli sertifikası var; açık tutmak gereksiz risktir. <strong>Kapatmanızı öneririz.</strong></span></li>
+      <li><span class="ad">TCP delik açmayı etkinleştir</span><span class="acik-kapali ac">Açık</span>
+        <span class="acik-lama">Cihazlar arasında doğrudan bağlantı denemesi. Zararsızdır; sunucumuz gerekirse aktarma kullanır.</span></li>
+      <li><span class="ad">UDP delik açmayı etkinleştir</span><span class="acik-kapali ac">Açık</span>
+        <span class="acik-lama">Aynı amaçla UDP üzerinden deneme. Açık kalabilir.</span></li>
+      <li><span class="ad">IPv6 P2P bağlantısını etkinleştir</span><span class="acik-kapali ac">Açık</span>
+        <span class="acik-lama">IPv6 destekli ağlarda doğrudan bağlantı. Açık kalabilir.</span></li>
+      <li><span class="ad">WebRTC P2P bağlantısını etkinleştir</span><span class="acik-kapali kap">Kapalı</span>
+        <span class="acik-lama">Deneysel bağlantı yöntemi; M2YDesk cihazlarında gerekmez.</span></li>
+      <li><span class="ad">Dil</span><span class="acik-kapali deg">Türkçe</span></li>
+      <li><span class="ad">Koyu Tema</span><span class="acik-kapali deg">Tercihinize göre</span></li>
+      <li><span class="ad">Bağlantı bittiğinde not sorulsun</span><span class="acik-kapali kap">Kapalı</span>
+        <span class="acik-lama">Her oturum sonunda not penceresi açar. Destek kaydı tutan danışmanlar açabilir; kişisel kullanımda gereksiz.</span></li>
+      <li><span class="ad">Giden oturumlar süresince ekranı açık tutun</span><span class="acik-kapali ac">Açık</span>
+        <span class="acik-lama">Bağlıyken iPhone ekranı kararıp kilitlenmez; oturum kopmaz.</span></li>
+    </ul>
+  </section>
+
+  <section class="cam" aria-labelledby="goruntu">
+    <h2 id="goruntu">4. Görüntü ayarları (Ayarlar → Görüntü Ayarları)</h2>
+    <p class="not">Bu değerler M2YDesk masaüstü uygulamasının varsayılanlarıyla aynıdır; her cihazda aynı deneyimi verir.</p>
+    <ul class="liste">
+      <li><span class="ad">Varsayılan Görünüm Stili</span><span class="acik-kapali deg">Uyarlanabilir ölçekte</span>
+        <span class="acik-lama">Uzak ekran iPhone/iPad ekranına sığacak şekilde ölçeklenir.</span></li>
+      <li><span class="ad">Varsayılan Görüntü Kalitesi</span><span class="acik-kapali deg">İyi görüntü kalitesi</span>
+        <span class="acik-lama">Mobil veride yavaşlık olursa “Dengeli”yi seçin.</span></li>
+      <li><span class="ad">Varsayılan Kodlayıcı</span><span class="acik-kapali deg">Otomatik</span></li>
+      <li><span class="ad">Görünüm Modu</span><span class="acik-kapali kap">Kapalı</span>
+        <span class="acik-lama">Açıksa yalnızca izlersiniz, fare/klavye gönderilmez. Destek için kapalı olmalı.</span></li>
+      <li><span class="ad">Uzaktaki fare imlecini göster</span><span class="acik-kapali ac">Açık</span></li>
+      <li><span class="ad">Uzak imleci takip et</span><span class="acik-kapali ac">Açık</span>
+        <span class="acik-lama">Yakınlaştırılmış görüntü, karşıdaki imleçle birlikte kayar.</span></li>
+      <li><span class="ad">Uzak pencere odağını takip et</span><span class="acik-kapali ac">Açık</span>
+        <span class="acik-lama">Karşıda etkin pencere değişince görüntü ona odaklanır.</span></li>
+      <li><span class="ad">Kalite monitörünü göster</span><span class="acik-kapali kap">Kapalı</span>
+        <span class="acik-lama">Hız/gecikme değerlerini ekranda gösterir; yalnızca sorun ararken açın.</span></li>
+      <li><span class="ad">Sustur</span><span class="acik-kapali kap">Kapalı</span>
+        <span class="acik-lama">Uzak bilgisayarın sesini kapatır.</span></li>
+      <li><span class="ad">Hafızadaki kopyalanmışları engelle</span><span class="acik-kapali kap">Kapalı</span>
+        <span class="acik-lama">Açıksa iki cihaz arasında kopyala-yapıştır çalışmaz.</span></li>
+      <li><span class="ad">Bağlantıdan sonra kilitle</span><span class="acik-kapali deg">Önerilir: Açık</span>
+        <span class="acik-lama">Oturum bitince uzak bilgisayar kilitlenir; başında kimse yokken bağlandığınız cihazlarda güvenlik sağlar.</span></li>
+      <li><span class="ad">Gizlilik modu</span><span class="acik-kapali kap">Kapalı</span>
+        <span class="acik-lama">Uzak ekranı başındaki kişiye karartır; yalnızca bazı Windows cihazlarında çalışır.</span></li>
+      <li><span class="ad">Gerçek renk (4:4:4)</span><span class="acik-kapali kap">Kapalı</span>
+        <span class="acik-lama">Daha keskin renk, ama daha çok veri ve pil harcar.</span></li>
+      <li><span class="ad">Ters fare tekerleği</span><span class="acik-kapali kap">Kapalı</span></li>
+      <li><span class="ad">Sol-sağ fare tuşlarını değiştir</span><span class="acik-kapali kap">Kapalı</span></li>
+      <li><span class="ad">Bağlantı kesildiğinde terminal oturumlarını açık tut</span><span class="acik-kapali kap">Kapalı</span>
+        <span class="acik-lama">Yalnızca uzak terminal kullananlar için.</span></li>
+      <li><span class="ad">Terminal uygulamalarının panoya kopyalamasına izin ver</span><span class="acik-kapali kap">Kapalı</span></li>
+    </ul>
+  </section>
+
+  <section class="cam" aria-labelledby="sorun">
+    <h2 id="sorun">5. Sık görülen uyarılar</h2>
+    <ul>
+      <li><strong>“Güvenli Olmayan Bağlantı – Uçtan uca şifreleme doğrulanamadı”:</strong> Önce <strong>Key</strong> alanının yukarıdakiyle birebir aynı olduğunu kontrol edin. Doğruysa karşı cihaz yeni açılmış ya da oturumu kapalı olabilir; birkaç dakika sonra yeniden deneyin. Uyarı sürerse “Bağlantıyı kes” deyin ve bize bildirin.</li>
+      <li><strong>“Giriş Hatalı – Bu cihaza yalnızca yetkili danışmanlar bağlanabilir”:</strong> Karşı cihazdaki M2YDesk eski sürümdür; güncellendiğinde iPhone/iPad’den sabit parolayla bağlanılabilir.</li>
+      <li><strong>Parola soruluyor:</strong> Karşı cihazda M2YDesk’in ilk açılışında belirlenen 6 haneli <strong>sabit parolayı</strong> girin.</li>
+    </ul>
+  </section>
+</main>
+<footer>© M2YDesk · <a href="/">Ana sayfa</a> · <a href="/kvkk">KVKK</a></footer>
+</body>
+</html>

@@ -257,6 +257,8 @@
     sol.appendChild(h('p', 'ikincil', 'Resmî RustDesk uygulamasını kurun; ardından Ayarlar → ID/Relay Sunucusu → QR tara ile aşağıdaki/yandaki QR kodu okutun.'));
     var b = h('div', 'btnlar'); b.appendChild(l); sol.appendChild(b);
     sol.appendChild(h('p', 'not', 'iOS’ta uygulama yalnızca bağlanan (kontrol eden) taraf olarak kullanılır; iPhone/iPad ekranı paylaşılamaz.'));
+    var rehber = h('a', null, 'Tüm iPhone/iPad ayarları ve önerilen değerler →'); rehber.href = '/ios-ayarlar';
+    var rp = h('p'); rp.appendChild(rehber); sol.appendChild(rp);
     var det = h('details'), s = h('summary', null, 'QR okutamıyorsanız elle girin');
     det.appendChild(s);
     [['ID Sunucusu', a.sunucu], ['Anahtar', a.anahtar]].forEach(function (r, i) {
@@ -277,7 +279,7 @@
     qr.id = 'qr'; qr.setAttribute('role', 'img'); qr.setAttribute('aria-label', 'iOS sunucu ayarı QR kodu');
     var kap = h('div', 'ios'); kap.appendChild(sol); kap.appendChild(qr); panel.appendChild(kap);
     if (window.QRCode) {
-      new QRCode(qr, { text: 'config=' + JSON.stringify({ host: a.sunucu, relay: '', api: '', key: a.anahtar }), width: 176, height: 176, correctLevel: QRCode.CorrectLevel.M });
+      new QRCode(qr, { text: 'config=' + JSON.stringify({ host: a.sunucu, relay: '', api: 'https://' + a.sunucu, key: a.anahtar }), width: 176, height: 176, correctLevel: QRCode.CorrectLevel.M });
     }
   }
 

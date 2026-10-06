@@ -2527,8 +2527,19 @@ impl Connection {
             if self.authorized {
                 return true;
             }
-            // M2YDesk: yalnızca yetkili hesaplar (imzalı, hedefe bağlı belirteç); parola denetiminden önce.
-            if hbb_common::m2y::require_auth() {
+            // M2YDesk: belirteç GÖNDERMEYEN istemciler (iOS'taki resmî RustDesk; kullanıcı kararı 06.10.2026)
+            // yalnızca standart parola denetiminden (hatalı deneme sınırı dahil) geçer ve ayrıca günlüğe yazılır.
+            // Belirteç gönderen istemcide belirteç ZORUNLU geçerli olmalıdır (geçersiz belirteç parolaya düşmez).
+            if hbb_common::m2y::require_auth() && lr.m2y_auth.is_empty() {
+                log::warn!(
+                    "M2YDesk: yetki belirteci yok, yalnız parola denetimi uygulanacak (ip={}, id={}, platform={})",
+                    self.ip,
+                    lr.my_id,
+                    lr.my_platform
+                );
+            }
+            // M2YDesk: belirteç varsa yalnızca yetkili hesaplar (imzalı, hedefe bağlı belirteç); parola denetiminden önce.
+            if hbb_common::m2y::require_auth() && !lr.m2y_auth.is_empty() {
                 let (failure, res) = self.check_failure(0).await;
                 if !res {
                     return true;
