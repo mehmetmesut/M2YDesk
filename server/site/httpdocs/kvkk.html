@@ -132,11 +132,11 @@
     <p>Kişisel verileriniz pazarlama amacıyla hiçbir üçüncü kişiye aktarılmaz ve satılmaz. Aktarım yalnızca şu hâllerle sınırlıdır:</p>
     <ul>
       <li><strong>Yetkili destek danışmanları:</strong> destek talebinizin ve ilgili cihaz bilgisinin, yalnızca talebin işlenmesi amacıyla, hizmet sağlayıcının yetkilendirdiği danışmanlarla paylaşılması,</li>
-      <li><strong>Altyapı ve iletişim hizmetleri:</strong> doğrulama kodu ve talep bildirimlerinin e-posta (ve yapılandırılmışsa anlık bildirim) yoluyla iletilmesi,</li>
-      <li><strong>Google:</strong> Google ile girişi tercih etmeniz hâlinde kimlik doğrulama, Google’ın kendi gizlilik politikasına ve aydınlatmasına tabi, sizinle Google arasındaki bir işlemdir,</li>
+      <li><strong>E-posta iletimi:</strong> doğrulama kodu ve talep bildirimleri, hizmet sağlayıcının kendi posta sunucusundan (<code>m2ydesk@mehmetmesut.com</code>) gönderilir; danışmanlara giden anlık bildirim (ntfy) <strong>kişisel veri içermez</strong>, yalnızca talep numarası taşır,</li>
+      <li><strong>Google:</strong> Google ile girişi tercih etmeniz hâlinde kimlik doğrulama, Google’ın kendi gizlilik politikasına ve aydınlatmasına tabi, sizin başlattığınız ve sizinle Google arasında gerçekleşen bir işlemdir,</li>
       <li><strong>Yetkili kurum ve kuruluşlar:</strong> mevzuatın öngördüğü hâllerde ve yetkili merciin talebi üzerine.</li>
     </ul>
-    <p>Veriler, hizmet sağlayıcının yönettiği sunucu altyapısında saklanır. Kişisel verilerin yurt dışına aktarılması gerektiği hâllerde Kanun’un 9. maddesindeki şartlara uyulur.</p>
+    <p>Veriler, hizmet sağlayıcının yönettiği ve <strong>Türkiye’de (İstanbul) bulunan</strong> sunucuda saklanır. Kişisel verileriniz yurt dışına aktarılmaz; tek istisna, yukarıda açıklanan ve sizin tercihinizle başlayan Google ile giriş işlemidir.</p>
 
     <h3>1.7. İlgili kişi olarak haklarınız</h3>
     <p>Kanun’un 11. maddesi uyarınca; kişisel verilerinizin işlenip işlenmediğini öğrenme, işlenmişse bilgi talep etme, işlenme amacını ve amacına uygun kullanılıp kullanılmadığını öğrenme, yurt içinde veya yurt dışında aktarıldığı üçüncü kişileri bilme, eksik veya yanlış işlenmişse düzeltilmesini isteme, Kanun’da öngörülen şartlar çerçevesinde silinmesini veya yok edilmesini isteme, bu işlemlerin aktarıldığı üçüncü kişilere bildirilmesini isteme, işlenen verilerin münhasıran otomatik sistemler ile analiz edilmesi suretiyle aleyhinize bir sonucun ortaya çıkmasına itiraz etme ve kanuna aykırı işlenmesi sebebiyle zarara uğramanız hâlinde zararın giderilmesini talep etme haklarına sahipsiniz. Başvuru yolu Bölüm 5’tedir.</p>
@@ -164,17 +164,17 @@
 
   <section class="cam" id="saklama" aria-labelledby="saklama-b">
     <h2 id="saklama-b">3. Saklama ve İmha</h2>
-    <p>Kişisel veriler, işlendikleri amaç için gerekli süre ve ilgili mevzuatta öngörülen süreler boyunca saklanır; süre sonunda silinir, yok edilir veya anonim hâle getirilir. Periyodik imha işlemi <strong>en geç altı ayda bir</strong> yapılır.</p>
+    <p>Kişisel veriler, işlendikleri amaç için gerekli süre ve ilgili mevzuatta öngörülen süreler boyunca saklanır; süre sonunda silinir, yok edilir veya anonim hâle getirilir. Periyodik imha, sunucuda <strong>her gün otomatik</strong> çalışan bir işlemle yapılır; süresi dolan kayıtlar beklenmeden silinir.</p>
     <div class="tablo">
       <table>
         <thead><tr><th>Veri</th><th>Saklama süresi</th></tr></thead>
         <tbody>
           <tr><td>E-posta adresi ve hesap kaydı</td><td>Hesap devam ettiği sürece. Silme veya rıza geri alma talebinden itibaren en geç 30 gün içinde silinir.</td></tr>
-          <tr><td>Doğrulama kodu</td><td>10 dakika geçerlidir, tek kullanımlıktır; yalnızca özeti (hash) tutulur.</td></tr>
+          <tr><td>Doğrulama kodu</td><td>10 dakika geçerlidir, tek kullanımlıktır; yalnızca özeti (hash) tutulur ve kayıt 24 saat içinde silinir.</td></tr>
           <tr><td>Oturum belirteci</td><td>Oturum süresince; çıkışta silinir. Bağlantı yokken en çok 7 gün geçerli kalır.</td></tr>
-          <tr><td>Cihaz bilgisi (ID, IP, MAC, bilgisayar/kullanıcı adı, işletim sistemi)</td><td>Rıza süresince; cihazın son çevrimiçi olduğu tarihten itibaren en çok 12 ay.</td></tr>
-          <tr><td>Oturum açma ve bağlantı oturumu kayıtları</td><td>Kayıt tarihinden itibaren 2 yıl.</td></tr>
-          <tr><td>Destek talepleri</td><td>Talebin kapanış tarihinden itibaren 2 yıl.</td></tr>
+          <tr><td>Cihaz bilgisi (ID, IP, MAC, bilgisayar/kullanıcı adı, işletim sistemi)</td><td>Rıza süresince; cihazın son çevrimiçi olduğu tarihten itibaren <strong>1 yıl</strong>.</td></tr>
+          <tr><td>Oturum açma ve bağlantı oturumu kayıtları</td><td>Kayıt tarihinden itibaren <strong>1 yıl</strong>.</td></tr>
+          <tr><td>Destek talepleri</td><td>Talep tarihinden itibaren <strong>1 yıl</strong>.</td></tr>
         </tbody>
       </table>
     </div>
