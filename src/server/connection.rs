@@ -2539,6 +2539,9 @@ impl Connection {
                 );
             }
             // M2YDesk: belirteç varsa yalnızca yetkili hesaplar (imzalı, hedefe bağlı belirteç); parola denetiminden önce.
+            // Geçerli belirteç = yetkili danışman (API yalnız sistem sahibine verir): parola SORULMAZ
+            // (kullanıcı kararı 06.10.2026). Parola yalnız belirteçsiz bağlantılarda (danışanlar arası, iOS) geçerlidir.
+            let mut m2y_danisman = false;
             if hbb_common::m2y::require_auth() && !lr.m2y_auth.is_empty() {
                 let (failure, res) = self.check_failure(0).await;
                 if !res {
@@ -2547,10 +2550,12 @@ impl Connection {
                 match hbb_common::m2y::verify_m2y_auth_now(&lr.m2y_auth, &Config::get_id()) {
                     Ok(email) => {
                         log::info!(
-                            "M2YDesk: yetki belirteci geçerli: {} (ip={})",
+                            "M2YDesk: yetki belirteci geçerli, danışman parolasız kabul: {} (ip={})",
                             hbb_common::m2y::mask_email(&email),
                             self.ip
                         );
+                        self.update_failure_with_scope(failure, true, 0, FailureScope::Default);
+                        m2y_danisman = true;
                     }
                     Err(reason) => {
                         log::warn!(
@@ -2712,7 +2717,20 @@ impl Connection {
                 crate::get_builtin_option(keys::OPTION_ALLOW_LOGON_SCREEN_PASSWORD) == "Y"
                     && is_logon();
 
-            if (password::approve_mode() == ApproveMode::Click && !allow_logon_screen_password)
+            if m2y_danisman {
+                // M2YDesk: yetkili danışman (geçerli belirteç) parola ve tıklama onayı olmadan oturum açar;
+                // 2FA açıksa send_logon_response yine sorar. Akış, parola doğrulandığındaki dal ile aynıdır.
+                if err_msg.is_empty() {
+                    #[cfg(target_os = "linux")]
+                    self.linux_headless_handle.wait_desktop_cm_ready().await;
+                    if !self.send_logon_response_and_keep_alive().await {
+                        return false;
+                    }
+                    self.try_start_cm(lr.my_id, lr.my_name, self.authorized);
+                } else {
+                    self.send_login_error(err_msg).await;
+                }
+            } else if (password::approve_mode() == ApproveMode::Click && !allow_logon_screen_password)
                 || password::approve_mode() == ApproveMode::Both && !password::has_valid_password()
             {
                 #[cfg(not(any(target_os = "android", target_os = "ios")))]
