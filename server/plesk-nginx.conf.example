@@ -62,6 +62,18 @@ location = /ios-ayarlar.html {
     return 301 /ios-ayarlar;
 }
 
+# Gizlilik politikası: temiz adres /gizlilik-politikasi (dosya gizlilik-politikasi.html; uygulamalardaki bağlantı)
+location = /gizlilik-politikasi {
+    try_files /gizlilik-politikasi.html =404;
+    add_header Cache-Control "no-cache" always;
+}
+location = /gizlilik-politikasi/ {
+    return 301 /gizlilik-politikasi;
+}
+location = /gizlilik-politikasi.html {
+    return 301 /gizlilik-politikasi;
+}
+
 # Kurulum betikleri (Windows PowerShell / macOS): UTF-8 olarak sunulur; aksi hâlde PowerShell 5.1
 # Türkçe karakterleri bozar.
 location ~ ^/(win-kur\.ps1|mac-kur\.sh)$ {
