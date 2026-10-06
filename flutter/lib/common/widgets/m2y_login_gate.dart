@@ -124,12 +124,30 @@ Widget m2yCompact(BuildContext context, Widget child) {
     context,
     Builder(builder: (context) {
       final t = Theme.of(context);
+      // Hızlı Destek için SABİT yazı/ikon ölçeği (ekranlar arası tutarlı; genel ölçek 0.80 üstüne biner):
+      // başlık 16, giriş/düğme 13, gövde 11.5, etiket 11, simge 16.
+      TextStyle? boyut(TextStyle? s, double px, [FontWeight? w]) =>
+          s?.copyWith(fontSize: px, fontWeight: w);
       return Theme(
         data: t.copyWith(
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          iconTheme: t.iconTheme.copyWith(size: 16),
           textTheme: t.textTheme.copyWith(
-            titleLarge: t.textTheme.titleLarge?.copyWith(fontSize: 17),
-            titleMedium: t.textTheme.titleMedium?.copyWith(fontSize: 14),
+            titleLarge: boyut(t.textTheme.titleLarge, 16, FontWeight.w600),
+            titleMedium: boyut(t.textTheme.titleMedium, 13),
+            bodyLarge: boyut(t.textTheme.bodyLarge, 13),
+            bodyMedium: boyut(t.textTheme.bodyMedium, 11.5),
+            bodySmall: boyut(t.textTheme.bodySmall, 11.5),
+            labelLarge: boyut(t.textTheme.labelLarge, 13),
+          ),
+          inputDecorationTheme: t.inputDecorationTheme.copyWith(
+            labelStyle: boyut(t.textTheme.bodyMedium, 12),
+            floatingLabelStyle: boyut(t.textTheme.bodySmall, 11),
+            hintStyle: boyut(t.textTheme.bodyMedium, 12),
+          ),
+          checkboxTheme: const CheckboxThemeData(
+            visualDensity: VisualDensity(horizontal: -4, vertical: -4),
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
         ),
         child: child,
@@ -384,6 +402,7 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
         curOP: _curOP,
         onLogin: _onOidcLogin,
         tamGenislik: qs,
+        olcek: qs ? 0.85 : 1.0,
       );
       return Column(
         mainAxisSize: MainAxisSize.min,
@@ -405,6 +424,8 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
             decoration: InputDecoration(
               labelText: 'E-posta',
               prefixIcon: const Icon(Icons.email_outlined),
+              prefixIconConstraints:
+                  qs ? const BoxConstraints(minWidth: 32, minHeight: 28) : null,
               errorText: _emailError,
               errorMaxLines: 3,
             ),
@@ -552,12 +573,16 @@ class M2yOidcButtons extends StatelessWidget {
   /// Kutunun tüm genişliğini kullanır (Hızlı Destek'te tek Google düğmesi).
   final bool tamGenislik;
 
+  /// Düğme (genişlik, yükseklik, simge, yazı) ölçeği; Hızlı Destek'te 0.85 (kullanıcı isteği: %15 küçük).
+  final double olcek;
+
   const M2yOidcButtons({
     Key? key,
     required this.options,
     required this.curOP,
     required this.onLogin,
     this.tamGenislik = false,
+    this.olcek = 1.0,
   }) : super(key: key);
 
   @override
@@ -566,7 +591,7 @@ class M2yOidcButtons extends StatelessWidget {
     return LayoutBuilder(builder: (context, c) {
       final n = options.length;
       final w = tamGenislik && n == 1
-          ? c.maxWidth
+          ? c.maxWidth * olcek
           : n <= 1
               ? maxWidth
               : ((c.maxWidth - gap * (n - 1)) / n).clamp(minWidth, maxWidth);
@@ -583,6 +608,7 @@ class M2yOidcButtons extends StatelessWidget {
               curOP: curOP,
               cbLogin: onLogin,
               width: w,
+              olcek: olcek,
               label: _label(op),
             ),
           );

@@ -57,10 +57,14 @@ class _IconOP extends StatelessWidget {
   final String op;
   final String? icon;
   final EdgeInsets margin;
+  // M2YDesk: Hızlı Destek'te küçük simge.
+  final double size;
+
   const _IconOP(
       {Key? key,
       required this.op,
       required this.icon,
+      this.size = 20,
       this.margin = const EdgeInsets.symmetric(horizontal: 4.0)})
       : super(key: key);
 
@@ -73,11 +77,11 @@ class _IconOP extends StatelessWidget {
       child: icon == null
           ? SvgPicture.asset(
               'assets/auth-$svgFile.svg',
-              width: 20,
+              width: size,
             )
           : SvgPicture.string(
               icon!,
-              width: 20,
+              width: size,
             ),
     );
   }
@@ -94,6 +98,7 @@ class ButtonOP extends StatelessWidget {
   // (giriş kapısında düğmeler tek satırda yan yana dizilir).
   final String? label;
   final double width;
+  final double olcek; // Hızlı Destek'te 0.85: yükseklik/simge/yazı birlikte küçülür
 
   const ButtonOP({
     Key? key,
@@ -105,10 +110,12 @@ class ButtonOP extends StatelessWidget {
     required this.onTap,
     this.label,
     this.width = 200,
+    this.olcek = 1.0,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final ikonBoyutu = 20 * olcek;
     final branding = _oidcProviderBranding(op);
     final buttonLabel =
         label ?? translate("Continue with {${branding.label}}");
@@ -126,17 +133,22 @@ class ButtonOP extends StatelessWidget {
             child: Row(
               children: [
                 SizedBox(
-                  width: 30,
+                  width: ikonBoyutu + 10,
                   child: _IconOP(
                     op: branding.iconKey,
                     icon: icon,
+                    size: ikonBoyutu,
                     margin: EdgeInsets.only(right: 5),
                   ),
                 ),
                 Expanded(
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
-                    child: Center(child: Text(buttonLabel)),
+                    child: Center(
+                        child: Text(buttonLabel,
+                            style: olcek == 1.0
+                                ? null
+                                : TextStyle(fontSize: 13 * olcek))),
                   ),
                 ),
               ],
@@ -159,6 +171,7 @@ class WidgetOP extends StatefulWidget {
   // M2YDesk: isteğe bağlı sabit düğme metni ve genişlik.
   final String? label;
   final double width;
+  final double olcek;
   const WidgetOP({
     Key? key,
     required this.config,
@@ -166,6 +179,7 @@ class WidgetOP extends StatefulWidget {
     required this.cbLogin,
     this.label,
     this.width = 200,
+    this.olcek = 1.0,
   }) : super(key: key);
 
   @override
@@ -246,9 +260,10 @@ class _WidgetOPState extends State<WidgetOP> {
           curOP: widget.curOP,
           icon: widget.config.icon,
           primaryColor: str2color(widget.config.op, 0x7f),
-          height: 36,
+          height: 36 * widget.olcek,
           label: widget.label,
           width: widget.width,
+          olcek: widget.olcek,
           onTap: () async {
             _resetState();
             widget.curOP.value = widget.config.op;
