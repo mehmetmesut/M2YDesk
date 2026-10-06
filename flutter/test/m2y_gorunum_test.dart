@@ -309,8 +309,8 @@ void main() {
       final google = tester.getRect(find.widgetWithText(ElevatedButton, 'Google ile giriş yap'));
       final eposta = tester.getRect(find.byType(TextField));
       expect(google.bottom, lessThan(eposta.top), reason: 'Google seçeneği e-posta alanının üstünde');
-      // Google düğmesi içerik genişliğini doldurur (içerik genişliği − 2×12 dolgu).
-      expect(google.width, closeTo(m2yQsIcerikGenisligi() - 24, 1));
+      // Google düğmesi içerik genişliğinin %85'i (kullanıcı isteği: %15 küçük), ortalı.
+      expect(google.width, closeTo((m2yQsIcerikGenisligi() - 24) * 0.85, 1));
 
       // Hızlı Destek penceresi 210 px genişliğinde (içerik + çerçeve payı).
       expect(imcomingOnlyHomeSize.width, closeTo(m2yQsIcerikGenisligi(), 0.5));

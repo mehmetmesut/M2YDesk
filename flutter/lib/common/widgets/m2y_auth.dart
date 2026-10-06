@@ -5,6 +5,7 @@
 // (`stop-service`; bkz. `ui_interface::m2y_set_connection_gate`).
 // Tasarım: docs/eposta-kod-girisi.md.
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_hbb/common.dart';
@@ -56,9 +57,9 @@ class M2yAuth {
   Future<void> start() async {
     if (_started) return;
     _started = true;
-    // Yalnız yerel ön izleme (--dart-define=M2Y_GIRIS_ONIZLEME=1): oturumu silmeden/kapıyı kapatmadan
+    // Yalnız yerel ön izleme (ortam değişkeni M2Y_GIRIS_ONIZLEME=1): oturumu silmeden/kapıyı kapatmadan
     // giriş ekranını gösterir. Sürüm derlemesinde (kDebugMode=false) hiçbir etkisi yoktur.
-    if (kDebugMode && _kGirisOnizleme) {
+    if (kDebugMode && (_kGirisOnizleme || Platform.environment['M2Y_GIRIS_ONIZLEME'] == '1')) {
       stage.value = M2yAuthStage.login;
       return;
     }

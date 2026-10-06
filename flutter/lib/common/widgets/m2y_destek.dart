@@ -247,9 +247,19 @@ class _M2yDestekDialogState extends State<_M2yDestekDialog> {
       if (resp.statusCode == 200) {
         if (!mounted) return;
         Navigator.of(context).pop();
+        // Hızlı Destek'in dar penceresinde küçük ve kısa bildirim (büyük yeşil kutu orantısızdı).
+        final qs = bind.isIncomingOnly();
         BotToast.showText(
             contentColor: Colors.green.shade700,
-            text: 'Talebiniz iletildi — danışmanınız size bağlanacak');
+            text: qs
+                ? 'Talebiniz iletildi'
+                : 'Talebiniz iletildi — danışmanınız size bağlanacak',
+            textStyle: TextStyle(fontSize: qs ? 11 : 14, color: Colors.white),
+            contentPadding: qs
+                ? const EdgeInsets.symmetric(horizontal: 10, vertical: 5)
+                : const EdgeInsets.all(10),
+            borderRadius: BorderRadius.circular(qs ? 6 : 8),
+            duration: const Duration(seconds: 3));
         return;
       }
       _error = _errorText(resp);
