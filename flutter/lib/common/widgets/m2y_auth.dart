@@ -19,6 +19,10 @@ enum M2yAuthStage { checking, login, setPassword, ready }
 const kM2yOptLastEmail = 'm2y-last-email';
 const kM2yOptAutostart = 'm2y-autostart';
 const kM2yKvkkUrl = 'https://desk.mehmetmesut.com/kvkk';
+
+/// Yetkili danışman olabilecek TEK hesap (kullanıcı kararı, sabit; sunucuda m2y-api `M2ySistemSahibiEposta`).
+/// İstemcide yalnız görünüm (rozet) için kullanılır; yetki kararı sunucu ve imzalı belirteçtedir.
+const kM2ySistemSahibiEposta = 'mehmetmesut@gmail.com';
 const kM2yCodeLength = 6;
 const _kGirisOnizleme = bool.fromEnvironment('M2Y_GIRIS_ONIZLEME');
 
