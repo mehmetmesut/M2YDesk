@@ -12,6 +12,7 @@ import 'package:flutter_hbb/common/widgets/custom_password.dart';
 import 'package:flutter_hbb/common/widgets/m2y_acilis.dart';
 import 'package:flutter_hbb/main.dart' show kBootArgs;
 import 'package:flutter_hbb/common/widgets/m2y_auth.dart';
+import 'package:flutter_hbb/common/widgets/m2y_bilgi_karti.dart';
 import 'package:flutter_hbb/common/widgets/m2y_destek.dart';
 import 'package:flutter_hbb/common/widgets/m2y_fixed_password.dart';
 import 'package:flutter_hbb/common/widgets/m2y_login_gate.dart';
@@ -526,7 +527,7 @@ class _DesktopHomePageState extends State<DesktopHomePage>
           closeButton: true);
     }
     if (systemError.isNotEmpty) {
-      return buildInstallCard("", systemError, "", () {});
+      return buildInstallCard("", systemError, "", () {}, hata: true);
     }
 
     if (isWindows && !bind.isDisableInstallation()) {
@@ -650,7 +651,8 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       String? help,
       String? link,
       bool? closeButton,
-      String? closeOption}) {
+      String? closeOption,
+      bool hata = false}) {
     if (bind.mainGetBuildinOption(key: kOptionHideHelpCards) == 'Y' &&
         content != 'install_daemon_tip') {
       return const SizedBox();
@@ -670,98 +672,18 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       }
     }
 
-    return Stack(
-      children: [
-        Container(
-          margin: EdgeInsets.fromLTRB(
-              0, marginTop, 0, bind.isIncomingOnly() ? marginTop : 0),
-          child: Container(
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [
-                  Color.fromARGB(255, 226, 66, 188),
-                  Color.fromARGB(255, 244, 114, 124),
-                ],
-              )),
-              padding: EdgeInsets.all(20),
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: (title.isNotEmpty
-                          ? <Widget>[
-                              Center(
-                                  child: Text(
-                                translate(title),
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15),
-                              ).marginOnly(bottom: 6)),
-                            ]
-                          : <Widget>[]) +
-                      <Widget>[
-                        if (content.isNotEmpty)
-                          Text(
-                            translate(content),
-                            style: TextStyle(
-                                height: 1.5,
-                                color: Colors.white,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 13),
-                          ).marginOnly(bottom: 20)
-                      ] +
-                      (btnText.isNotEmpty
-                          ? <Widget>[
-                              Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    FixedWidthButton(
-                                      width: 150,
-                                      padding: 8,
-                                      isOutline: true,
-                                      text: translate(btnText),
-                                      textColor: Colors.white,
-                                      borderColor: Colors.white,
-                                      textSize: 20,
-                                      radius: 10,
-                                      onTap: onPressed,
-                                    )
-                                  ])
-                            ]
-                          : <Widget>[]) +
-                      (help != null
-                          ? <Widget>[
-                              Center(
-                                  child: InkWell(
-                                      onTap: () async =>
-                                          await launchUrl(Uri.parse(link!)),
-                                      child: Text(
-                                        translate(help),
-                                        style: TextStyle(
-                                            decoration:
-                                                TextDecoration.underline,
-                                            color: Colors.white,
-                                            fontSize: 12),
-                                      )).marginOnly(top: 6)),
-                            ]
-                          : <Widget>[]))),
-        ),
-        if (closeButton != null && closeButton == true)
-          Positioned(
-            top: 18,
-            right: 0,
-            child: IconButton(
-              icon: Icon(
-                Icons.close,
-                color: Colors.white,
-                size: 20,
-              ),
-              onPressed: closeCard,
-            ),
-          ),
-      ],
+    // M2YDesk: pembe degrade kart yerine temaya uyumlu sade kart (m2y_bilgi_karti.dart).
+    return M2yBilgiKarti.rustdesk(
+      title: title,
+      content: content,
+      btnText: btnText,
+      onPressed: onPressed,
+      help: help,
+      link: link,
+      hata: hata,
+      onKapat: closeButton == true ? closeCard : null,
+      margin: EdgeInsets.fromLTRB(12, marginTop > 12 ? 12 : marginTop, 12,
+          bind.isIncomingOnly() ? 8 : 0),
     );
   }
 
