@@ -50,6 +50,18 @@ location = /kvkk.html {
     return 301 /kvkk;
 }
 
+# iPhone/iPad RustDesk ayar rehberi: temiz adres /ios-ayarlar (dosya ios-ayarlar.html)
+location = /ios-ayarlar {
+    try_files /ios-ayarlar.html =404;
+    add_header Cache-Control "no-cache" always;
+}
+location = /ios-ayarlar/ {
+    return 301 /ios-ayarlar;
+}
+location = /ios-ayarlar.html {
+    return 301 /ios-ayarlar;
+}
+
 # Kurulum betikleri (Windows PowerShell / macOS): UTF-8 olarak sunulur; aksi hâlde PowerShell 5.1
 # Türkçe karakterleri bozar.
 location ~ ^/(win-kur\.ps1|mac-kur\.sh)$ {
