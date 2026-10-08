@@ -2,7 +2,7 @@
 """Sabit geliştirici-yönetici hesabını m2y-api'de idempotent olarak kurar.
 
 Kural (kullanıcının tüm projeleri): ADMIN_BOOTSTRAP_EMAIL / ADMIN_BOOTSTRAP_PASSWORD
-(varsayılan mehmetmesut@gmail.com / ${ADMIN_BOOTSTRAP_PASSWORD}). Hesap varsa DOKUNULMAZ; yoksa oluşturulur.
+(varsayılan e-posta mehmetmesut@gmail.com; parola ADMIN_BOOTSTRAP_PASSWORD ile verilir). Hesap varsa DOKUNULMAZ; yoksa oluşturulur.
 Parola API tarafından bcrypt ile saklanır. Hesap M2Y_ADMIN_EMAILS listesinde olduğu için
 korumalıdır (silinemez, pasife alınamaz, yetkisi düşürülemez).
 
@@ -22,7 +22,9 @@ KAPSAYICI = "m2y-api"
 SUNUCU = "/opt/m2ydesk/server"
 ADMIN_ENV = os.path.join(SUNUCU, ".env.m2yadmin")
 EPOSTA = os.environ.get("ADMIN_BOOTSTRAP_EMAIL", "mehmetmesut@gmail.com").strip().lower()
-PAROLA = os.environ.get("ADMIN_BOOTSTRAP_PASSWORD", "${ADMIN_BOOTSTRAP_PASSWORD}")
+PAROLA = os.environ.get("ADMIN_BOOTSTRAP_PASSWORD", "")
+if not PAROLA:
+    sys.exit("ADMIN_BOOTSTRAP_PASSWORD ortam değişkeni gerekli (kaynakta varsayılan parola tutulmaz)")
 
 
 def istek(yol: str, govde: dict | None = None, belirtec: str = "") -> dict:

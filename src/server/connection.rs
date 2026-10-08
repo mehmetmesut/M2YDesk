@@ -2558,16 +2558,15 @@ impl Connection {
                         m2y_danisman = true;
                     }
                     Err(reason) => {
+                        // Geçersiz belirteç parola yoluna düşer (09.10.2026): reddetmek güvenlik
+                        // katmaz (belirteçsiz istek zaten parola yoluna gider), ama saati kayık ya
+                        // da eski anahtarlı hedefte danışmanı kilitlerdi. Hata sayacına eklenmez.
                         log::warn!(
-                            "M2YDesk: yetki belirteci reddedildi: {} (ip={}, id={})",
+                            "M2YDesk: yetki belirteci reddedildi ({}), parola yoluna geçildi (ip={}, id={})",
                             reason,
                             self.ip,
                             lr.my_id
                         );
-                        self.update_failure_with_scope(failure, false, 0, FailureScope::Default);
-                        self.send_login_error(hbb_common::m2y::AUTH_REJECTED).await;
-                        sleep(1.).await;
-                        return false;
                     }
                 }
             }
