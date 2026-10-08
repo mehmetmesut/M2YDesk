@@ -24,6 +24,8 @@ const APP_PREFIX: &str = "m2ydesk-qs";
 #[cfg(not(feature = "m2y_qs"))]
 const APP_PREFIX: &str = "m2ydesk";
 const APPNAME_RUNTIME_ENV_KEY: &str = "RUSTDESK_APPNAME";
+// M2YDesk: src/common.rs `m2y_launcher_exe` ile aynı ad kullanılmalı.
+const M2Y_PACKER_EXE_ENV_KEY: &str = "M2Y_PACKER_EXE";
 #[cfg(windows)]
 const SET_FOREGROUND_WINDOW_ENV_KEY: &str = "SET_FOREGROUND_WINDOW";
 
@@ -155,6 +157,9 @@ fn execute(path: PathBuf, args: Vec<String>, _ui: bool) {
     }
 
     cmd.env(APPNAME_RUNTIME_ENV_KEY, exe_name);
+    // M2YDesk: zorunlu güncellemede değiştirilecek dosya kullanıcının çalıştırdığı bu exe'dir,
+    // %LOCALAPPDATA% altındaki iç exe değil.
+    cmd.env(M2Y_PACKER_EXE_ENV_KEY, &exe);
     if use_null_stdio() {
         cmd.stdin(Stdio::null())
             .stdout(Stdio::null())

@@ -317,6 +317,25 @@ void main() {
       expect(getIncomingOnlyHomeSize().width, closeTo(210, 0.5));
     });
 
+    testWidgets('KVKK: açık rıza işaretlenmeden Google girişi başlatılamaz', (tester) async {
+      kopru.hizli = true;
+      await tester.pumpWidget(_app(const SizedBox(width: 320, height: 800, child: M2yAuthGate())));
+      await tester.pumpAndSettle();
+
+      const uyari = 'Devam etmek için açık rıza kutusunu işaretleyin.';
+      final google = find.widgetWithText(ElevatedButton, 'Google ile giriş yap');
+      expect(find.ancestor(of: google, matching: find.byType(AbsorbPointer)), findsWidgets);
+      await tester.tap(google, warnIfMissed: false);
+      await tester.pumpAndSettle();
+      expect(find.text(uyari), findsOneWidget, reason: 'rıza yokken dokunuş uyarı gösterir');
+
+      await tester.tap(find.byType(Checkbox));
+      await tester.pumpAndSettle();
+      final kilit = tester.widgetList<AbsorbPointer>(
+          find.ancestor(of: google, matching: find.byType(AbsorbPointer)));
+      expect(kilit.any((a) => a.absorbing), isFalse, reason: 'rıza verilince Google açılır');
+    });
+
     testWidgets('tam sürüm: e-posta üstte, Google ve Webauth altta aynı satırda', (tester) async {
       kopru.hizli = false;
       await tester.pumpWidget(_app(const SizedBox(width: 600, height: 800, child: M2yAuthGate())));

@@ -1137,7 +1137,11 @@ pub async fn m2y_connect_gate() -> Option<String> {
             ));
         }
     }
-    let list = m2y_block_list().await?;
+    // Toplam bekleme 5 sn ile sınırlı (HEAD yoklamalarında zaman aşımı yok).
+    let list = tokio::time::timeout(std::time::Duration::from_secs(5), m2y_block_list())
+        .await
+        .ok()
+        .flatten()?;
     let mac = m2y_mac_address();
     if list.is_blocked(&Config::get_id(), &encode64(hbb_common::get_uuid()), &mac) {
         return Some(m2y_tr("m2y-blocked"));
@@ -1238,12 +1242,65 @@ pub fn m2y_mandatory_update_now() -> ResultType<()> {
         };
         return crate::platform::update_to(p);
     }
+    if let Some(launcher) = m2y_launcher_exe() {
+        return m2y_update_launcher(&file, &launcher);
+    }
     let exe = std::env::current_exe()?;
     let helper = m2y_replace_helper_path(&exe)?;
     m2y_download_verified(&file, &helper)?;
     std::process::Command::new(&helper)
         .arg("--m2y-replace")
         .arg(&exe)
+        .spawn()?;
+    Ok(())
+}
+
+/// Taşınabilir paketleyicinin (kullanıcının çalıştırdığı exe) yolu. Paketleyici `M2Y_PACKER_EXE`
+/// ile iletir; iç exe doğrudan çalıştırıldıysa yoktur.
+#[cfg(windows)]
+fn m2y_launcher_exe() -> Option<std::path::PathBuf> {
+    let p = std::path::PathBuf::from(std::env::var_os("M2Y_PACKER_EXE")?);
+    let is_exe = p
+        .extension()
+        .map_or(false, |e| e.eq_ignore_ascii_case("exe"));
+    (p.is_absolute() && is_exe && p.is_file()).then_some(p)
+}
+
+/// Doğrulanmış yeni paketleyici kullanıcının exe'sinin yerine konur (paketleyici iç programı
+/// başlatıp hemen kapandığından kilitli değildir). Bu program ve açılım klasöründeki diğer
+/// süreçler kapandıktan sonra yeni sürüm başlatılır; çağıran program ardından kapanmalıdır.
+#[cfg(windows)]
+fn m2y_update_launcher(
+    file: &hbb_common::M2yUpdateFile,
+    launcher: &std::path::Path,
+) -> ResultType<()> {
+    use std::os::windows::process::CommandExt;
+    const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+    let tmp = m2y_replace_helper_path(launcher)?;
+    m2y_download_verified(file, &tmp)?;
+    if let Err(e) = std::fs::rename(&tmp, launcher) {
+        std::fs::remove_file(&tmp).ok();
+        bail!("program dosyası değiştirilemedi: {}", e);
+    }
+    let dir = std::env::current_exe()?
+        .parent()
+        .map(|d| d.to_string_lossy().into_owned())
+        .unwrap_or_default();
+    let quote = |s: &str| s.replace('\'', "''");
+    let script = format!(
+        "Wait-Process -Id {pid} -Timeout 60 -ErrorAction SilentlyContinue; \
+         $d = '{dir}\\'; \
+         Get-Process | Where-Object {{ $_.Path -and $_.Path.StartsWith($d, 'OrdinalIgnoreCase') }} | \
+         Wait-Process -Timeout 30 -ErrorAction SilentlyContinue; \
+         Start-Process -FilePath '{exe}'",
+        pid = std::process::id(),
+        dir = quote(&dir),
+        exe = quote(&launcher.to_string_lossy()),
+    );
+    std::process::Command::new("powershell.exe")
+        .args(["-NoProfile", "-NonInteractive", "-WindowStyle", "Hidden", "-Command"])
+        .arg(script)
+        .creation_flags(CREATE_NO_WINDOW)
         .spawn()?;
     Ok(())
 }
@@ -1322,7 +1379,14 @@ pub fn m2y_replace_and_restart(target: &str) {
     let is_exe = target
         .extension()
         .map_or(false, |e| e.eq_ignore_ascii_case("exe"));
-    if !is_exe || target == me || target.parent().is_none() || target.parent() != me.parent() {
+    if target == me {
+        // 1.0.4 güncelleyicisi: yeni paketleyici bu klasörü zaten yeni sürümle açtı; başlat.
+        if let Err(e) = std::process::Command::new(&me).spawn() {
+            log::error!("M2YDesk: yeni sürüm başlatılamadı: {}", e);
+        }
+        return;
+    }
+    if !is_exe || target.parent().is_none() || target.parent() != me.parent() {
         log::error!("M2YDesk: geçersiz değiştirme hedefi: {:?}", target);
         return;
     }
@@ -1513,8 +1577,10 @@ fn should_use_raw_tcp_for_api(url: &str) -> bool {
 
 /// Check if we can attempt raw TCP proxy fallback for this target URL.
 #[inline]
-fn can_fallback_to_raw_tcp(url: &str) -> bool {
-    !use_ws() && is_tcp_proxy_api_target(url)
+fn can_fallback_to_raw_tcp(_url: &str) -> bool {
+    // M2YDesk: açık kaynak hbbs HttpProxyRequest desteklemez; geri dönüş her API hatasında
+    // 18 sn bekletir. Kapalı.
+    false
 }
 
 #[inline]

@@ -73,16 +73,26 @@ class M2yAuth {
           stage.value == M2yAuthStage.setPassword;
       if (name.isEmpty && active) unawaited(_toLogin());
     });
-    final token = bind.mainGetLocalOption(key: 'access_token');
-    if (token.isEmpty || bind.mainM2YAuthExpired()) {
-      await _toLogin(clearSession: token.isNotEmpty);
-    } else {
-      // 7 günlük tolerans içinde: hemen aç, sunucuyu arka planda doğrula.
-      final verify = _recheckSession();
-      await _afterLogin();
-      await verify;
+    try {
+      final token = bind.mainGetLocalOption(key: 'access_token');
+      if (token.isEmpty || bind.mainM2YAuthExpired()) {
+        await _toLogin(clearSession: token.isNotEmpty);
+      } else {
+        // 7 günlük tolerans içinde: hemen aç, sunucuyu arka planda doğrula.
+        final verify = _recheckSession();
+        await _afterLogin();
+        await verify;
+      }
+    } catch (e) {
+      // Bekleme ekranında takılı kalınmaz: giriş ekranına dönülür.
+      debugPrint('M2YDesk: oturum denetimi başarısız: $e');
+      await _toLogin();
     }
-    _timer = Timer.periodic(_recheckInterval, (_) => _recheckSession());
+    _timer = Timer.periodic(_recheckInterval, (_) {
+      _recheckSession().catchError((Object e) {
+        debugPrint('M2YDesk: oturum yeniden denetlenemedi: $e');
+      });
+    });
   }
 
   Future<void> _recheckSession() async {
@@ -109,6 +119,11 @@ class M2yAuth {
   /// Kod ya da Google ile oturum açıldıktan sonra.
   Future<void> onLoggedIn() async {
     bind.mainM2YMarkAuthOk();
+    // Üyelik kartındaki ad/e-posta hemen dolsun (yanıtta kullanıcı bilgisi olmayabilir).
+    unawaited(gFFI.userModel.m2yVerifySession().catchError((Object e) {
+      debugPrint('M2YDesk: kullanıcı bilgisi alınamadı: $e');
+      return 0;
+    }));
     await _afterLogin();
   }
 

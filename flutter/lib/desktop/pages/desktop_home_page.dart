@@ -34,7 +34,6 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:window_size/window_size.dart' as window_size;
-import '../widgets/button.dart';
 
 class DesktopHomePage extends StatefulWidget {
   const DesktopHomePage({Key? key}) : super(key: key);
@@ -628,7 +627,11 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       // Solda "Açılışta başlat" anahtarı, sağda Çıkış.
       return Row(
         children: [
-          const Expanded(child: M2yAcilisAnahtari()),
+          // Açılışta başlatma yalnız Windows'ta uygulanır.
+          if (isWindows)
+            const Expanded(child: M2yAcilisAnahtari())
+          else
+            const Spacer(),
           OutlinedButton(
             onPressed: () {
               SystemNavigator.pop(); // Close the application

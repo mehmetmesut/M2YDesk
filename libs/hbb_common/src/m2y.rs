@@ -467,10 +467,17 @@ pub fn verify_m2y_auth(
     if p.x <= 0 || (p.x as u64).saturating_add(AUTH_CLOCK_SKEW) <= now {
         return Err("süresi dolmuş");
     }
+    // Belirteç 5 dk'lıktır; geri kalan saatli hedefleri kilitlememek için üst sınır geniş tutulur.
+    if p.x as u64 > now.saturating_add(AUTH_MAX_TTL) {
+        return Err("süre aralığı geçersiz");
+    }
     Ok(p.e)
 }
 
 /// Gömülü anahtarlar ve sistem saatiyle doğrular.
+/// Belirteç geçerlilik bitişi için kabul edilen en uzak gelecek (sn).
+const AUTH_MAX_TTL: u64 = 3600;
+
 pub fn verify_m2y_auth_now(token: &[u8], my_id: &str) -> Result<String, &'static str> {
     verify_m2y_auth(token, my_id, now_secs(), auth_pubkeys())
 }
@@ -561,6 +568,15 @@ mod auth_tests {
         );
         let t = make_token(&sk, "a@b.com", "42", -5);
         assert_eq!(verify_m2y_auth(t.as_bytes(), "42", NOW, &pk), Err("süresi dolmuş"));
+    }
+
+    #[test]
+    fn far_future_expiry_rejected() {
+        let (pk, sk) = keypair();
+        let t = make_token(&sk, "a@b.com", "42", (NOW + AUTH_MAX_TTL) as i64);
+        assert!(verify_m2y_auth(t.as_bytes(), "42", NOW, &pk).is_ok());
+        let t = make_token(&sk, "a@b.com", "42", (NOW + AUTH_MAX_TTL + 1) as i64);
+        assert_eq!(verify_m2y_auth(t.as_bytes(), "42", NOW, &pk), Err("süre aralığı geçersiz"));
     }
 
     #[test]

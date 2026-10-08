@@ -66,8 +66,13 @@ class M2yZorunluGuncelleme {
   }
 
   Future<void> openDownloadPage() async {
-    if (page.isEmpty) return;
-    await launchUrl(Uri.parse(page));
+    final uri = Uri.tryParse(page);
+    if (uri == null || uri.scheme != 'https') return;
+    try {
+      await launchUrl(uri);
+    } catch (e) {
+      debugPrint('M2YDesk: indirme sayfası açılamadı: $e');
+    }
   }
 
   /// "Şimdi güncelle": Windows'ta indir + SHA-256 doğrula + kur/değiştir; başarısızlıkta ve

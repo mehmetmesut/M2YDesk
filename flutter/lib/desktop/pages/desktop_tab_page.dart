@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hbb/common.dart';
+import 'package:flutter_hbb/common/widgets/m2y_auth.dart';
+import 'package:flutter_hbb/common/widgets/m2y_zorunlu_guncelleme.dart';
 import 'package:flutter_hbb/consts.dart';
 import 'package:flutter_hbb/desktop/pages/desktop_home_page.dart';
 import 'package:flutter_hbb/desktop/pages/desktop_setting_page.dart';
@@ -96,15 +98,20 @@ class _DesktopTabPageState extends State<DesktopTabPage> {
             backgroundColor: Theme.of(context).colorScheme.background,
             body: DesktopTab(
               controller: tabController,
-              tail: Offstage(
-                offstage: bind.isIncomingOnly() || bind.isDisableSettings(),
-                child: ActionIcon(
-                  message: 'Settings',
-                  icon: IconFont.menu,
-                  onTap: DesktopTabPage.onAddSetting,
-                  isClose: false,
-                ),
-              ),
+              // M2YDesk: giriş kapısı ya da zorunlu güncelleme ekranı açıkken ayarlara
+              // girilemez (hizmet buradan yeniden açılabiliyordu).
+              tail: Obx(() => Offstage(
+                    offstage: bind.isIncomingOnly() ||
+                        bind.isDisableSettings() ||
+                        !M2yAuth.instance.isReady ||
+                        M2yZorunluGuncelleme.instance.required.value,
+                    child: ActionIcon(
+                      message: 'Settings',
+                      icon: IconFont.menu,
+                      onTap: DesktopTabPage.onAddSetting,
+                      isClose: false,
+                    ),
+                  )),
             )));
     return isMacOS || kUseCompatibleUiMode
         ? tabWidget

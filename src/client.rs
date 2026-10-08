@@ -3647,9 +3647,14 @@ async fn send_login(
         .read()
         .unwrap()
         .create_login_msg(os_username, os_password, password);
-    // M2YDesk: hedefe bağlı yetki belirteci; alınamazsa boş gider ve zorunlu kılan taraf reddeder.
+    // M2YDesk: hedefe bağlı yetki belirteci; alınamazsa boş gider (parola yolu).
+    // Şifresiz kanalda gönderilmez: dinlenip 5 dk içinde yeniden kullanılabilirdi.
     let target = msg_out.login_request().username.clone();
-    msg_out.mut_login_request().m2y_auth = m2y_fetch_auth(&target).await.into();
+    if peer.is_secured() {
+        msg_out.mut_login_request().m2y_auth = m2y_fetch_auth(&target).await.into();
+    } else {
+        log::warn!("M2YDesk: şifresiz bağlantı, yetki belirteci gönderilmedi");
+    }
     allow_err!(peer.send(&msg_out).await);
 }
 

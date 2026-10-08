@@ -300,6 +300,9 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
       _startCooldown();
     } on RequestException catch (e) {
       _emailError = _sendError(e);
+    } catch (e) {
+      debugPrint('M2YDesk: kod gönderilemedi: $e');
+      _emailError = 'Beklenmeyen bir hata oluştu, yeniden deneyin.';
     }
     if (mounted) setState(() => _busy = false);
   }
@@ -314,6 +317,9 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
       showToast('Yeni kod gönderildi');
     } on RequestException catch (e) {
       _codeError = _sendError(e);
+    } catch (e) {
+      debugPrint('M2YDesk: kod yeniden gönderilemedi: $e');
+      _codeError = 'Beklenmeyen bir hata oluştu, yeniden deneyin.';
     }
     if (mounted) setState(() => _busy = false);
   }
@@ -333,11 +339,14 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
       await gFFI.userModel.m2yVerifyCode(_sentTo, code);
       await bind.mainSetLocalOption(key: kM2yOptLastEmail, value: _sentTo);
       await M2yAuth.instance.onLoggedIn();
-      return;
     } on RequestException catch (e) {
       _codeError = _verifyError(e);
+    } catch (e) {
+      debugPrint('M2YDesk: kod doğrulanamadı: $e');
+      _codeError = 'Beklenmeyen bir hata oluştu, yeniden deneyin.';
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
-    if (mounted) setState(() => _busy = false);
   }
 
   void _useOtherEmail() {
@@ -351,6 +360,7 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
 
   Future<void> _forgetEmail() async {
     await bind.mainSetLocalOption(key: kM2yOptLastEmail, value: '');
+    if (!mounted) return;
     _useOtherEmail();
     showToast('E-posta adresiniz bu cihazdan silindi');
   }
@@ -403,13 +413,24 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
               .toList()
           : _oidcOptions.toList();
       if (options.isEmpty) return const Offstage();
-      final buttons = M2yOidcButtons(
+      final secenekler = M2yOidcButtons(
         options: options,
         curOP: _curOP,
         onLogin: _onOidcLogin,
         tamGenislik: qs,
         olcek: qs ? 0.85 : 1.0,
       );
+      // KVKK: açık rıza işaretlenmeden Google girişi de başlatılamaz; dokunulursa uyarı gösterilir.
+      final buttons = _consent
+          ? secenekler
+          : GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => setState(() => _emailError =
+                  'Devam etmek için açık rıza kutusunu işaretleyin.'),
+              child: AbsorbPointer(
+                child: Opacity(opacity: 0.45, child: secenekler),
+              ),
+            );
       return Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -555,18 +576,29 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
           ),
           if (_busy) const LinearProgressIndicator(),
           const SizedBox(height: 8),
-          // Birincil sağda, geri dönüş solda.
-          Row(children: [
-            OutlinedButton(
-              onPressed: _busy ? null : _changeEmail,
-              child: const Text('E-postayı değiştir'),
-            ),
-            const Spacer(),
+          // Birincil sağda, geri dönüş solda. Hızlı Destek'te yan yana sığmaz: alt alta, birincil üstte.
+          if (M2yAuth.instance.isQuickSupport) ...[
             ElevatedButton(
               onPressed: _busy ? null : _verify,
               child: const Text('Doğrula'),
             ),
-          ]),
+            const SizedBox(height: 6),
+            OutlinedButton(
+              onPressed: _busy ? null : _changeEmail,
+              child: const Text('E-postayı değiştir'),
+            ),
+          ] else
+            Row(children: [
+              OutlinedButton(
+                onPressed: _busy ? null : _changeEmail,
+                child: const Text('E-postayı değiştir'),
+              ),
+              const Spacer(),
+              ElevatedButton(
+                onPressed: _busy ? null : _verify,
+                child: const Text('Doğrula'),
+              ),
+            ]),
         ],
       ),
     );

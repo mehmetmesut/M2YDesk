@@ -1,3 +1,4 @@
+import 'package:flutter_hbb/common/widgets/m2y_zorunlu_guncelleme.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
@@ -2279,6 +2280,8 @@ setEnvTerminalAdmin() {
 
 // uri link handler
 bool handleUriLink({List<String>? cmdArgs, Uri? uri, String? uriString}) {
+  // M2YDesk: zorunlu güncelleme bekleyen sürümde bağlantı adresleri işlenmez.
+  if (M2yZorunluGuncelleme.instance.required.value) return false;
   List<String>? args;
   if (cmdArgs != null && cmdArgs.isNotEmpty) {
     args = cmdArgs;
@@ -2605,6 +2608,8 @@ connect(BuildContext context, String id,
     String? connToken,
     bool? isSharedPassword}) async {
   if (id == '') return;
+  // M2YDesk: zorunlu güncelleme bekleyen sürümden giden bağlantı açılmaz (kart, geçmiş, bağlantı).
+  if (M2yZorunluGuncelleme.instance.required.value) return;
   if (!isDesktop || desktopType == DesktopType.main) {
     try {
       if (Get.isRegistered<IDTextEditingController>()) {
