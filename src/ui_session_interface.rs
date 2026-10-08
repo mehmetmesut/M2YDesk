@@ -1950,7 +1950,11 @@ pub async fn io_loop<T: InvokeUiSession>(handler: Session<T>, round: u32) {
     #[cfg(not(any(target_os = "android", target_os = "ios")))]
     let (sender, mut receiver) = mpsc::unbounded_channel::<Data>();
     *handler.sender.write().unwrap() = Some(sender.clone());
-    let token = LocalConfig::get_option("access_token");
+    // M2YDesk: açık kaynak hbbs jetonu kullanmaz ve şifreli TCP el sıkışması (KeyExchange)
+    // göndermez. Jeton dolu olursa istemci secure_tcp'de 18 sn bekleyip "Failed to secure tcp:
+    // deadline has elapsed" ile düşer; API jetonunu hbbs'ye taşımak da gereksiz bir sızıntıdır.
+    // Bağlantı yetkisi LoginRequest.m2y_auth (imzalı, hedefe bağlı) ile ayrıca taşınır.
+    let token = String::new();
     let key = crate::get_key(false).await;
     #[cfg(not(any(target_os = "android", target_os = "ios")))]
     if handler.is_port_forward() {
