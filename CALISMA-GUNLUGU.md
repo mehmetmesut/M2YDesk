@@ -19,3 +19,10 @@
 - Site: `istemci-hazirla.sh` (M2Y_SURUM=v1.0.5, asgari 1.0.4 — diğer platformlar henüz yok), özetler GitHub ile birebir (`ozet-karsilastir.sh` HEPSİ EŞLEŞİYOR), `surum.json` yerel anahtarla imzalandı ve yüklendi, `dogrula.sh` ✔.
 - Derleme #19 başlatıldı: Android + Linux + macOS, aynı v1.0.5 etiketine eklenecek.
 - Kalan: #19 bitince istemci-hazirla.sh yeniden (asgari 1.0.5) → imza → doğrulama → kullanıcı cihaz testi listesi.
+
+## 09.10.2026 11:40 — 1.0.5 TÜM platformlarda yayında, zorunlu asgari 1.0.5 (%100)
+- Derleme #19 başarılı: apk, deb, dmg aynı v1.0.5 release'ine eklendi.
+- `istemci-hazirla.sh` (asgari 1.0.5): 7 dosya sitede; `ozet-karsilastir.sh` HEPSİ EŞLEŞİYOR; `surum.json` imzalandı (qrRkSE…); `dogrula.sh` 18 ✔, uyarı yok.
+- API `.env.m2yapi` M2Y_ASGARI_SURUM=1.0.5; kapsayıcı `docker compose --profile api up -d api` ile yeniden oluşturuldu (servis adı `api`, profil `api`; düz `docker compose up -d m2y-api` ÇALIŞMAZ). /api/login-options 200.
+- APK imzalı (META-INF/M2YDESK.RSA). macOS yalnız Apple Silicon (ad-hoc imza), Intel yok.
+- Kalan: kullanıcının gerçek cihaz testleri (parolasız danışman, hizmet otomatik başlatma, Android APK kapısı, iPhone parola ile bağlantı).
