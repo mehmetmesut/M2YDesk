@@ -2406,6 +2406,46 @@ class _About extends StatefulWidget {
   State<_About> createState() => _AboutState();
 }
 
+/// Hakkında kutusu: ürün kimliği, altyapı/telif notu (AGPL gereği korunur) ve M²Y imzası.
+/// "M²Y" tıklanınca mehmetmesut.com açılır.
+Widget _m2yHakkindaKutusu(BuildContext context, String license) {
+  final tema = Theme.of(context);
+  final kucuk = tema.textTheme.bodySmall;
+  final soluk = kucuk?.copyWith(color: kucuk.color?.withOpacity(0.7));
+  final baglanti = TextStyle(
+      color: tema.colorScheme.primary, decoration: TextDecoration.underline);
+  Widget link(String metin, String url, {TextStyle? stil}) => InkWell(
+        onTap: () => launchUrlString(url),
+        child: Text(metin, style: (stil ?? const TextStyle()).merge(baglanti)),
+      );
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text('M2YDesk', style: tema.textTheme.titleMedium),
+      Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: [
+        Text('Uzaktan erişim ve destek çözümü · ', style: kucuk),
+        link('desk.mehmetmesut.com', 'https://desk.mehmetmesut.com', stil: kucuk),
+      ]),
+      const SizedBox(height: 8),
+      SelectionArea(
+        child: Text(
+          'Açık kaynak RustDesk altyapısı üzerine geliştirilmiştir.\n'
+          'RustDesk © ${DateTime.now().year} Purslane Tech Pte. Ltd. · AGPL-3.0 lisansı'
+          '${license.isEmpty ? '' : '\n$license'}',
+          style: soluk,
+        ),
+      ),
+      const SizedBox(height: 12),
+      Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: [
+        const Text('Yeşil Dönüşüm Mühendisi © Creator '),
+        link('M²Y', 'https://mehmetmesut.com',
+            stil: const TextStyle(fontWeight: FontWeight.w700)),
+      ]),
+      Text('Mehmet Mesut YILMAZ', style: soluk),
+    ],
+  );
+}
+
 class _AboutState extends State<_About> {
   @override
   Widget build(BuildContext context) {
@@ -2465,36 +2505,7 @@ class _AboutState extends State<_About> {
                 ),
                 padding:
                     const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-                child: SelectionArea(
-                    child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'M2YDesk, açık kaynak RustDesk üzerine kurulmuştur.\n'
-                      'Copyright © ${DateTime.now().year} Purslane Tech Pte. Ltd. (RustDesk) · AGPL-3.0'
-                      '${license.isEmpty ? '' : '\n$license'}',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    const SizedBox(height: 10),
-                    Text.rich(TextSpan(children: [
-                      const TextSpan(text: 'Yeşil Dönüşüm Mühendisi © Creator '),
-                      TextSpan(
-                          text: 'M²Y',
-                          style: const TextStyle(fontWeight: FontWeight.w700)),
-                    ])),
-                    Text.rich(TextSpan(children: [
-                      TextSpan(
-                          text: 'Mehmet Mesut YILMAZ = ',
-                          style: Theme.of(context).textTheme.bodySmall),
-                      TextSpan(
-                          text: 'M²Y',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall
-                              ?.copyWith(fontWeight: FontWeight.w700)),
-                    ])),
-                  ],
-                )),
+                child: _m2yHakkindaKutusu(context, license),
               ).marginSymmetric(vertical: 8.0)
             ],
           ).marginOnly(left: _kContentHMargin)

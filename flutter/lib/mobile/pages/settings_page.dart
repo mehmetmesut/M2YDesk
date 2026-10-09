@@ -1002,7 +1002,8 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
             ),
             SettingsTile(
               title: Text('Yeşil Dönüşüm Mühendisi © Creator M²Y'),
-              description: Text('Mehmet Mesut YILMAZ = M²Y'),
+              description: Text('Mehmet Mesut YILMAZ · mehmetmesut.com'),
+              onPressed: (context) => launchUrlString('https://mehmetmesut.com'),
               leading: Icon(Icons.verified_outlined),
             )
           ],
@@ -1125,7 +1126,10 @@ void showAbout(OverlayDialogManager dialogManager) {
                     decoration: TextDecoration.underline,
                   )),
             )),
-        Text('Yeşil Dönüşüm Mühendisi © Creator M²Y'),
+        InkWell(
+            onTap: () => launchUrl(Uri.parse('https://mehmetmesut.com')),
+            child: Text('Yeşil Dönüşüm Mühendisi © Creator M²Y',
+                style: TextStyle(decoration: TextDecoration.underline))),
       ]),
       actions: [],
     );
