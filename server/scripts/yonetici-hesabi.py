@@ -2,7 +2,8 @@
 """Sabit geliştirici-yönetici hesabını m2y-api'de idempotent olarak kurar.
 
 Kural (kullanıcının tüm projeleri): ADMIN_BOOTSTRAP_EMAIL / ADMIN_BOOTSTRAP_PASSWORD
-(varsayılan e-posta mehmetmesut@gmail.com; parola ADMIN_BOOTSTRAP_PASSWORD ile verilir). Hesap varsa DOKUNULMAZ; yoksa oluşturulur.
+ortam değişkenleriyle verilir (e-posta varsayılanı sistem sahibi; parola varsayılanı YOK, zorunlu).
+Hesap varsa DOKUNULMAZ; yoksa oluşturulur.
 Parola API tarafından bcrypt ile saklanır. Hesap M2Y_ADMIN_EMAILS listesinde olduğu için
 korumalıdır (silinemez, pasife alınamaz, yetkisi düşürülemez).
 
