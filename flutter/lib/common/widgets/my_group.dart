@@ -58,7 +58,10 @@ class _MyGroupState extends State<MyGroup> {
   }
 
   Widget _buildLandscape() {
-    return Row(
+    return LayoutBuilder(builder: (context, constraints) {
+      // M2YDesk: sol liste e-postaları sığdıracak kadar geniş (alanın %45'i, 170–280 px).
+      final solGenislik = (constraints.maxWidth * 0.45).clamp(170.0, 280.0);
+      return Row(
       children: [
         Container(
           decoration: BoxDecoration(
@@ -66,7 +69,7 @@ class _MyGroupState extends State<MyGroup> {
               border:
                   Border.all(color: Theme.of(context).colorScheme.background)),
           child: Container(
-            width: 150,
+            width: solGenislik,
             height: double.infinity,
             child: Column(
               children: [
@@ -90,7 +93,8 @@ class _MyGroupState extends State<MyGroup> {
               )),
         )
       ],
-    );
+      );
+    });
   }
 
   Widget _buildPortrait() {
@@ -242,7 +246,7 @@ class _MyGroupState extends State<MyGroup> {
                     ),
                   ),
                 ).marginOnly(right: 4),
-                if (isMe) Flexible(child: Text(displayName)),
+                if (isMe) Flexible(child: _tekSatir(displayName)),
                 if (isMe)
                   Flexible(
                     child: Container(
@@ -259,7 +263,7 @@ class _MyGroupState extends State<MyGroup> {
                       ),
                     ),
                   ),
-                if (!isMe) Expanded(child: Text(displayName)),
+                if (!isMe) Expanded(child: _tekSatir(displayName)),
               ],
             ).paddingSymmetric(vertical: 4),
           ),
@@ -298,7 +302,7 @@ class _MyGroupState extends State<MyGroup> {
                   child: Icon(IconFont.deviceGroupOutline,
                       color: MyTheme.accent, size: 19),
                 ).marginOnly(right: 4),
-                Expanded(child: Text(name)),
+                Expanded(child: _tekSatir(name)),
               ],
             ).paddingSymmetric(vertical: 4),
           ),
@@ -306,4 +310,11 @@ class _MyGroupState extends State<MyGroup> {
       },
     )).marginSymmetric(horizontal: 12).marginOnly(bottom: 6);
   }
+
+  /// Uzun ad/e-posta tek satırda kalır; kesilen kısım ipucunda görünür.
+  Widget _tekSatir(String metin) => Tooltip(
+        message: metin,
+        waitDuration: const Duration(milliseconds: 600),
+        child: Text(metin, maxLines: 1, overflow: TextOverflow.ellipsis),
+      );
 }

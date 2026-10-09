@@ -54,6 +54,13 @@ class PeersModelName {
 /// for peer search text, global obs value
 final peerSearchText = "".obs;
 
+/// M2YDesk: cihaz listesi alanının son ölçülen genişliği (görünüm menüsü için).
+final RxDouble m2yPeerAlanGenisligi = 0.0.obs;
+
+/// Küçük kartlar (220 px) yan yana en az iki sütun sığıyorsa anlamlıdır; yoksa listeyle aynı görünür.
+bool m2yKucukKartlarAnlamli() =>
+    m2yPeerAlanGenisligi.value <= 0 || m2yPeerAlanGenisligi.value >= 2 * 220 + 12;
+
 /// for peer sort, global obs value
 RxString? _peerSort;
 RxString get peerSort {
@@ -296,7 +303,14 @@ class _PeersViewState extends State<_PeersView>
               _curPeers.addAll(peers.map((e) => e.id));
               _queryOnlines(true);
             }
-            return child;
+            return LayoutBuilder(builder: (context, constraints) {
+              final g = constraints.maxWidth;
+              if (g.isFinite && (g - m2yPeerAlanGenisligi.value).abs() > 1) {
+                WidgetsBinding.instance
+                    .addPostFrameCallback((_) => m2yPeerAlanGenisligi.value = g);
+              }
+              return child;
+            });
           } else {
             return const Center(
               child: CircularProgressIndicator(),

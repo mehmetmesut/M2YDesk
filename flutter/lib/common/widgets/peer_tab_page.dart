@@ -791,6 +791,8 @@ class _PeerViewDropdownState extends State<PeerViewDropdown> {
         enabled: false,
         child: Text(translate("Change view"), style: style)));
     for (var e in PeerUiType.values) {
+      // M2YDesk: dar alanda küçük kartlar listeden ayırt edilemez; seçenek gösterilmez.
+      if (e == PeerUiType.tile && !m2yKucukKartlarAnlamli()) continue;
       items.add(PopupMenuItem(
           height: 36,
           child: Obx(() => Center(
