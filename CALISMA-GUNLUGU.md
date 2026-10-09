@@ -37,4 +37,9 @@
 ## 09.10.2026 16:40 — 1.0.6 yayında (isteğe bağlı güncelleme; asgari 1.0.5) (%100)
 - Derleme #20 ilk denemede başarılı, 4 platform. Release v1.0.6: 8 dosya.
 - Site: 7 dosya, özetler GitHub ile birebir; surum.json imzalandı; dogrula.sh ✔.
-- Kalan: Store sertifika sonucu (ağ dışından kontrol) ve ardından Store'a 1.0.6 MSIX gönderimi; kullanıcı 1.0.6 arayüz değişikliklerini gözden geçirir.
+- Kalan: Store sertifika sonucu (ağ dışından kontrol) ve ardından Store'a MSIX gönderimi; kullanıcı arayüz değişikliklerini gözden geçirir.
+
+## 09.10.2026 18:20 — 1.0.7: Hakkında sayfası M2YDesk kimliğinde (derleniyor, %60)
+- Kullanıcı bulgusu: Hakkında sayfası RustDesk'ten kalmış (mavi pano, Purslane telif, slogan, rustdesk.com).
+- Yeni kutu: M2YDesk · desk.mehmetmesut.com (bağlantı) · RustDesk altyapı/telif notu (AGPL gereği korunur, soluk) · "Yeşil Dönüşüm Mühendisi © Creator M²Y" (M²Y → mehmetmesut.com) · Mehmet Mesut YILMAZ. Bağlantılar: Gizlilik, KVKK, Web sitesi, Kaynak kodu (72c97f4, 4651aad). Mobilde aynı.
+- Sürüm 1.0.7 (0bd9e03); derleme #21 (4 platform) başlatıldı. Asgari 1.0.5 kalır.
