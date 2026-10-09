@@ -43,3 +43,8 @@
 - Kullanıcı bulgusu: Hakkında sayfası RustDesk'ten kalmış (mavi pano, Purslane telif, slogan, rustdesk.com).
 - Yeni kutu: M2YDesk · desk.mehmetmesut.com (bağlantı) · RustDesk altyapı/telif notu (AGPL gereği korunur, soluk) · "Yeşil Dönüşüm Mühendisi © Creator M²Y" (M²Y → mehmetmesut.com) · Mehmet Mesut YILMAZ. Bağlantılar: Gizlilik, KVKK, Web sitesi, Kaynak kodu (72c97f4, 4651aad). Mobilde aynı.
 - Sürüm 1.0.7 (0bd9e03); derleme #21 (4 platform) başlatıldı. Asgari 1.0.5 kalır.
+
+## 10.10.2026 — 1.0.7 yayında; GitGuardian uyarısı yanlış alarm (%100)
+- Derleme #21 başarılı; 8 dosya release'de, 7'si sitede, özetler birebir; surum.json imzalandı; asgari 1.0.5.
+- GitGuardian "Company Email Password": geçmişteki `mehmetmesut@gmail.com / ${ADMIN_BOOTSTRAP_PASSWORD}` yer tutucu satırına takıldı; gerçek sır yok (tüm geçmiş tarandı). Açıklama satırı ayrıldı (772f016). Kullanıcı GitGuardian'a GitHub erişimi verdi (salt okunur tarama); incident "false positive" işaretlenebilir.
+- Kalan: Store sertifika sonucu (ağ dışından) → MSIX 1.0.7 gönderimi.
