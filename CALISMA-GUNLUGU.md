@@ -32,4 +32,9 @@
 - Kullanıcı bulguları: grup sekmesi sol listesi dar (e-postalar kırılıyor) → alanın %45'i (170–280 px), tek satır + ipucu; "Görünümü değiştir"de küçük kartlar dar alanda listeyle aynı → iki sütun sığmıyorsa seçenek gizli (43c6691).
 - Denetimden kalan düşük önemli 5 bulgu kapatıldı (f535149): 403 → oturum düşer; OIDC 5×10 sn yeniden deneme; Destek iste çift pencere; güncelleme ekranı canlı metin/durum sıfırlama; "sürüm eski" iletisi hedefe bağlı. Çıkışta cihaz parolası bilerek korunuyor (cihazın parolası, hesabın değil).
 - Sürüm 1.0.6 (7d8f2e0). Derleme #20 (4 platform) başlatıldı. Asgari sürüm 1.0.5'te kalacak (1.0.6 isteğe bağlı).
-- Store: sertifika durumu kontrolü Microsoft hesap seçimi istiyor (kullanıcı seçecek).
+- Store: sertifika durumu kontrolü Microsoft hesap seçimi istiyor (kullanıcı seçecek); sonra partner.microsoft.com ağdan açılamadı (üniversite ağı).
+
+## 09.10.2026 16:40 — 1.0.6 yayında (isteğe bağlı güncelleme; asgari 1.0.5) (%100)
+- Derleme #20 ilk denemede başarılı, 4 platform. Release v1.0.6: 8 dosya.
+- Site: 7 dosya, özetler GitHub ile birebir; surum.json imzalandı; dogrula.sh ✔.
+- Kalan: Store sertifika sonucu (ağ dışından kontrol) ve ardından Store'a 1.0.6 MSIX gönderimi; kullanıcı 1.0.6 arayüz değişikliklerini gözden geçirir.
