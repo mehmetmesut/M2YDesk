@@ -2446,49 +2446,56 @@ class _AboutState extends State<_About> {
                 SelectionArea(
                     child: Text('${translate('Fingerprint')}: $fingerprint')
                         .marginSymmetric(vertical: 4.0)),
-              InkWell(
-                  onTap: () {
-                    launchUrlString('https://desk.mehmetmesut.com/gizlilik-politikasi');
-                  },
-                  child: Text(
-                    translate('Privacy Statement'),
-                    style: linkStyle,
-                  ).marginSymmetric(vertical: 4.0)),
-              InkWell(
-                  onTap: () {
-                    launchUrlString('https://rustdesk.com');
-                  },
-                  child: Text(
-                    translate('Website'),
-                    style: linkStyle,
-                  ).marginSymmetric(vertical: 4.0)),
+              // M2YDesk: bağlantılar kendi sitemize; kaynak kodu bağlantısı AGPL-3.0 gereği.
+              for (final b in const [
+                ('Gizlilik Politikası', 'https://desk.mehmetmesut.com/gizlilik-politikasi'),
+                ('KVKK Aydınlatma Metni', 'https://desk.mehmetmesut.com/kvkk'),
+                ('Web sitesi', 'https://desk.mehmetmesut.com'),
+                ('Kaynak kodu (AGPL-3.0)', 'https://github.com/mehmetmesut/M2YDesk'),
+              ])
+                InkWell(
+                    onTap: () => launchUrlString(b.$2),
+                    child: Text(b.$1, style: linkStyle)
+                        .marginSymmetric(vertical: 4.0)),
+              // Sade bilgi kutusu (renkli pano yerine): kaynak ve telif, altta M²Y imzası.
               Container(
-                decoration: const BoxDecoration(color: Color(0xFF2c8cff)),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Theme.of(context).dividerColor),
+                  borderRadius: BorderRadius.circular(6),
+                ),
                 padding:
-                    const EdgeInsets.symmetric(vertical: 24, horizontal: 8),
+                    const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
                 child: SelectionArea(
-                    child: Row(
+                    child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Copyright © ${DateTime.now().toString().substring(0, 4)} Purslane Tech Pte. Ltd.\n$license',
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                          Text(
-                            translate('Slogan_tip'),
-                            style: TextStyle(
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white),
-                          )
-                        ],
-                      ),
+                    Text(
+                      'M2YDesk, açık kaynak RustDesk üzerine kurulmuştur.\n'
+                      'Copyright © ${DateTime.now().year} Purslane Tech Pte. Ltd. (RustDesk) · AGPL-3.0'
+                      '${license.isEmpty ? '' : '\n$license'}',
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
+                    const SizedBox(height: 10),
+                    Text.rich(TextSpan(children: [
+                      const TextSpan(text: 'Yeşil Dönüşüm Mühendisi © Creator '),
+                      TextSpan(
+                          text: 'M²Y',
+                          style: const TextStyle(fontWeight: FontWeight.w700)),
+                    ])),
+                    Text.rich(TextSpan(children: [
+                      TextSpan(
+                          text: 'Mehmet Mesut YILMAZ = ',
+                          style: Theme.of(context).textTheme.bodySmall),
+                      TextSpan(
+                          text: 'M²Y',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
+                              ?.copyWith(fontWeight: FontWeight.w700)),
+                    ])),
                   ],
                 )),
-              ).marginSymmetric(vertical: 4.0)
+              ).marginSymmetric(vertical: 8.0)
             ],
           ).marginOnly(left: _kContentHMargin)
         ]),
