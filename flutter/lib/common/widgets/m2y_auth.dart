@@ -104,6 +104,12 @@ class M2yAuth {
       if (stage.value != M2yAuthStage.login) await _toLogin();
       return;
     }
+    if (status == 403) {
+      // Hesap yönetim panelinden kapatıldı: oturum hemen kapanır.
+      debugPrint('M2YDesk: hesap devre dışı (403), oturum kapatılıyor');
+      await _toLogin(clearSession: true);
+      return;
+    }
     if (bind.mainM2YAuthExpired()) {
       debugPrint('M2YDesk: 7 gündür sunucuya ulaşılamadı, oturum kapatılıyor');
       await _toLogin(clearSession: true);

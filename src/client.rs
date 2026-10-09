@@ -3415,7 +3415,9 @@ pub fn handle_login_error(
         true
     } else if err == hbb_common::m2y::AUTH_REJECTED {
         // M2YDesk: karşı taraf yetki belirtecini reddetti (yok, süresi dolmuş ya da yetkisiz hesap).
-        let text = if M2Y_OUTDATED.load(std::sync::atomic::Ordering::SeqCst) {
+        let hedef = lc.read().unwrap().id.clone();
+        let eski = M2Y_OUTDATED_ID.lock().unwrap().as_deref() == Some(hedef.as_str());
+        let text = if eski {
             hbb_common::m2y::OUTDATED_LOCAL
         } else {
             hbb_common::m2y::AUTH_REJECTED_LOCAL
@@ -3658,13 +3660,19 @@ async fn send_login(
     allow_err!(peer.send(&msg_out).await);
 }
 
-/// M2YDesk: son yetki isteği HTTP 426 (istemci sürümü eski) aldıysa `true`.
-static M2Y_OUTDATED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+/// M2YDesk: yetki isteği HTTP 426 (istemci sürümü eski) alan son hedef kimliği.
+/// Hedefe bağlı tutulur ki aynı anda açık başka bir oturumun iletisi karışmasın.
+static M2Y_OUTDATED_ID: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
 
 /// M2YDesk: oturum açıksa `POST /api/m2y/yetki` ile hedefe bağlı (5 dk) yetki belirteci alır.
 /// Oturum yoksa, sunucuya ulaşılamazsa ya da hesap yetkisizse boş döner (5 sn zaman aşımı).
 async fn m2y_fetch_auth(target: &str) -> String {
-    M2Y_OUTDATED.store(false, std::sync::atomic::Ordering::SeqCst);
+    {
+        let mut eski = M2Y_OUTDATED_ID.lock().unwrap();
+        if eski.as_deref() == Some(target) {
+            *eski = None;
+        }
+    }
     let access_token = LocalConfig::get_option("access_token");
     if access_token.is_empty() || target.is_empty() {
         return String::new();
@@ -3701,7 +3709,7 @@ async fn m2y_fetch_auth(target: &str) -> String {
                 log::warn!("M2YDesk: yetki belirteci verilmedi: HTTP {}", status);
                 if status.as_u16() == 426 {
                     // Sunucu bu sürümü eski buldu; ret iletisi "güncelleyin" olarak gösterilir.
-                    M2Y_OUTDATED.store(true, std::sync::atomic::Ordering::SeqCst);
+                    *M2Y_OUTDATED_ID.lock().unwrap() = Some(target.to_owned());
                 }
                 return String::new();
             }

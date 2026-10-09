@@ -32,6 +32,9 @@ class M2yZorunluGuncelleme {
 
   final required = false.obs;
   final stage = M2yUpdateStage.idle.obs;
+
+  /// Her yenilemede artar; ekran sürüm metnini bununla tazeler.
+  final yenileme = 0.obs;
   String current = '';
   String minimum = '';
   String method = 'sayfa';
@@ -59,7 +62,14 @@ class M2yZorunluGuncelleme {
       minimum = '${m['gerekli'] ?? ''}';
       method = '${m['yontem'] ?? 'sayfa'}';
       page = '${m['sayfa'] ?? ''}';
-      required.value = m['zorunlu'] == true;
+      final zorunlu = m['zorunlu'] == true;
+      if (!zorunlu && stage.value != M2yUpdateStage.idle) {
+        // Gereklilik kalktıysa önceki "başarısız" durumu bir sonraki sefere taşınmaz.
+        stage.value = M2yUpdateStage.idle;
+        error = '';
+      }
+      required.value = zorunlu;
+      yenileme.value++;
     } catch (e) {
       debugPrint('M2YDesk: zorunlu güncelleme durumu okunamadı: $e');
     }
@@ -141,6 +151,7 @@ class _M2yZorunluGuncellemeKatmaniState
     final c = M2yZorunluGuncelleme.instance;
     final theme = Theme.of(context);
     final content = Obx(() {
+      c.yenileme.value; // sürüm metni için abonelik
       final stage = c.stage.value;
       final busy = stage == M2yUpdateStage.working ||
           stage == M2yUpdateStage.restarting;

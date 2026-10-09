@@ -215,9 +215,24 @@ class _M2yLoginFormState extends State<_M2yLoginForm> {
     _email.text = _remembered;
     // Hatırlanan e-posta daha önce verilmiş açık rızayı gösterir.
     _consent = _remembered.isNotEmpty;
-    Future.microtask(() async {
-      _oidcOptions.value = await m2yOidcYukleyici();
-    });
+    Future.microtask(_oidcYukle);
+  }
+
+  /// Harici giriş seçenekleri; ağ yoksa birkaç kez yeniden denenir (kullanıcı açılışta
+  /// çevrimdışıysa Google düğmesi sonradan görünür).
+  Future<void> _oidcYukle() async {
+    for (var deneme = 0; deneme < 5 && mounted; deneme++) {
+      try {
+        final secenekler = await m2yOidcYukleyici();
+        if (secenekler.isNotEmpty) {
+          _oidcOptions.value = secenekler;
+          return;
+        }
+      } catch (e) {
+        debugPrint('M2YDesk: giriş seçenekleri alınamadı: $e');
+      }
+      await Future.delayed(const Duration(seconds: 10));
+    }
   }
 
   @override

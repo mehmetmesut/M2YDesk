@@ -106,18 +106,29 @@ Widget m2ySideButton({
 class M2yDestekButton extends StatelessWidget {
   const M2yDestekButton({Key? key}) : super(key: key);
 
+  /// Pencere açıkken ikinci tıklama yeni pencere açmaz.
+  static bool _acik = false;
+
   @override
   Widget build(BuildContext context) {
     return m2ySideButton(
       tooltip: 'Danışmanınızdan bağlanmasını isteyin',
       icon: const Icon(Icons.support_agent),
       label: 'Destek iste',
-      onPressed: () => m2yPencereBuyutup(
-          const Size(480, 460),
-          () => showDialog(
-              context: context,
-              builder: (ctx) =>
-                  m2yCompactDialog(ctx, const _M2yDestekDialog()))),
+      onPressed: () async {
+        if (_acik) return;
+        _acik = true;
+        try {
+          await m2yPencereBuyutup(
+              const Size(480, 460),
+              () => showDialog(
+                  context: context,
+                  builder: (ctx) =>
+                      m2yCompactDialog(ctx, const _M2yDestekDialog())));
+        } finally {
+          _acik = false;
+        }
+      },
     );
   }
 }
