@@ -12,3 +12,10 @@
 - Doğrulama: flutter analyze hata yok; 56/56 test geçti. Rust yerelde derlenemedi (cargo yok) — CI'da derlenecek.
 - Herkese açık depo (AGPL gereği + sınırsız ücretsiz Actions): tüm geçmiş gizli bilgi için tarandı; tek bulgu yönetici parolası varsayılanı → `git filter-repo --replace-text` ile geçmişten silindi, zorla gönderildi (commit kimlikleri değişti).
 - Kalan: depo görünürlüğü → derleme → yayın (asgari sürüm 1.0.5) → cihaz testi.
+
+## 09.10.2026 10:55 — 1.0.5 Windows yayında (%85: Android/Linux/macOS derleniyor)
+- Depo herkese açık yapıldı (kullanıcı); eski Actions kayıtları silindi.
+- Derleme #18: 1. deneme GitHub önbellek kesintisi yüzünden düştü (kod hatası değil; windows qs başarılıydı), 2. deneme başarılı. Yalnız Windows işaretliydi (form varsayılanı) → release v1.0.5: exe, install, msi, QS exe, QS msix.
+- Site: `istemci-hazirla.sh` (M2Y_SURUM=v1.0.5, asgari 1.0.4 — diğer platformlar henüz yok), özetler GitHub ile birebir (`ozet-karsilastir.sh` HEPSİ EŞLEŞİYOR), `surum.json` yerel anahtarla imzalandı ve yüklendi, `dogrula.sh` ✔.
+- Derleme #19 başlatıldı: Android + Linux + macOS, aynı v1.0.5 etiketine eklenecek.
+- Kalan: #19 bitince istemci-hazirla.sh yeniden (asgari 1.0.5) → imza → doğrulama → kullanıcı cihaz testi listesi.
