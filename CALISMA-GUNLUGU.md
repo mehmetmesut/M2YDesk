@@ -26,3 +26,10 @@
 - API `.env.m2yapi` M2Y_ASGARI_SURUM=1.0.5; kapsayıcı `docker compose --profile api up -d api` ile yeniden oluşturuldu (servis adı `api`, profil `api`; düz `docker compose up -d m2y-api` ÇALIŞMAZ). /api/login-options 200.
 - APK imzalı (META-INF/M2YDESK.RSA). macOS yalnız Apple Silicon (ad-hoc imza), Intel yok.
 - Kalan: kullanıcının gerçek cihaz testleri (parolasız danışman, hizmet otomatik başlatma, Android APK kapısı, iPhone parola ile bağlantı).
+
+## 09.10.2026 15:30 — 1.0.5 cihazda doğrulandı; 1.0.6 toplu düzeltme derleniyor (%60)
+- Kullanıcı doğruladı: 1.0.5 ile 206 205 400'e bağlantı çalışıyor ("Failed to secure tcp" kapandı).
+- Kullanıcı bulguları: grup sekmesi sol listesi dar (e-postalar kırılıyor) → alanın %45'i (170–280 px), tek satır + ipucu; "Görünümü değiştir"de küçük kartlar dar alanda listeyle aynı → iki sütun sığmıyorsa seçenek gizli (43c6691).
+- Denetimden kalan düşük önemli 5 bulgu kapatıldı (f535149): 403 → oturum düşer; OIDC 5×10 sn yeniden deneme; Destek iste çift pencere; güncelleme ekranı canlı metin/durum sıfırlama; "sürüm eski" iletisi hedefe bağlı. Çıkışta cihaz parolası bilerek korunuyor (cihazın parolası, hesabın değil).
+- Sürüm 1.0.6 (7d8f2e0). Derleme #20 (4 platform) başlatıldı. Asgari sürüm 1.0.5'te kalacak (1.0.6 isteğe bağlı).
+- Store: sertifika durumu kontrolü Microsoft hesap seçimi istiyor (kullanıcı seçecek).
