@@ -3370,6 +3370,9 @@ reg add {subkey} /f /v EstimatedSize /t REG_DWORD /d {size}
     let filter = format!(" /FI \"PID ne {}\"", get_current_pid());
     let restore_service_cmd = if is_service_running {
         format!("sc start {}", &app_name)
+    } else if !m2y_user_stopped_service() {
+        // M2YDesk: eksik hizmet onarılır (varsa `sc create` hata verir, `sc start` başlatır).
+        get_create_service(&exe)
     } else {
         "".to_owned()
     };
@@ -3710,7 +3713,9 @@ fn get_create_service(exe: &str) -> String {
     if config::is_outgoing_only() {
         return "".to_string();
     }
-    let stop = Config::get_option("stop-service") == "Y";
+    // M2YDesk: oturum kapısı `stop-service` = "Y" yapar; kapı kapalıyken yapılan kurulum
+    // hizmetsiz kalıyordu. Kapı gelen bağlantıyı zaten keser, hizmet yine de kurulur.
+    let stop = m2y_user_stopped_service();
     if stop {
         format!("
 if exist \"%PROGRAMDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\{app_name} Tray.lnk\" del /f /q \"%PROGRAMDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\{app_name} Tray.lnk\"
@@ -3738,6 +3743,13 @@ sc sdset {app_name} D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO
 ")
 }
 
+/// M2YDesk: hizmeti kullanıcı bilinçli olarak mı durdurdu? `stop-service` = "Y" ama bunu
+/// oturum kapısı koyduysa (`m2y-gate-stopped`) kullanıcı seçimi sayılmaz.
+fn m2y_user_stopped_service() -> bool {
+    Config::get_option("stop-service") == "Y"
+        && config::LocalConfig::get_option(hbb_common::m2y::OPT_GATE_STOPPED) != "Y"
+}
+
 // M2YDesk: açılıştaki sessiz hizmet başlatma denemesi başarısız olduysa true.
 static M2Y_SERVICE_AUTOSTART_FAILED: std::sync::atomic::AtomicBool =
     std::sync::atomic::AtomicBool::new(false);
@@ -3756,8 +3768,7 @@ pub fn m2y_service_autostart_failed() -> bool {
 /// başlattığı `--server` ile IPC çakışması olmaz. Tekrar deneme yoktur; başarısızsa arayüz
 /// "Servisi başlat" bağlantısını gösterir. Arka plan iş parçacığında çağrılmalıdır (bloklar).
 pub fn m2y_try_start_service_on_launch() {
-    let user_stopped = Config::get_option("stop-service") == "Y"
-        && config::LocalConfig::get_option(hbb_common::m2y::OPT_GATE_STOPPED) != "Y";
+    let user_stopped = m2y_user_stopped_service();
     if config::is_outgoing_only()
         || !is_installed()
         || user_stopped
