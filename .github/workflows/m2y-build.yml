@@ -996,12 +996,37 @@ jobs:
           fi
           ./build.py --flutter --hwcodec --unix-file-copy-paste ${{ matrix.job.extra-build-args }}
 
-      - name: Ad-hoc sign app (Apple Silicon)
-        # Apple Silicon imzasız ikiliyi hiç çalıştırmaz; geliştirici sertifikası olmadan geçici (ad-hoc) imza atılır.
-        # Gatekeeper uyarısı yine çıkar; sitedeki kurulum betiği (mac-kur.sh) karantinayı kaldırır.
+      - name: Sign app (Apple Silicon)
+        # Sabit öz-imzalı sertifika (secrets.MACOS_SIGN_P12, "M2Y Software") varsa onunla imzalanır: imza
+        # kimliği sürümden sürüme aynı kalır, Erişilebilirlik/Ekran Kaydı izinleri güncellemede korunur.
+        # Yoksa geçici (ad-hoc) imza; izinler her sürümde yeniden verilmeli. Gatekeeper uyarısı iki durumda da
+        # çıkar (Apple sertifikası değil); sitedeki kurulum betiği (mac-kur.sh) karantinayı kaldırır.
+        env:
+          MACOS_SIGN_P12: ${{ secrets.MACOS_SIGN_P12 }}
+          MACOS_SIGN_P12_PASSWORD: ${{ secrets.MACOS_SIGN_P12_PASSWORD }}
         run: |
-          codesign --force --deep --sign - ./flutter/build/macos/Build/Products/Release/M2YDesk.app
-          codesign --verify --verbose=2 ./flutter/build/macos/Build/Products/Release/M2YDesk.app
+          APP=./flutter/build/macos/Build/Products/Release/M2YDesk.app
+          if [ -n "$MACOS_SIGN_P12" ]; then
+            KC="$RUNNER_TEMP/m2y-imza.keychain-db"
+            KCP="$(openssl rand -hex 16)"
+            echo "$MACOS_SIGN_P12" | base64 --decode > "$RUNNER_TEMP/imza.p12"
+            security create-keychain -p "$KCP" "$KC"
+            security set-keychain-settings -lut 21600 "$KC"
+            security unlock-keychain -p "$KCP" "$KC"
+            security import "$RUNNER_TEMP/imza.p12" -k "$KC" -P "$MACOS_SIGN_P12_PASSWORD" -T /usr/bin/codesign
+            rm -f "$RUNNER_TEMP/imza.p12"
+            security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KCP" "$KC" > /dev/null
+            security list-keychains -d user -s "$KC" $(security list-keychains -d user | tr -d '"')
+            # Öz-imzalı sertifika "güvenilir" değildir; kimlik adıyla değil SHA-1 özetiyle seçilir.
+            KIMLIK="$(security find-certificate -c "M2Y Software" -Z "$KC" | awk '/SHA-1 hash:/{print $NF; exit}')"
+            [ -n "$KIMLIK" ] || { echo "::error::M2Y Software sertifikası anahtarlıkta bulunamadı"; exit 1; }
+            codesign --force --deep --keychain "$KC" --sign "$KIMLIK" "$APP"
+          else
+            echo "::warning::MACOS_SIGN_P12 tanımlı değil; geçici (ad-hoc) imza — macOS izinleri her güncellemede yeniden verilmeli."
+            codesign --force --deep --sign - "$APP"
+          fi
+          codesign --verify --verbose=2 "$APP"
+          codesign --display --requirements - "$APP"
 
       - name: create unsigned dmg
         run: |
