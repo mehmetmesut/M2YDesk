@@ -48,3 +48,24 @@
 - Derleme #21 başarılı; 8 dosya release'de, 7'si sitede, özetler birebir; surum.json imzalandı; asgari 1.0.5.
 - GitGuardian "Company Email Password": geçmişteki `mehmetmesut@gmail.com / ${ADMIN_BOOTSTRAP_PASSWORD}` yer tutucu satırına takıldı; gerçek sır yok (tüm geçmiş tarandı). Açıklama satırı ayrıldı (772f016). Kullanıcı GitGuardian'a GitHub erişimi verdi (salt okunur tarama); incident "false positive" işaretlenebilir.
 - Kalan: Store sertifika sonucu (ağ dışından) → MSIX 1.0.7 gönderimi.
+
+## 16.10.2026 — 1.0.8: "Servisi başlat" kök nedeni (%60: derleniyor)
+- Belirti: kurulu Windows'ta açılışta "Servis çalışmıyor / Servisi başlat". Bu PC'de `sc query M2YDesk` → hizmet YOK (1.0.7 Program Files'ta kurulu).
+- Kök neden: `get_create_service` stop-service=Y iken hizmet oluşturmuyordu; giriş kapısı bu değeri koyuyor → kapı kapalıyken yapılan kurulum hizmetsiz. update_me de yalnız çalışan hizmeti yeniden başlatıyordu.
+- Düzeltme (5f245e0): `m2y_user_stopped_service()` (Y + kapı işareti yok = kullanıcı seçimi); kurulum yalnız kullanıcı durdurduysa atlar; update_me çalışmayan hizmeti `get_create_service` ile onarır. Sürüm 1.0.8 (97959b3). Karar: asgari 1.0.8 (kullanıcı onayı A) → eksik hizmetler zorunlu güncellemeyle onarılır.
+- Store: Hızlı Destek ONAYLANDI ve yayında (apps.microsoft.com/detail/9MZ8NFJ4QVM9, yayıncı M2Y Software, 07.10.2026). Store paketi 1.0.4 kodu; yeni MSIX gönderimi bekliyor.
+- Mac: bağlanınca yalnız izleme, fare/klavye yok → Erişilebilirlik izni; ad-hoc imza her sürümde değiştiği için izin güncellemede bayatlıyor. Kalıcı çözüm kararı kullanıcıda (öz-imzalı sabit sertifika / Apple Developer / böyle kalsın).
+- Derleme #22 (v1.0.8, 4 platform) başlatıldı.
+
+## 18.10.2026 — 1.0.8 yayını engeli ve Mac sabit imza (%70)
+- #22: tüm platformlar derlendi; macOS 1. denemede GitHub makine kopması (2. denemede başarılı). "publish release" her denemede 403 "Resource not accessible by integration".
+- Neden: depo Actions varsayılan iş akışı yetkisi "read" idi; yeniden çalıştırılan işler eski belirteç yetkisini taşıyor. Ayar "Read and write" yapıldı (kullanıcı isteğiyle). v1.0.8 release'i elle (boş, prerelease) oluşturuldu; #22 yeniden denemesi "update release" de 403 → yalnız YENİ koşular yeni yetkiyi alır.
+- Mac sabit imza: öz-imzalı "M2Y Software" kod imzalama sertifikası (%USERPROFILE%\.m2ydesk\mac-imza, 10 yıl); iş akışı secrets.MACOS_SIGN_P12 varsa SHA-1 kimliğiyle imzalar (0a58e64). Kullanıcı iki gizli değeri ekledi.
+- Yeni koşular: #23 (yalnız macOS, sabit imza), #24 (Windows+Android+Linux). İkisi de v1.0.8 release'ine dosya ekleyecek.
+- Store: Submission 2 taslağı açık, "Yenilikler" 1.0.8 metni kaydedildi; paket 1.0.8 MSIX bekliyor.
+
+## 18.10.2026 10:30 — 1.0.8 YAYINDA, asgari 1.0.8; Store gönderimi hazır (%95)
+- #23 (macOS, sabit "M2Y Software" imzası — ad-hoc uyarısı yok, imza adımı başarılı) ve #24 (Windows/Android/Linux) başarılı; yeni koşular write yetkisiyle release'e yükledi (8 dosya).
+- Site: 7 dosya, özetler birebir; surum.json imzalı (asgari 1.0.8); dogrula.sh 18 ✔; API M2Y_ASGARI_SURUM=1.0.8 (`docker compose --profile api up -d api`).
+- Store: Submission 2 (yalnız metin, paket 1.0.4) 17.10'da gönderilmiş ve yayımlanmıştı. Submission 3 açıldı: 1.0.8 MSIX (v1.0.8.0) yüklendi → Validated, 1.0.4 kaldırıldı; runFullTrust gerekçesi (429 karakter, İng.) girildi; tüm bölümler hazır. "Make this update mandatory" UWP'ye özgü olduğu için işaretlenmedi. Geçici paket adresi ve nginx bloğu silindi.
+- Kalan: kullanıcı "Submit for certification"; cihazlarda doğrulama (Windows hizmeti otomatik kurulumu, Mac'te bir kez izin yenileme sonrası fare/klavye).
