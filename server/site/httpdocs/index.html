@@ -193,10 +193,12 @@
     return;
   }
   var IKON = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var MS_IKON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#F25022" d="M2 2h9.5v9.5H2z"/><path fill="#7FBA00" d="M12.5 2H22v9.5h-9.5z"/><path fill="#00A4EF" d="M2 12.5h9.5V22H2z"/><path fill="#FFB900" d="M12.5 12.5H22V22h-9.5z"/></svg>';
 
   // Platform tablosu: d = [ayar anahtarı, düğme metni]
   var PL = [
-    { id: 'qs', ad: 'Windows', alt: 'Hızlı Destek', ac: 'Destek almak için önerilir. Kurulum gerektirmez. En kolay yol: Başlat’a “PowerShell” yazıp açın, aşağıdaki komutu yapıştırıp Enter’a basın; uyarı çıkmadan açılır.',
+    { id: 'qs', ad: 'Windows', alt: 'Hızlı Destek', ac: 'Destek almak için önerilir. En kolay yol: Microsoft Store’dan alın; güvenle, uyarı çıkmadan kurulur ve kendiliğinden güncellenir. Store kullanamıyorsanız: Başlat’a “PowerShell” yazıp açın, aşağıdaki komutu yapıştırıp Enter’a basın.',
+      magaza: 'https://apps.microsoft.com/detail/9MZ8NFJ4QVM9', magazaAd: 'Microsoft Store’dan al',
       komut: "$env:M2Y_HIZLI='1'; irm https://desk.mehmetmesut.com/win-kur.ps1 | iex",
       d: [['windows_qs', 'Ya da Hızlı Destek’i indir']],
       not: 'İndirdiğiniz dosyada Windows “PC’nizi korudu” uyarısı verirse: Ek bilgi → Yine de çalıştır. Komut, dosyayı indirip doğruladıktan sonra açar.' },
@@ -299,6 +301,14 @@
     if (p.mobil) mobilPanel(panel, p);
     else {
       panel.appendChild(h('p', 'ikincil', p.ac));
+      if (p.magaza) {
+        // Microsoft Store: önerilen yol (imzalı, uyarısız, otomatik güncelleme).
+        var mb = h('div', 'btnlar'), ml = h('a', 'btn ana');
+        ml.href = p.magaza; ml.target = '_blank'; ml.rel = 'noopener';
+        ml.insertAdjacentHTML('beforeend', MS_IKON);
+        ml.appendChild(h('span', null, p.magazaAd));
+        mb.appendChild(ml); panel.appendChild(mb);
+      }
       if (p.komut) {
         var k = h('div', 'komut');
         k.appendChild(h('code', null, p.komut));
@@ -310,7 +320,7 @@
         panel.appendChild(k);
       }
       var b = h('div', 'btnlar');
-      p.dosya.forEach(function (x, i) { b.appendChild(indirmeBaglantisi(p, x, i)); });
+      p.dosya.forEach(function (x, i) { b.appendChild(indirmeBaglantisi(p, x, p.magaza ? i + 1 : i)); });
       panel.appendChild(b);
       panel.appendChild(h('p', 'not', p.not));
     }
