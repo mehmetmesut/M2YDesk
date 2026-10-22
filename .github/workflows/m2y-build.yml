@@ -349,7 +349,7 @@ jobs:
         continue-on-error: true
         run: |
           pushd ./res/msi
-          python preprocess.py --arp -d ../../rustdesk --app-name M2YDesk -m "Mehmet Mesut YILMAZ (M2Y)"
+          python preprocess.py --arp -d ../../rustdesk --app-name M2YDesk -m "M2Y Software"
           nuget restore msi.sln
           msbuild msi.sln -p:Configuration=Release -p:Platform=x64 /p:TargetVersion=Windows10
           $msi = Get-ChildItem ./Package/bin/*/Release/en-us/Package.msi | Select-Object -First 1

@@ -214,8 +214,8 @@ exclude = ["vdi/host", "examples/custom_plugin"]
 libxdo-sys = { path = "libs/libxdo-sys-stub" }
 
 [package.metadata.winres]
-LegalCopyright = "Copyright © 2026 Purslane Tech Pte. Ltd. All rights reserved. M2YDesk uyarlaması: Mehmet Mesut YILMAZ, AGPL-3.0"
-CompanyName = "Mehmet Mesut YILMAZ (M2Y)"
+LegalCopyright = "© 2026 M2Y Software (Mehmet Mesut YILMAZ). RustDesk altyapısı © Purslane Tech Pte. Ltd. · AGPL-3.0"
+CompanyName = "M2Y Software"
 ProductName = "M2YDesk"
 FileDescription = "M2YDesk Uzaktan Erişim"
 OriginalFilename = "M2YDesk.exe"

@@ -2423,7 +2423,7 @@ Widget _m2yHakkindaKutusu(BuildContext context, String license) {
     children: [
       Text('M2YDesk', style: tema.textTheme.titleMedium),
       Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: [
-        Text('Uzaktan erişim ve destek çözümü · ', style: kucuk),
+        Text('M2Y Software · Uzaktan erişim ve destek çözümü · ', style: kucuk),
         link('desk.mehmetmesut.com', 'https://desk.mehmetmesut.com', stil: kucuk),
       ]),
       const SizedBox(height: 8),

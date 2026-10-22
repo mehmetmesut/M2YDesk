@@ -16,4 +16,4 @@ PRODUCT_MODULE_NAME = RustDesk
 PRODUCT_BUNDLE_IDENTIFIER = com.m2y.m2ydesk
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2026 Purslane Tech Pte. Ltd. All rights reserved. M2YDesk uyarlaması: Mehmet Mesut YILMAZ, AGPL-3.0
+PRODUCT_COPYRIGHT = © 2026 M2Y Software (Mehmet Mesut YILMAZ). RustDesk altyapısı © Purslane Tech Pte. Ltd. · AGPL-3.0

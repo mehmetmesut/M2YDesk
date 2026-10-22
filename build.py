@@ -307,12 +307,12 @@ Section: net
 Priority: optional
 Version: %s
 Architecture: %s
-Maintainer: Mehmet Mesut YILMAZ
+Maintainer: M2Y Software (Mehmet Mesut YILMAZ)
 Depends: libgtk-3-0t64 | libgtk-3-0, libxcb-randr0, libxdo3 | libxdo4, libxfixes3, libxcb-shape0, libxcb-xfixes0, libasound2t64 | libasound2, libsystemd0, curl, libva2, libva-drm2, libva-x11-2, libgstreamer-plugins-base1.0-0, libpam0g, gstreamer1.0-pipewire%s
 Recommends: libayatana-appindicator3-1
 Description: M2YDesk remote control software.
  Based on RustDesk, Copyright (c) Purslane Tech Pte. Ltd.
- M2YDesk adaptation: Mehmet Mesut YILMAZ (M2Y), AGPL-3.0.
+ M2YDesk by M2Y Software (Mehmet Mesut YILMAZ), AGPL-3.0.
 
 """ % (version, get_deb_arch(), get_deb_extra_depends())
     file = open(control_file_path, "w")

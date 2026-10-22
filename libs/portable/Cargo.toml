@@ -30,7 +30,8 @@ windows = { version = "0.61", features = [
 native-windows-gui = {version = "1.0", default-features = false, features = ["animation-timer", "image-decoder"]}
 
 [package.metadata.winres]
-LegalCopyright = "Copyright © 2026 Purslane Tech Pte. Ltd. (RustDesk) · M2YDesk uyarlaması: Mehmet Mesut YILMAZ. AGPL-3.0"
+LegalCopyright = "© 2026 M2Y Software (Mehmet Mesut YILMAZ). RustDesk altyapısı © Purslane Tech Pte. Ltd. · AGPL-3.0"
+CompanyName = "M2Y Software"
 ProductName = "M2YDesk"
 OriginalFilename = "m2ydesk.exe"
 FileDescription = "M2YDesk Uzaktan Erişim"
