@@ -68,8 +68,18 @@ RxString get peerSort {
   return _peerSort!;
 }
 
+/// M2YDesk: "Çevrimiçi" süzgeci ("Y" = yalnız çevrimiçi cihazlar); yerel ayarda saklanır.
+const kM2yOptYalnizCevrimici = 'm2y-yalniz-cevrimici';
+RxString? _m2yYalnizCevrimici;
+RxString get m2yYalnizCevrimici {
+  _m2yYalnizCevrimici ??=
+      bind.getLocalFlutterOption(k: kM2yOptYalnizCevrimici).obs;
+  return _m2yYalnizCevrimici!;
+}
+
 // list for listener
-RxList<RxString> get obslist => [peerSearchText, peerSort].obs;
+RxList<RxString> get obslist =>
+    [peerSearchText, peerSort, m2yYalnizCevrimici].obs;
 
 final peerSearchTextController =
     TextEditingController(text: peerSearchText.value);
@@ -376,6 +386,9 @@ class _PeersViewState extends State<_PeersView>
       String searchText, String sortedBy, List<Peer> peers) async {
     if (widget.peerFilter != null) {
       peers = peers.where((peer) => widget.peerFilter!(peer)).toList();
+    }
+    if (m2yYalnizCevrimici.value == 'Y') {
+      peers = peers.where((peer) => peer.online).toList();
     }
 
     // fallback to id sorting

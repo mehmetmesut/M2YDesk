@@ -142,6 +142,7 @@ class _PeerTabPageState extends State<PeerTabPage>
         onReorder: model.reorder,
         scrollDirection: Axis.horizontal,
         physics: NeverScrollableScrollPhysics(),
+        footer: _m2yCevrimiciDugmesi(context),
         children: model.visibleEnabledOrderedIndexs.map((t) {
           final selected = model.currentTab == t;
           final color = selected
@@ -183,6 +184,41 @@ class _PeerTabPageState extends State<PeerTabPage>
                     ),
                   )));
         }).toList());
+  }
+
+  /// M2YDesk: sekme ikonlarının sağında "Çevrimiçi" süzgeci; açıkken tüm sekmelerde yalnız
+  /// çevrimiçi cihazlar listelenir.
+  Widget _m2yCevrimiciDugmesi(BuildContext context) {
+    const yesil = Color.fromARGB(255, 50, 190, 166);
+    return Obx(() {
+      final acik = m2yYalnizCevrimici.value == 'Y';
+      final renk = acik
+          ? MyTheme.tabbar(context).selectedTextColor
+          : MyTheme.tabbar(context).unSelectedTextColor;
+      return Tooltip(
+        preferBelow: false,
+        message: acik ? 'Tüm cihazları göster' : 'Yalnız çevrimiçi cihazları göster',
+        child: InkWell(
+          onTap: () {
+            final v = acik ? '' : 'Y';
+            m2yYalnizCevrimici.value = v;
+            bind.setLocalFlutterOption(k: kM2yOptYalnizCevrimici, v: v);
+          },
+          child: Container(
+            decoration: acik
+                ? BoxDecoration(
+                    border: Border(bottom: BorderSide(width: 2, color: yesil)))
+                : null,
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              Icon(Icons.circle, size: 10, color: acik ? yesil : renk),
+              const SizedBox(width: 5),
+              Text('Çevrimiçi', style: TextStyle(fontSize: 13, color: renk)),
+            ]),
+          ),
+        ),
+      ).paddingOnly(left: 6);
+    });
   }
 
   Widget _createPeersView() {
