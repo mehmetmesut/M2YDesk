@@ -964,11 +964,10 @@ class _CmControlPanel extends StatelessWidget {
   }
 
   buildAuthorized(BuildContext context) {
-    final bool canElevate = bind.cmCanElevate();
-    final model = Provider.of<ServerModel>(context);
-    final showElevation = canElevate &&
-        model.showElevation &&
-        client.type_() == ClientType.remote;
+    // M2YDesk: bağlantı penceresindeki "Yükseltme" düğmesi gösterilmez. Yönetici izni oturum
+    // başında kendiliğinden, sonrasında danışmanın "İzin iste" isteğiyle Windows'un Evet/Hayır
+    // penceresi (UAC) olarak sorulur; karşı tarafın ayrıca düğme araması gerekmez.
+    const showElevation = false;
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
