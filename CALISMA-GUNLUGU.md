@@ -78,3 +78,4 @@
 - Cihaz listesi: sekme ikonlarının sağında "Çevrimiçi" süzgeci (96a2be0).
 - Derleme #27 başarılı (#25/#26 iptal edildi, değişiklikler tek derlemede). Site 7 dosya; GitHub/surum.json/disk özetleri birebir (yeni yerel `ozet_kontrol.py`; sunucudaki /root/ozet-karsilastir.sh artık yok); surum.json imzalı; API asgari 1.0.9.
 - Kalan: Store Submission 4 (1.0.9 MSIX + runFullTrust ve allowElevation gerekçeleri) — Partner Center üniversite ağında açılmıyor; kullanıcı Submit.
+- 22.10 (başka ağ): Submission 4 hazırlandı — paket 1.0.9.0 Validated (1.0.8 kalktı), allowElevation gerekçesi (492 kr., İng.) + runFullTrust (429) kayıtlı, "Yenilikler" 1.0.9 metni; geçici adres silindi. Kalan: kullanıcı "Submit for certification".
