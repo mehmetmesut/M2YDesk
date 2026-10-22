@@ -1666,6 +1666,24 @@ impl Connection {
         } else {
             (0, AuthConnType::Remote)
         };
+        // M2YDesk: kurulu olmayan (Hızlı Destek/taşınabilir) Windows'ta yönetici pencereleri fare ve
+        // klavyeye kapalıdır; destek ortasında "yükseltme isteği" duvarına çarpılıyordu. Uzak masaüstü
+        // oturumu açılınca yükseltme bir kez kendiliğinden istenir: karşıdaki kullanıcı Windows izin
+        // ekranında "Evet" derse oturum boyunca kısıt kalkar, "Hayır" derse eski davranış sürer.
+        #[cfg(windows)]
+        if conn_type == 0
+            && self.keyboard
+            && !crate::platform::is_installed()
+            && !portable_client::running()
+        {
+            std::thread::spawn(|| {
+                if let Err(e) =
+                    portable_client::start_portable_service(portable_client::StartPara::Direct)
+                {
+                    log::warn!("M2YDesk: otomatik yükseltme başlatılamadı: {e}");
+                }
+            });
+        }
         self.authed_conn_id = Some(self::raii::AuthedConnID::new(
             self.inner.id(),
             auth_conn_type,

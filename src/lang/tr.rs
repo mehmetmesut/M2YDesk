@@ -371,7 +371,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Write a message", "Bir mesaj yazın"),
         ("Prompt", "İstem"),
         ("Please wait for confirmation of UAC...", "UAC onayı için lütfen bekleyiniz..."),
-        ("elevated_foreground_window_tip", "elevated_foreground_window_tip"),
+        ("elevated_foreground_window_tip", "Karşı bilgisayarda öndeki pencere yönetici yetkisi istiyor (ör. Windows izin ekranı ya da yönetici olarak açılmış bir program); bu yüzden fare ve klavye geçici olarak çalışmıyor. Karşı taraftan pencereyi küçültmesini isteyin ya da \"Yükseltme isteği\" ile izin isteyin. Kalıcı çözüm: karşı bilgisayara M2YDesk'i kurun."),
         ("Disconnected", "Bağlantı Kesildi"),
         ("Other", "Diğer"),
         ("Confirm before closing multiple tabs", "Çoklu sekmeleri kapatmadan önce onayla"),

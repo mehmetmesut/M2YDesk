@@ -40,5 +40,7 @@
   <Capabilities>
     <Capability Name="internetClient" />
     <rescap:Capability Name="runFullTrust" />
+    <!-- Yönetici pencerelerinde fare/klavye için oturumda kullanıcı onaylı (UAC) yükseltme. -->
+    <rescap:Capability Name="allowElevation" />
   </Capabilities>
 </Package>
