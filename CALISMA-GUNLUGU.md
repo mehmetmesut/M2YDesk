@@ -69,3 +69,12 @@
 - Site: 7 dosya, özetler birebir; surum.json imzalı (asgari 1.0.8); dogrula.sh 18 ✔; API M2Y_ASGARI_SURUM=1.0.8 (`docker compose --profile api up -d api`).
 - Store: Submission 2 (yalnız metin, paket 1.0.4) 17.10'da gönderilmiş ve yayımlanmıştı. Submission 3 açıldı: 1.0.8 MSIX (v1.0.8.0) yüklendi → Validated, 1.0.4 kaldırıldı; runFullTrust gerekçesi (429 karakter, İng.) girildi; tüm bölümler hazır. "Make this update mandatory" UWP'ye özgü olduğu için işaretlenmedi. Geçici paket adresi ve nginx bloğu silindi.
 - Kalan: kullanıcı "Submit for certification"; cihazlarda doğrulama (Windows hizmeti otomatik kurulumu, Mac'te bir kez izin yenileme sonrası fare/klavye).
+- 18.10 sonu: Submission 3 (1.0.8) Store'da yayımlandı.
+
+## 22.10.2026 17:05 — 1.0.9 yayında, asgari 1.0.9 (%90: Store bekliyor)
+- Kullanıcı: kurulu olmayan karşı tarafta yönetici penceresinde fare/klavye kesiliyor, "elevated_foreground_window_tip" ham metni ve işe yaramayan "Yükseltme" düğmesi.
+- Düzeltme: uzak masaüstü oturumu açılınca (Windows, kurulu değil, klavye izni var) portable service bir kez kendiliğinden başlatılır → karşı tarafta Windows Evet/Hayır (UAC); bağlantı penceresindeki Yükseltme düğmesi kaldırıldı; danışman tarafı "İzin iste"; Türkçe metinler (a1b499a, 7765b3e). MSIX'e allowElevation (Store QS'te runas engelini kaldırmak için; Store gerekçesi gerekir).
+- Site: Hızlı Destek sekmesinde "Microsoft Store'dan al" birincil düğme (23a8029).
+- Cihaz listesi: sekme ikonlarının sağında "Çevrimiçi" süzgeci (96a2be0).
+- Derleme #27 başarılı (#25/#26 iptal edildi, değişiklikler tek derlemede). Site 7 dosya; GitHub/surum.json/disk özetleri birebir (yeni yerel `ozet_kontrol.py`; sunucudaki /root/ozet-karsilastir.sh artık yok); surum.json imzalı; API asgari 1.0.9.
+- Kalan: Store Submission 4 (1.0.9 MSIX + runFullTrust ve allowElevation gerekçeleri) — Partner Center üniversite ağında açılmıyor; kullanıcı Submit.
