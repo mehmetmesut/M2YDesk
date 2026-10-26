@@ -86,3 +86,4 @@
 
 - 26.10.2026 · Store'dan inen QS zorunlu güncellemeye kilitleniyordu (asgari 1.0.9 > Store 1.0.8) · asgari 1.0.8'e çekildi (surum.json imzalı + API); Store paketi artık asgariyi yok sayar (c065854) · Tamamlandı
 - 26.10.2026 · QS açılışta UAC soruyordu · açılışta yükseltme kaldırıldı; bağlantıda yalnız yönetici grubundaki kullanıcıya Evet/Hayır (c5fb370) · 1.0.10 derlendi (#40313428643), sitede yayında, özetler eşleşiyor · Gerçek cihaz testi bekliyor
+- 26.10.2026 · QS penceresi taşınamıyor/küçültülemiyordu · başlık alanı sürükleme tutamağı + simge durumuna küçült düğmesi; 1.0.11 derlendi (#40369692677), sitede yayında, asgari 1.0.8 · Gerçek cihaz testi bekliyor
