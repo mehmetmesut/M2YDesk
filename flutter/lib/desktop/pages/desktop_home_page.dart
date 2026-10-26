@@ -470,6 +470,15 @@ class _DesktopHomePageState extends State<DesktopHomePage>
 
   buildTip(BuildContext context) {
     final isOutgoingOnly = bind.isOutgoingOnly();
+    // M2YDesk: başlık çubuğu olmayan pencerede (Hızlı Destek) bu alandan sürüklenerek taşınır.
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onPanStart: (_) => windowManager.startDragging(),
+      child: _buildTipBody(context, isOutgoingOnly),
+    );
+  }
+
+  Widget _buildTipBody(BuildContext context, bool isOutgoingOnly) {
     return Padding(
       padding: bind.isIncomingOnly()
           ? const EdgeInsets.only(left: 12.0, right: 8, top: 6.0, bottom: 2)
