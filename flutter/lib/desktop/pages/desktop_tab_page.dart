@@ -100,11 +100,13 @@ class _DesktopTabPageState extends State<DesktopTabPage> {
               controller: tabController,
               // M2YDesk: giriş kapısı ya da zorunlu güncelleme ekranı açıkken ayarlara
               // girilemez (hizmet buradan yeniden açılabiliyordu).
+              // Gözlenen değerler önce okunur: Hızlı Destek'te isIncomingOnly() kısa devre yapınca
+              // Obx hiç Rx okumuyor, hata veriyor ve tüm başlık çubuğu gri kutu çiziliyordu.
               tail: Obx(() => Offstage(
-                    offstage: bind.isIncomingOnly() ||
-                        bind.isDisableSettings() ||
+                    offstage: M2yZorunluGuncelleme.instance.required.value ||
                         !M2yAuth.instance.isReady ||
-                        M2yZorunluGuncelleme.instance.required.value,
+                        bind.isIncomingOnly() ||
+                        bind.isDisableSettings(),
                     child: ActionIcon(
                       message: 'Settings',
                       icon: IconFont.menu,

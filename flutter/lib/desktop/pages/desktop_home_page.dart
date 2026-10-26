@@ -490,24 +490,12 @@ class _DesktopHomePageState extends State<DesktopHomePage>
           Column(
             children: [
               if (!isOutgoingOnly)
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        translate("Your Desktop"),
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                    ),
-                    // M2YDesk: Hızlı Destek'te pencere içinden simge durumuna küçültme.
-                    if (bind.isIncomingOnly())
-                      Tooltip(
-                        message: translate('Minimize'),
-                        child: InkWell(
-                          onTap: () => windowManager.minimize(),
-                          child: const Icon(Icons.remove, size: 18),
-                        ),
-                      ),
-                  ],
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    translate("Your Desktop"),
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                 ),
             ],
           ),
