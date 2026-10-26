@@ -1163,6 +1163,10 @@ fn m2y_store_min_version(bytes: &[u8]) {
 
 /// Bu sürüm, son doğrulanmış `asgari_surum`'dan eski mi?
 pub fn m2y_mandatory_update_required() -> bool {
+    // Store paketini yalnız Store günceller; onaydan önce yeni sürüm sunulamaz, kilitlemek kullanıcıyı keser.
+    if m2y_is_store() {
+        return false;
+    }
     hbb_common::m2y::update_required(
         crate::VERSION,
         &LocalConfig::get_option(hbb_common::m2y::OPT_MIN_VERSION),
@@ -1207,7 +1211,7 @@ pub fn m2y_mandatory_update_info() -> String {
         format!("https://{}/", hbb_common::m2y_update_host())
     };
     json!({
-        "zorunlu": hbb_common::m2y::update_required(crate::VERSION, &min),
+        "zorunlu": m2y_mandatory_update_required(),
         "mevcut": crate::VERSION,
         "gerekli": min.trim().trim_start_matches(|c: char| c == 'v' || c == 'V'),
         "yontem": yontem,
