@@ -89,3 +89,4 @@
 - 26.10.2026 · QS penceresi taşınamıyor/küçültülemiyordu · başlık alanı sürükleme tutamağı + simge durumuna küçült düğmesi; 1.0.11 derlendi (#40369692677), sitede yayında, asgari 1.0.8 · Gerçek cihaz testi bekliyor
 - 26.10.2026 · QS üst çubuğu gri kutu (Obx Rx okumuyordu) · düzeltildi, 1.0.12 yayında; kullanıcının PC'sinde başlık çubuğu küçült/kapat ile görüldü · Tamamlandı
 - 26.10.2026 · Kurulumsuz seçenek yalnız Hızlı Destek · sitede taşınabilir tam sürüm bağlantısı kaldırıldı (dosya güncelleme için sunucuda kalır) · Tamamlandı
+- 26.10.2026 · Store Submission 4 → 1.0.12 · 1.0.9 incelemesi iptal (kullanıcı), 1.0.12 MSIX yüklendi ve doğrulandı, Yenilikler güncellendi, geçici adres silindi · Submit kullanıcıda
