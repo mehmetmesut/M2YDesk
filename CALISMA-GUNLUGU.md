@@ -79,3 +79,10 @@
 - Derleme #27 başarılı (#25/#26 iptal edildi, değişiklikler tek derlemede). Site 7 dosya; GitHub/surum.json/disk özetleri birebir (yeni yerel `ozet_kontrol.py`; sunucudaki /root/ozet-karsilastir.sh artık yok); surum.json imzalı; API asgari 1.0.9.
 - Kalan: Store Submission 4 (1.0.9 MSIX + runFullTrust ve allowElevation gerekçeleri) — Partner Center üniversite ağında açılmıyor; kullanıcı Submit.
 - 22.10 (başka ağ): Submission 4 hazırlandı — paket 1.0.9.0 Validated (1.0.8 kalktı), allowElevation gerekçesi (492 kr., İng.) + runFullTrust (429) kayıtlı, "Yenilikler" 1.0.9 metni; geçici adres silindi. Kalan: kullanıcı "Submit for certification".
+
+- 22.10.2026 23:50 · winget bildirimi (microsoft/winget-pkgs#459594) ve Homebrew tap (mehmetmesut/homebrew-m2y) · PR açık (CLA onayı kullanıcıda), tap yayında; paketleme/ commit fe433da · Devam ediyor
+- 22.10.2026 23:55 · Samsung Galaxy Store (Private Seller) kaydı · e-posta onayı bekliyor · Devam ediyor
+- 22.10.2026 23:55 · Xiaomi GetApps kaydı · yalnız şirket belgesi kabul ediyor; form kısmen dolu, şirket alanları boş · Beklemede
+
+- 26.10.2026 · Store'dan inen QS zorunlu güncellemeye kilitleniyordu (asgari 1.0.9 > Store 1.0.8) · asgari 1.0.8'e çekildi (surum.json imzalı + API); Store paketi artık asgariyi yok sayar (c065854) · Tamamlandı
+- 26.10.2026 · QS açılışta UAC soruyordu · açılışta yükseltme kaldırıldı; bağlantıda yalnız yönetici grubundaki kullanıcıya Evet/Hayır (c5fb370) · 1.0.10 derlendi (#40313428643), sitede yayında, özetler eşleşiyor · Gerçek cihaz testi bekliyor
