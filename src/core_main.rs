@@ -173,10 +173,12 @@ pub fn core_main() -> Option<Vec<String>> {
         return try_send_by_dbus(args[0].clone());
     }
 
+    // M2YDesk: açılışta UAC sorulmaz (tıkla-çalıştır); yükseltme yalnız bağlantı kurulunca istenir.
     #[cfg(windows)]
     if !crate::platform::is_installed()
         && args.is_empty()
         && _is_quick_support
+        && crate::platform::is_elevated(None).unwrap_or(false)
         && !_is_elevate
         && !_is_run_as_system
     {

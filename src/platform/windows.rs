@@ -2797,6 +2797,20 @@ pub fn ensure_primary_token(user_token: HANDLE) -> ResultType<HANDLE> {
     }
 }
 
+/// M2YDesk: oturum kullanıcısı yönetici grubunda mı? Öyleyse UAC yalnız Evet/Hayır sorar;
+/// standart kullanıcıda yönetici parolası isteyeceği için otomatik yükseltme yapılmaz.
+pub fn m2y_user_can_consent_elevation() -> bool {
+    use hbb_common::platform::windows::RAIIHandle;
+    unsafe {
+        let mut token: HANDLE = mem::zeroed();
+        if OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &mut token) == FALSE {
+            return false;
+        }
+        let _token = RAIIHandle(token);
+        is_user_token_admin(token).unwrap_or(false)
+    }
+}
+
 pub fn is_user_token_admin(user_token: HANDLE) -> ResultType<bool> {
     if user_token.is_null() || user_token == INVALID_HANDLE_VALUE {
         bail!("Invalid user token provided");

@@ -1675,6 +1675,7 @@ impl Connection {
             && self.keyboard
             && !crate::platform::is_installed()
             && !portable_client::running()
+            && crate::platform::m2y_user_can_consent_elevation()
         {
             std::thread::spawn(|| {
                 if let Err(e) =
