@@ -1,156 +1,166 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html class="dark" lang="tr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>M2YDesk | Uzaktan Destek</title>
 <meta name="description" content="M2YDesk: Mehmet Mesut YILMAZ’ın danışanları için geliştirdiği güvenli uzaktan masaüstü, ekran yansıtma ve bilgisayar yönetimi uygulaması. Süresiz, sınırsız, lisans ücreti yok.">
 <meta name="robots" content="index, follow">
-<meta name="theme-color" content="#060a1c">
+<meta name="theme-color" content="#080e1d">
 <link rel="canonical" href="https://desk.mehmetmesut.com/">
 <meta property="og:title" content="M2YDesk | Uzaktan Destek">
 <meta property="og:description" content="Güvenli uzaktan destek: indirin, çalıştırın, ID ve parolayı iletin.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://desk.mehmetmesut.com/">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/m2y.css">
-<style>
-  h1{font-size:clamp(2rem,5.2vw,3.2rem);margin:0 0 12px;line-height:1.08;letter-spacing:-.02em;text-wrap:balance}
-  h1 em{font-style:normal;background:linear-gradient(90deg,#7db4ff,#b79cff);-webkit-background-clip:text;background-clip:text;color:transparent}
-  h2{margin:0 0 6px;font-size:1.45rem}
-  h3{margin:0 0 2px;font-size:1.08rem}
-  p{margin:0 0 8px}
-  .ikincil{color:var(--ikincil)}
-  .kucuk{font-size:.9rem}
-
-  /* Giriş: metin + üç boyutlu cam sahne */
-  .giris{display:grid;gap:28px;align-items:center;padding:clamp(12px,3vw,36px) 0 8px}
-  @media(min-width:860px){.giris{grid-template-columns:1.15fr 1fr}}
-  .etiket{display:inline-block;font-size:.8rem;font-weight:700;letter-spacing:.12em;color:#9cc2ff;border:1px solid rgba(156,194,255,.35);background:rgba(110,168,255,.10);padding:4px 12px;border-radius:999px;margin-bottom:14px}
-  .giris p{font-size:1.1rem;color:#c5d0e6;max-width:560px}
-  .degerler{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 20px;padding:0}
-  .degerler li{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:.95rem;padding:6px 14px;border-radius:999px;background:var(--satir);border:1px solid var(--cizgi);box-shadow:0 1px 0 rgba(255,255,255,.12) inset}
-  .degerler li::before{content:"";width:8px;height:8px;border-radius:50%;background:#5eead4;box-shadow:0 0 10px #5eead4}
-  .sahne{position:relative;height:300px;perspective:1100px}
-  @media(max-width:859px){.sahne{display:none}}
-  .ekran{position:absolute;border-radius:16px;border:1px solid rgba(255,255,255,.28);
-    background:linear-gradient(145deg,rgba(255,255,255,.20),rgba(255,255,255,.04) 55%),linear-gradient(160deg,rgba(59,130,246,.35),rgba(139,92,246,.25));
-    box-shadow:0 1px 0 rgba(255,255,255,.45) inset,0 40px 70px -30px rgba(0,0,0,.85),0 0 60px -10px rgba(96,165,250,.45);
-    -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
-  .ekran::before{content:"";position:absolute;left:14px;top:12px;width:44px;height:8px;border-radius:8px;background:rgba(255,255,255,.35)}
-  .ekran i{position:absolute;left:14px;right:14px;height:9px;border-radius:9px;background:rgba(255,255,255,.16)}
-  .ekran i:nth-child(1){top:38px;right:40%}.ekran i:nth-child(2){top:58px}.ekran i:nth-child(3){top:78px;right:28%}
-  .ekran.a{width:330px;height:212px;right:36px;top:18px;transform:rotateY(-22deg) rotateX(9deg)}
-  .ekran.b{width:210px;height:140px;left:6px;bottom:8px;transform:rotateY(18deg) rotateX(7deg) translateZ(60px)}
-  .kilit{position:absolute;left:44%;top:46%;width:66px;height:66px;display:grid;place-items:center;border-radius:20px;color:#fff;
-    background:linear-gradient(160deg,#3b82f6,#6d4aff);box-shadow:0 1px 0 rgba(255,255,255,.55) inset,0 18px 36px -10px rgba(79,70,229,.9);transform:translateZ(110px)}
-  .kilit svg{width:30px;height:30px}
-
-  /* İndirme kutusu */
-  .sekmeler{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:10px 0 16px}
-  @media(max-width:620px){.sekmeler{grid-template-columns:repeat(3,1fr)}}
-  .sekme{font:inherit;display:grid;justify-items:center;gap:4px;padding:10px 6px;border-radius:14px;cursor:pointer;color:var(--ikincil);background:var(--satir);border:1px solid var(--cizgi)}
-  .sekme svg{width:26px;height:26px}
-  .sekme b{font-size:.98rem;color:var(--metin)}
-  .sekme small{font-size:.76rem;min-height:1.1em;color:#5eead4;font-weight:700}
-  .sekme:hover{border-color:var(--vurgu)}
-  .sekme[aria-selected="true"]{color:#fff;border-color:transparent;background:linear-gradient(160deg,rgba(59,130,246,.55),rgba(109,74,255,.5));box-shadow:0 1px 0 rgba(255,255,255,.35) inset,0 14px 28px -14px rgba(79,70,229,.9)}
-
-  .onay{margin:0 0 12px;padding:10px 12px;background:var(--satir);border:1px solid var(--cizgi);border-radius:12px}
-  .onay label{display:flex;gap:10px;align-items:flex-start;cursor:pointer;font-size:.95rem}
-  .onay input{flex:none;width:20px;height:20px;margin-top:2px;accent-color:var(--vurgu)}
-  #onay-not{margin:6px 0 0;font-size:.9rem;font-weight:700;color:var(--hata)}
-  #onay-not:empty{display:none}
-  details{margin-top:8px}
-  summary{cursor:pointer;font-weight:600;font-size:.92rem;color:var(--ikincil)}
-  details ul{margin:4px 0 8px;padding-left:20px}
-  details p,details li{font-size:.9rem;color:var(--ikincil)}
-
-  .secenekler{list-style:none;margin:0;padding:0;display:grid;gap:8px}
-  .secenekler li{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--satir);border:1px solid var(--cizgi)}
-  .secenekler li.one{border-color:rgba(110,168,255,.55);background:linear-gradient(160deg,rgba(59,130,246,.16),rgba(109,74,255,.10))}
-  .secenekler div{flex:1;min-width:0}
-  .secenekler b{display:block}
-  .secenekler b span{font-size:.72rem;font-weight:700;letter-spacing:.06em;color:#5eead4;border:1px solid rgba(94,234,212,.4);padding:1px 8px;border-radius:999px;margin-left:8px;vertical-align:middle}
-  .secenekler p{margin:0;font-size:.92rem;color:var(--ikincil)}
-  @media(max-width:560px){.secenekler li{flex-wrap:wrap}.secenekler .btn{width:100%}}
-
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:9px 16px;border-radius:10px;font:inherit;font-weight:700;font-size:.98rem;text-decoration:none;white-space:nowrap;
-    color:var(--metin);background:var(--satir);border:1px solid var(--cizgi);box-shadow:0 1px 0 rgba(255,255,255,.10) inset;transition:transform .15s ease}
-  .btn:hover{transform:translateY(-1px);border-color:var(--vurgu)}
-  .btn.ana{color:#fff;border-color:transparent;padding:11px 24px;font-size:1.05rem;background:linear-gradient(180deg,#4f8dff,#3b5bff 55%,#5b3df5);
-    box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 -2px 0 rgba(0,0,0,.18) inset,0 16px 30px -12px rgba(59,91,255,.85)}
-  .btn svg{width:18px;height:18px;flex:none}
-  .btn.kilitli{opacity:.5}
-  .not{background:var(--uyari-bg);border:1px solid var(--uyari-k);border-radius:12px;padding:8px 12px;font-size:.92rem;margin:12px 0 0}
-  .komut{display:flex;align-items:center;gap:8px;margin:8px 0;padding:8px 10px;border-radius:10px;background:rgba(0,0,0,.45);border:1px solid var(--cizgi)}
-  .komut code{flex:1;min-width:0;overflow-x:auto;white-space:nowrap;font-family:Consolas,ui-monospace,monospace;font-size:.85rem;background:none;border:0;padding:0}
-  code{background:var(--satir);border:1px solid var(--cizgi);padding:1px 6px;border-radius:6px;font-size:.88rem;overflow-wrap:anywhere}
-  .kopyala{font:inherit;font-size:.88rem;font-weight:700;background:var(--vurgu);border:0;color:#06102a;border-radius:7px;padding:5px 12px;cursor:pointer}
-  .satir{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:6px 0;font-size:.92rem}
-  .mobil{display:grid;gap:16px;align-items:start;margin-top:14px;grid-template-columns:1fr}
-  @media(min-width:640px){.mobil{grid-template-columns:1fr auto}}
-  #qr{display:grid;place-items:center;padding:10px;background:#fff;border-radius:12px;width:fit-content;justify-self:center}
-
-  /* Neden + adımlar */
-  .kartlar,.adimlar{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:12px}
-  @media(min-width:640px){.kartlar{grid-template-columns:repeat(2,1fr)}.adimlar{grid-template-columns:repeat(3,1fr)}}
-  @media(min-width:900px){.kartlar{grid-template-columns:repeat(4,1fr)}}
-  .kartlar li,.adimlar li{padding:16px}
-  .kartlar svg,.no{display:grid;place-items:center;width:40px;height:40px;padding:9px;border-radius:12px;color:#fff;font-weight:700;margin-bottom:10px;
-    background:linear-gradient(160deg,#3b82f6,#6d4aff);box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 12px 22px -10px rgba(79,70,229,.9)}
-  .no{padding:0}
-  .kartlar p,.adimlar p{margin:0;font-size:.93rem;color:var(--ikincil)}
-  .neden>p{max-width:820px}
-  footer p{margin:0 0 4px}
-  #sonra{color:var(--metin);background:#111a3c;width:min(680px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto}
-  #sonra::backdrop{background:rgba(3,6,18,.72);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
-  #sonra h2{margin-top:10px}
-  #sonra code{white-space:normal;word-break:break-all}
-  #sonra .adimlar li{background:var(--satir);border:1px solid var(--cizgi);border-radius:12px;padding:12px}
-  #sonra h3{margin:0 0 4px;font-size:1rem}
-  .hat{display:flex;gap:8px 16px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin:14px 0;padding:12px;border-radius:12px;background:var(--vurgu-acik);border:1px solid var(--cizgi)}
-  .hat p{margin:0;font-size:.93rem}
-  .hat a{font-weight:700;font-size:1.1rem;white-space:nowrap}
-</style>
+<link rel="preload" href="font/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/m2y-ana.css">
 </head>
-<body>
-<header class="ust"><div>
-  <a class="marka" href="/"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="3" y="6" width="26" height="17" rx="4" stroke="currentColor" stroke-width="2.4"/><path d="M11 27h10M16 23v4" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M11 14.5l3 3 7-7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>M2YDesk</a>
-  <nav aria-label="Sayfalar"><a href="/" aria-current="page">İndir</a><a href="/ios-ayarlar">Mobil ayarlar</a><a href="/kvkk">KVKK</a><a href="/gizlilik-politikasi">Gizlilik</a></nav>
-</div></header>
-<main>
-  <section class="giris" aria-labelledby="ana-baslik">
-    <div>
-      <span class="etiket">M2Y SOFTWARE</span>
-      <h1 id="ana-baslik">Danışmanlıkta <em>kesintisiz uzaktan</em> destek</h1>
-      <p>M2YDesk, Mehmet Mesut YILMAZ’ın danışanlarına güvenli uzaktan masaüstü bağlantısı, ekran yansıtma ve bilgisayar yönetimi desteği vermek için geliştirdiği uygulamadır.</p>
-      <ul class="degerler"><li>Süresiz</li><li>Sınırsız</li><li>Lisans ücreti yok</li></ul>
-      <a class="btn ana" href="#indir">Uygulamayı indir</a>
-    </div>
-    <div class="sahne" aria-hidden="true">
-      <div class="ekran a"><i></i><i></i><i></i></div>
-      <div class="ekran b"><i></i><i></i><i></i></div>
-      <div class="kilit"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2.5" stroke="currentColor" stroke-width="2"/><path d="M8 11V8a4 4 0 018 0v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
-    </div>
-  </section>
-
-  <section class="cam" id="hata" hidden role="alert">
-    <h2>Sayfa yüklenemedi</h2>
-    <p class="ikincil">Ayar dosyası (<code>ayar.js</code>) okunamadı. Lütfen daha sonra yeniden deneyin ya da danışmanınızla iletişime geçin.</p>
-  </section>
-
-  <section class="cam" id="indir" aria-labelledby="indir-baslik">
-    <h2 id="indir-baslik">İndirin</h2>
-    <p class="ikincil">İşletim sisteminizi seçin; size uygun seçenek en üstte görünür.</p>
-    <div class="sekmeler" id="sekmeler" role="tablist" aria-label="İşletim sistemi"></div>
-    <div id="panel" role="tabpanel" tabindex="-1"></div>
-  </section>
-
-  <div class="onay" id="onay-bolum">
-    <label for="onay-kutu"><input type="checkbox" id="onay-kutu" aria-describedby="onay-not"><span><a href="/kvkk" target="_blank" rel="noopener">Aydınlatma metnini</a> okudum; cihaz ve bağlantı bilgilerimin uzaktan destek amacıyla işlenmesine <strong>açık rıza</strong> veriyorum.</span></label>
-    <p id="onay-not" role="status" aria-live="polite"></p>
-    <details>
+<body class="bg-background font-body-md text-body-md text-on-surface antialiased">
+<header class="fixed top-0 left-0 right-0 w-full z-50 bg-surface-container-lowest/80 backdrop-blur-2xl shadow-[0_1px_8px_rgba(0,0,0,0.4)]">
+<div class="h-20 max-w-7xl mx-auto px-margin-mobile lg:px-margin flex items-center justify-between gap-space-md">
+<a class="flex items-center gap-space-sm" href="/"><svg class="h-8 w-8 text-primary" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="3" y="6" width="26" height="17" rx="4" stroke="currentColor" stroke-width="2.4"/><path d="M11 27h10M16 23v4" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M11 14.5l3 3 7-7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="font-headline-sm text-headline-sm text-on-surface font-bold tracking-tight">M2YDesk</span></a>
+<nav class="hidden lg:flex items-center gap-space-lg" aria-label="Sayfalar">
+<a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" href="#neden">Neden M2YDesk?</a>
+<a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" href="#adimlar">Nasıl kullanılır?</a>
+<a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" href="#cihazlar-bolum">Tüm cihazlar</a>
+<a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" href="/ios-ayarlar">Mobil ayarlar</a>
+<a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" href="/kvkk">KVKK &amp; Gizlilik</a></nav>
+<a class="inline-flex items-center justify-center px-space-lg py-space-sm rounded-full bg-primary-container text-on-primary-container font-label-lg text-label-lg hover:bg-primary transition-all duration-200 shadow-[0_4px_14px_0_rgba(77,142,255,0.39)]" href="#indir"><span class="material-symbols-outlined text-[18px] mr-space-xs" aria-hidden="true">download</span>Hemen İndir</a>
+</div>
+</header>
+<main class="w-full pt-20 bg-background min-h-screen">
+<div class="flex flex-col w-full">
+<!-- 1. LUXURY HERO SECTION -->
+<section class="relative w-full overflow-hidden bg-gradient-to-b from-[#0B1120] via-[#111728] to-[#1E1B4B] py-space-xl lg:py-24 text-on-surface">
+<!-- Ambient Volumetric Orbs -->
+<div class="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-primary/10 blur-[120px] pointer-events-none"></div>
+<div class="absolute top-1/4 right-0 w-[500px] h-[500px] rounded-full bg-tertiary/10 blur-[140px] pointer-events-none"></div>
+<div class="absolute -bottom-24 left-1/3 w-[450px] h-[450px] rounded-full bg-secondary-container/20 blur-[130px] pointer-events-none"></div>
+<div class="relative max-w-7xl mx-auto px-margin-mobile lg:px-margin">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center">
+<!-- Hero Left Column -->
+<div class="lg:col-span-6 flex flex-col gap-space-md">
+<!-- Translucent Pill Badge -->
+<div class="inline-flex items-center gap-space-xs px-space-md py-1 rounded-full bg-surface-container-high/60 backdrop-blur-md w-max shadow-sm">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+<span class="font-telemetry-data text-telemetry-data text-tertiary uppercase tracking-wider font-semibold">M2Y Software</span>
+</div>
+<!-- Headline -->
+<h1 class="font-headline-xl lg:font-display-lg text-headline-xl lg:text-display-lg text-on-surface font-extrabold tracking-tight">
+            Danışmanlıkta <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-tertiary to-secondary">kesintisiz uzaktan</span> destek
+          </h1>
+<!-- Description -->
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">
+            M2YDesk, Mehmet Mesut YILMAZ’ın danışanlarına güvenli uzaktan masaüstü bağlantısı, ekran yansıtma ve bilgisayar yönetimi desteği vermek için geliştirdiği uygulamadır. Yüksek lisans ücretli araçlara süresiz, sınırsız ve lisans maliyeti gerektirmeyen bir alternatiftir.
+          </p>
+<!-- 3 Luxury Value Chips -->
+<div class="flex flex-wrap items-center gap-space-sm pt-space-xs">
+<!-- Chip 1 -->
+<div class="flex items-center gap-space-xs px-space-md py-space-xs rounded-xl bg-surface-container/70 backdrop-blur-md shadow-sm hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-tertiary text-[20px]" aria-hidden="true">all_inclusive</span>
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Süresiz</span>
+</div>
+<!-- Chip 2 -->
+<div class="flex items-center gap-space-xs px-space-md py-space-xs rounded-xl bg-surface-container/70 backdrop-blur-md shadow-sm hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-primary text-[20px]" aria-hidden="true">bolt</span>
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Sınırsız</span>
+</div>
+<!-- Chip 3 -->
+<div class="flex items-center gap-space-xs px-space-md py-space-xs rounded-xl bg-surface-container/70 backdrop-blur-md shadow-sm hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-secondary text-[20px]" aria-hidden="true">verified_user</span>
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Lisans ücreti yok</span>
+</div>
+</div>
+<!-- Guide Subtitle -->
+<div class="pt-space-sm flex items-center gap-space-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-[20px]" aria-hidden="true">touch_app</span>
+<p class="font-body-md text-body-md">Cihazınızı seçin, indirin, ID ve parolayı danışmanınıza iletin.</p>
+</div>
+</div>
+<!-- Hero Right Column: High-End Visual Showcase -->
+<div class="lg:col-span-6 relative">
+<div class="relative rounded-2xl bg-gradient-to-tr from-surface-container-lowest/80 via-surface-container/50 to-surface-container-high/60 backdrop-blur-2xl p-space-sm lg:p-space-md shadow-2xl overflow-hidden group">
+<!-- Glass Inner Accent Glow -->
+<div class="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-tertiary/10 opacity-70 pointer-events-none"></div>
+<div class="relative w-full rounded-xl overflow-hidden shadow-xl aspect-[4/3] flex items-center justify-center bg-surface-container-lowest">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="gorsel/giris.jpg" width="1024" height="768" alt="" fetchpriority="high"/>
+<!-- Floating HUD Glass Badges -->
+<div class="absolute top-4 left-4 flex items-center gap-space-xs px-3 py-1.5 rounded-full bg-surface-container-lowest/80 backdrop-blur-xl shadow-lg">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+<span class="font-telemetry-data text-telemetry-data text-tertiary">Uçtan uca şifreli</span>
+</div>
+<div class="absolute bottom-4 left-4 flex items-center gap-space-xs px-3 py-1.5 rounded-full bg-surface-container-lowest/80 backdrop-blur-xl shadow-lg">
+<span class="material-symbols-outlined text-primary text-[16px]" aria-hidden="true">dns</span>
+<span class="font-telemetry-data text-telemetry-data text-on-surface">Kendi sunucumuz</span>
+</div>
+<div class="absolute bottom-4 right-4 flex items-center gap-space-xs px-3 py-1.5 rounded-full bg-surface-container-lowest/80 backdrop-blur-xl shadow-lg">
+<span class="material-symbols-outlined text-secondary text-[16px]" aria-hidden="true">verified</span>
+<span class="font-telemetry-data text-telemetry-data text-secondary">Açık kaynak altyapı</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="indir" aria-labelledby="kart-ad" class="w-full bg-slate-100 dark:bg-[#121829] py-space-xl lg:py-24 transition-colors">
+<div class="max-w-[1040px] mx-auto px-margin-mobile lg:px-margin">
+<!-- "Cihazınız için önerilen" Glass Download Card -->
+<div class="relative rounded-2xl bg-white dark:bg-surface-container-low p-space-lg lg:p-space-xl shadow-xl transition-all">
+<!-- Subtle Top Glow Gradient -->
+<div class="absolute top-0 left-0 right-0 h-1.5 rounded-t-2xl bg-gradient-to-r from-primary via-tertiary to-primary-container"></div>
+<!-- Meta Header Row -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pb-space-md">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 dark:bg-primary-container/20 text-on-primary-fixed-variant dark:text-primary font-label-md text-label-md font-bold">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span>
+              <span id="kart-rozet">Cihazınız için önerilen</span>
+            </span>
+<span id="kart-tespit" class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-surface-container-high/30 dark:bg-surface-container-high text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-[14px]" aria-hidden="true">sensors</span>
+              Otomatik tespit edildi
+            </span>
+</div>
+<div class="flex items-center gap-space-xs text-on-surface-variant font-telemetry-data text-telemetry-data">
+<span class="material-symbols-outlined text-tertiary text-[16px]" aria-hidden="true">verified_user</span>
+<span>SHA-256 ile doğrulanabilir</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-space-lg items-center py-space-md">
+<div class="md:col-span-8 flex items-start gap-space-md">
+<div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-container to-secondary-container flex items-center justify-center flex-shrink-0 shadow-md shadow-primary-container/20 text-white">
+<span class="material-symbols-outlined text-[36px]" id="kart-ikon" aria-hidden="true">desktop_windows</span>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-space-sm flex-wrap">
+<h2 class="font-headline-sm text-headline-sm text-slate-900 dark:text-on-surface font-bold" id="kart-ad">M2YDesk</h2>
+<span class="px-2.5 py-0.5 rounded-full bg-slate-200 dark:bg-surface-container-highest text-slate-700 dark:text-on-surface font-label-sm text-label-sm font-semibold" id="kart-etiket"></span>
+</div>
+<p class="font-body-md text-body-md text-slate-600 dark:text-on-surface-variant" id="kart-kim"></p>
+</div>
+</div>
+<div class="md:col-span-4 p-space-md rounded-xl bg-slate-50 dark:bg-surface-container flex flex-col gap-space-xs shadow-inner">
+<div class="flex items-center justify-between text-slate-600 dark:text-on-surface-variant">
+<span class="font-label-md text-label-md">Sürüm:</span>
+<span class="font-telemetry-data text-telemetry-data text-slate-900 dark:text-on-surface font-bold" data-surum>—</span>
+</div>
+<div class="flex items-center justify-between text-slate-600 dark:text-on-surface-variant">
+<span class="font-label-md text-label-md">Güncelleme:</span>
+<span class="font-telemetry-data text-telemetry-data text-tertiary-container dark:text-tertiary font-bold" data-guncelleme>—</span>
+</div>
+</div>
+</div>
+<div class="py-space-md" id="onay-bolum">
+<label class="flex items-start gap-space-sm cursor-pointer select-none group" for="onay-kutu">
+<input class="mt-1 w-4 h-4 rounded accent-primary-container" id="onay-kutu" type="checkbox" aria-describedby="onay-not"/>
+<span class="font-body-sm text-body-sm text-slate-700 dark:text-on-surface-variant group-hover:text-slate-900 dark:group-hover:text-on-surface transition-colors">
+<a class="text-primary underline font-medium hover:text-primary-container" href="/kvkk" target="_blank" rel="noopener">Aydınlatma metnini</a> okudum; cihaz ve bağlantı bilgilerimin uzaktan destek amacıyla işlenmesine <strong>açık rıza</strong> veriyorum.
+</span>
+</label>
+<p class="font-body-sm text-body-sm text-error font-semibold mt-space-xs" id="onay-not" role="status" aria-live="polite"></p>
+<div class="kvkk font-body-sm text-body-sm text-on-surface-variant mt-space-xs">
+<details>
       <summary>Hangi veriler işleniyor? (KVKK özeti)</summary>
       <p><strong>Veri sorumlusu:</strong> M2YDesk hizmet sağlayıcısı (Mehmet Mesut YILMAZ) · <a href="https://mehmetmesut.com">mehmetmesut.com</a></p>
       <p><strong>İşlenen veriler:</strong></p>
@@ -164,49 +174,275 @@
       <p><strong>Haklarınız (KVKK m.11):</strong> verilerinize erişme, düzeltme, silme, işlenmesine itiraz etme ve rızanızı geri çekme hakkına sahipsiniz; başvuru için yukarıdaki iletişim adresini kullanabilirsiniz.</p>
       <p><a href="/kvkk" target="_blank" rel="noopener">Tam metinler: aydınlatma, açık rıza, saklama ve imha, başvuru →</a></p>
     </details>
-  </div>
-
-  <section class="neden" aria-labelledby="neden-baslik">
-    <h2 id="neden-baslik">Neden M2YDesk?</h2>
-    <p class="ikincil">AnyDesk ve TeamViewer gibi uygulamaların yüksek lisans ücretlerine alternatif olarak geliştirildi. Süre ve kullanım sınırı yoktur, lisans maliyeti gerektirmez. Danışmanlık süreçlerinde üçüncü taraf yazılımlara bağımlı kalmadan, danışmanın kendi geliştirdiği çözümle doğrudan, kesintisiz ve profesyonel teknik destek sunulur.</p>
-    <ul class="kartlar">
-      <li class="cam"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Güvenli bağlantı</h3><p>Bağlantı yalnızca sizin onayınızla ve uçtan uca şifreli kurulur; ekran içeriği kaydedilmez.</p></li>
-      <li class="cam"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 20h8M12 16v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><h3>Ekran yansıtma</h3><p>Ekranınızı danışmanınızla paylaşın; sorunu birlikte görün, çözümü anında izleyin.</p></li>
-      <li class="cam"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 4l13 7-5.5 1.500L11 18 5 4z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><h3>Bilgisayar yönetimi</h3><p>Danışmanınız izninizle bilgisayarınızı uzaktan yönetir; kurulum ve ayarları sizin yerinize yapar.</p></li>
-      <li class="cam"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="12" r="3" stroke="currentColor" stroke-width="2"/><path d="M9 12h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><h3>Doğrudan destek</h3><p>Araya başka bir şirket girmez; bağlantı danışmanınızın kendi sunucusu üzerinden kurulur.</p></li>
-    </ul>
-  </section>
-
-  <section id="adimlar" aria-labelledby="adim-baslik">
-    <h2 id="adim-baslik">Nasıl kullanılır?</h2>
-    <ol class="adimlar">
-      <li class="cam"><span class="no" aria-hidden="true">1</span><h3>İndirin</h3><p>Onay kutusunu işaretleyip size uygun seçeneği indirin.</p></li>
-      <li class="cam"><span class="no" aria-hidden="true">2</span><h3>Çalıştırın</h3><p>İnen dosyayı açın. Uyarı çıkarsa indirme kutusundaki nota bakın.</p></li>
-      <li class="cam"><span class="no" aria-hidden="true">3</span><h3>ID ve parolayı iletin</h3><p>Pencerede görünen ID ve parolayı danışmanınıza söyleyin. İstediğiniz an kapatabilirsiniz.</p></li>
-    </ol>
-  </section>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-space-md pt-space-xs">
+<div class="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-space-sm" id="kart-dugmeler"></div>
+<button type="button" id="kart-ozet-dugme" class="whitespace-nowrap flex-shrink-0 inline-flex items-center justify-center sm:justify-end gap-space-xs text-slate-600 dark:text-on-surface-variant hover:text-primary dark:hover:text-primary font-telemetry-data text-telemetry-data transition-colors">
+<span class="material-symbols-outlined text-[18px]" aria-hidden="true">lock</span>
+SHA-256 doğrula
+</button>
+</div>
+<p class="font-telemetry-data text-telemetry-data text-on-surface-variant break-all mt-space-sm" id="kart-ozet" role="status" hidden></p>
+<p class="mt-space-lg rounded-xl bg-surface-container px-space-md py-space-sm font-body-sm text-body-sm text-on-surface-variant" id="kart-not"></p>
+<div class="mt-space-sm flex flex-col gap-space-sm" id="kart-ek"></div>
+</div>
+</div>
+</section>
+<section id="hata" hidden role="alert" class="w-full bg-surface-container-lowest py-space-xl text-on-surface">
+<div class="max-w-[1040px] mx-auto px-margin-mobile lg:px-margin">
+<h2 class="font-headline-md text-headline-md">Sayfa yüklenemedi</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-space-xs">Ayar dosyası okunamadı. Lütfen daha sonra yeniden deneyin ya da danışmanınızı arayın: <a class="text-primary underline" href="tel:+905307302002">0530 730 20 02</a></p>
+</div>
+</section>
+<!-- 3. SECTION: "Neden M2YDesk?" (Executive Grid) -->
+<section id="neden" aria-labelledby="neden-baslik" class="w-full bg-surface-container-lowest py-space-xl lg:py-24 text-on-surface">
+<div class="max-w-7xl mx-auto px-margin-mobile lg:px-margin">
+<!-- Section Header -->
+<div class="flex flex-col items-center text-center max-w-3xl mx-auto mb-space-xl">
+<span class="font-telemetry-data text-telemetry-data text-tertiary uppercase tracking-wider font-semibold mb-space-xs">Kendi çözümümüz</span>
+<h2 id="neden-baslik" class="font-headline-lg lg:font-headline-xl text-headline-lg lg:text-headline-xl font-bold tracking-tight text-on-surface">
+          Neden M2YDesk?
+        </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-space-xs">
+          AnyDesk ve TeamViewer gibi uygulamaların yüksek lisans ücretlerine alternatif olarak geliştirildi. Süre ve kullanım sınırı yoktur, lisans maliyeti gerektirmez. Danışmanlık süreçlerinde üçüncü taraf yazılımlara bağımlı kalmadan, danışmanın kendi geliştirdiği çözümle doğrudan, kesintisiz ve profesyonel teknik destek sunulur.
+        </p>
+</div>
+<!-- 4 Luxury Frosted Glass Feature Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-lg">
+<!-- Card 1 -->
+<div class="rounded-2xl bg-surface-container-low/70 backdrop-blur-xl p-space-lg shadow-lg hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/10 transition-all flex flex-col justify-between group">
+<div>
+<div class="w-12 h-12 rounded-xl bg-tertiary/10 text-tertiary flex items-center justify-center mb-space-md group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[28px]" aria-hidden="true">lock_clock</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface mb-space-xs">Güvenli bağlantı</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+              Bağlantı yalnızca sizin onayınızla ve uçtan uca şifreli kurulur; ekran içeriği kaydedilmez.
+            </p>
+</div>
+<div class="mt-space-lg flex items-center gap-1 font-telemetry-data text-telemetry-data text-tertiary font-medium">
+<span>Onayınızla başlar</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="rounded-2xl bg-surface-container-low/70 backdrop-blur-xl p-space-lg shadow-lg hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/10 transition-all flex flex-col justify-between group">
+<div>
+<div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-space-md group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[28px]" aria-hidden="true">screenshot_monitor</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface mb-space-xs">Ekran yansıtma</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+              Ekranınızı danışmanınızla paylaşın; sorunu birlikte görün, çözümü anında izleyin.
+            </p>
+</div>
+<div class="mt-space-lg flex items-center gap-1 font-telemetry-data text-telemetry-data text-primary font-medium">
+<span>Canlı görüntü</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="rounded-2xl bg-surface-container-low/70 backdrop-blur-xl p-space-lg shadow-lg hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/10 transition-all flex flex-col justify-between group">
+<div>
+<div class="w-12 h-12 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center mb-space-md group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[28px]" aria-hidden="true">terminal</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface mb-space-xs">Bilgisayar yönetimi</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+              Danışmanınız izninizle bilgisayarınızı uzaktan yönetir; kurulum ve ayarları sizin yerinize yapar.
+            </p>
+</div>
+<div class="mt-space-lg flex items-center gap-1 font-telemetry-data text-telemetry-data text-secondary font-medium">
+<span>Kurulum ve ayar desteği</span>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="rounded-2xl bg-surface-container-low/70 backdrop-blur-xl p-space-lg shadow-lg hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/10 transition-all flex flex-col justify-between group">
+<div>
+<div class="w-12 h-12 rounded-xl bg-tertiary-fixed-dim/10 text-tertiary-fixed-dim flex items-center justify-center mb-space-md group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[28px]" aria-hidden="true">key</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface mb-space-xs">Doğrudan destek</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+              Araya başka bir şirket girmez; bağlantı danışmanınızın kendi sunucusu üzerinden kurulur.
+            </p>
+</div>
+<div class="mt-space-lg flex items-center gap-1 font-telemetry-data text-telemetry-data text-tertiary-fixed-dim font-medium">
+<span>Aracısız iletişim</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. SECTION: "Nasıl Kullanılır?" (3 Adımda Hızlı Bağlantı) -->
+<section id="adimlar" aria-labelledby="adim-baslik" class="w-full bg-surface-container-low py-space-xl lg:py-24 text-on-surface">
+<div class="max-w-7xl mx-auto px-margin-mobile lg:px-margin">
+<!-- Section Header -->
+<div class="flex flex-col items-center text-center max-w-2xl mx-auto mb-space-xl">
+<span class="font-telemetry-data text-telemetry-data text-primary uppercase tracking-wider font-semibold mb-space-xs">Üç adım</span>
+<h2 id="adim-baslik" class="font-headline-lg lg:font-headline-xl text-headline-lg lg:text-headline-xl font-bold tracking-tight text-on-surface">
+          Nasıl kullanılır?
+        </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-space-xs">
+          İndirin, çalıştırın, ID ve parolayı danışmanınıza iletin.
+        </p>
+</div>
+<!-- 3 Steps Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg mb-space-xl">
+<!-- Step 1 -->
+<div class="relative rounded-2xl bg-surface-container p-space-lg shadow-lg flex flex-col justify-between">
+<div class="absolute -top-4 -left-2 w-10 h-10 rounded-xl bg-primary-container text-white flex items-center justify-center font-headline-sm text-headline-sm font-bold shadow-md">
+            1
+          </div>
+<div class="pt-space-xs">
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface mb-space-xs">İndirin</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+              Onay kutusunu işaretleyip size uygun seçeneği indirin.
+            </p>
+</div>
+<div class="mt-space-md pt-space-sm flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-primary text-[18px]" aria-hidden="true">folder_open</span>
+<span>İndirilenler klasörüne iner</span>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="relative rounded-2xl bg-surface-container p-space-lg shadow-lg flex flex-col justify-between">
+<div class="absolute -top-4 -left-2 w-10 h-10 rounded-xl bg-tertiary-container text-white flex items-center justify-center font-headline-sm text-headline-sm font-bold shadow-md">
+            2
+          </div>
+<div class="pt-space-xs">
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface mb-space-xs">Çalıştırın</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+              İnen dosyayı açın. Uyarı çıkarsa indirme kutusundaki nota bakın.
+            </p>
+</div>
+<div class="mt-space-md pt-space-sm flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-tertiary text-[18px]" aria-hidden="true">play_circle</span>
+<span>Hızlı Destek kurulum istemez</span>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="relative rounded-2xl bg-surface-container p-space-lg shadow-lg flex flex-col justify-between">
+<div class="absolute -top-4 -left-2 w-10 h-10 rounded-xl bg-secondary-container text-white flex items-center justify-center font-headline-sm text-headline-sm font-bold shadow-md">
+            3
+          </div>
+<div class="pt-space-xs">
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface mb-space-xs">ID ve parolayı iletin</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+              Pencerede görünen ID ve parolayı danışmanınıza söyleyin.
+            </p>
+</div>
+<div class="mt-space-md pt-space-sm flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-secondary text-[18px]" aria-hidden="true">lock_reset</span>
+<span>İstediğiniz an kapatın</span>
+</div>
+</div>
+</div>
+<!-- Interactive Preview Widget (Application Screen Mockup) -->
+<div class="max-w-xl mx-auto rounded-2xl bg-surface-container-lowest/90 backdrop-blur-2xl p-space-lg shadow-2xl">
+<div class="flex items-center justify-between pb-space-sm mb-space-md">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-error"></span>
+<span class="w-3 h-3 rounded-full bg-[#f59e0b]"></span>
+<span class="w-3 h-3 rounded-full bg-tertiary"></span>
+<span class="ml-2 font-label-sm text-label-sm text-outline">Uygulama ekranı (örnek gösterim)</span>
+</div>
+<span class="font-telemetry-data text-telemetry-data text-tertiary flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span> Hazır
+          </span>
+</div>
+<div class="flex flex-col sm:flex-row items-center justify-between gap-space-md p-space-md rounded-xl bg-surface-container-high/60">
+<!-- Device ID Mockup -->
+<div class="flex flex-col items-start gap-1">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Bu Cihaz (ID)</span>
+<span class="font-telemetry-data text-headline-sm text-primary font-bold tracking-wider">123 456 789</span>
+</div>
+<!-- Password Mockup -->
+<div class="flex flex-col items-start sm:items-end gap-1">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Parola</span>
+<div class="flex items-center gap-2">
+<span class="font-telemetry-data text-headline-sm text-secondary font-bold tracking-widest">• • • • • •</span>
+</div>
+</div>
+</div>
+<p class="font-label-sm text-label-sm text-center text-outline-variant mt-space-sm">
+          Pencereyi kapatarak oturumu istediğiniz an sonlandırabilirsiniz.
+        </p>
+</div>
+</div>
+</section>
+<!-- 5. SECTION: "Diğer cihazlar" (Tüm İşletim Sistemleri) -->
+<section id="cihazlar-bolum" aria-labelledby="cihaz-baslik" class="w-full bg-surface-container-lowest py-space-xl lg:py-24 text-on-surface">
+<div class="max-w-7xl mx-auto px-margin-mobile lg:px-margin">
+<!-- Section Header -->
+<div class="flex flex-col max-w-2xl mb-space-lg">
+<h2 id="cihaz-baslik" class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">Tüm cihazlar</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">
+          Başka bir cihaz ya da kurulum türü için sisteminizi seçin.
+        </p>
+</div>
+<!-- Enterprise List Table -->
+<div class="w-full overflow-hidden rounded-2xl bg-surface-container-low/60 backdrop-blur-xl shadow-xl">
+<div class="divide-y divide-surface-container-high/40" id="cihazlar">
+</div>
+</div>
+</div>
+</section>
+<!-- 6. SUPPORT & TRUST CALLOUT BANNER -->
+<section class="w-full bg-gradient-to-r from-surface-container via-surface-container-high to-surface-container py-space-xl text-on-surface">
+<div class="max-w-7xl mx-auto px-margin-mobile lg:px-margin">
+<div class="rounded-2xl bg-surface-container-lowest/80 backdrop-blur-xl p-space-lg lg:p-space-xl flex flex-col lg:flex-row items-center justify-between gap-space-lg shadow-2xl">
+<div class="flex items-start sm:items-center gap-space-md">
+<div class="w-14 h-14 rounded-2xl bg-tertiary/10 text-tertiary flex items-center justify-center flex-shrink-0 shadow-inner">
+<span class="material-symbols-outlined text-[32px]" aria-hidden="true">support_agent</span>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-space-xs flex-wrap">
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Yardıma mı ihtiyacınız var?</h3>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">
+              Takıldığınız noktada danışmanınızı arayın; adım adım birlikte ilerleyin.
+            </p>
+</div>
+</div>
+<div class="flex items-center gap-space-md flex-shrink-0 w-full sm:w-auto">
+<a class="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-xl py-3 rounded-xl bg-surface-container-high hover:bg-surface-variant text-on-surface font-label-lg text-label-lg font-semibold transition-all shadow-md" href="tel:+905307302002">
+<span class="material-symbols-outlined text-[20px]" aria-hidden="true">phone_in_talk</span>
+            0530 730 20 02
+          </a>
+</div>
+</div>
+</div>
+</section>
+</div>
 </main>
-
-<dialog id="sonra" class="cam" aria-labelledby="sonra-baslik">
-  <span class="etiket">İNDİRME BAŞLATILDI</span>
-  <h2 id="sonra-baslik">M2YDesk</h2>
-  <p>Dosya: <code id="sonra-dosya"></code>. İndirme başlamadıysa <a id="sonra-yeniden" href="#indir">yeniden indirin</a>.</p>
-  <ol class="adimlar">
-    <li><span class="no" aria-hidden="true">1</span><h3>Dosyayı açın</h3><p>İnen dosyayı açın. Uyarı çıkarsa indirme kutusundaki nota bakın.</p></li>
-    <li><span class="no" aria-hidden="true">2</span><h3>ID ve parolayı iletin</h3><p>Pencerede görünen ID ve parolayı danışmanınıza söyleyin.</p></li>
-    <li><span class="no" aria-hidden="true">3</span><h3>Bağlantı hazır</h3><p>Danışmanınız bağlanır. Pencereyi kapatarak istediğiniz an sonlandırırsınız.</p></li>
-  </ol>
-  <div class="hat"><p><b>Danışmanınız hatta mı?</b><br>Takıldığınız noktada telefonla yardım alabilirsiniz.</p><a href="tel:+905307302002">0530 730 20 02</a></div>
-  <p class="kucuk" id="sonra-ozet-satir" hidden>Dosya doğrulama (SHA-256): <code id="sonra-ozet"></code></p>
-  <form method="dialog"><button class="btn" type="submit">Pencereyi kapat</button></form>
+<dialog id="sonra" aria-labelledby="sonra-baslik" class="rounded-2xl bg-surface-container-low text-on-surface p-space-lg lg:p-space-xl shadow-2xl w-[min(680px,calc(100vw-2rem))] max-h-[calc(100dvh-2rem)] overflow-auto backdrop:bg-black/70 backdrop:backdrop-blur-sm">
+<span class="inline-flex items-center gap-space-xs px-space-md py-1 rounded-full bg-surface-container-high font-telemetry-data text-telemetry-data text-tertiary uppercase tracking-wider font-semibold"><span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>İndirme başlatıldı</span>
+<h2 id="sonra-baslik" class="font-headline-md text-headline-md mt-space-sm">M2YDesk</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-space-xs">Dosya: <code id="sonra-dosya" class="font-telemetry-data text-telemetry-data text-on-surface break-all"></code>. İndirme başlamadıysa <a id="sonra-yeniden" class="text-primary underline" href="#indir">yeniden indirin</a>.</p>
+<ol class="grid grid-cols-1 sm:grid-cols-3 gap-space-sm mt-space-md">
+<li class="rounded-xl bg-surface-container p-space-md"><h3 class="font-label-lg text-label-lg text-on-surface">1 · Dosyayı açın</h3><p class="font-body-sm text-body-sm text-on-surface-variant mt-1">İnen dosyayı açın. Uyarı çıkarsa indirme kutusundaki nota bakın.</p></li>
+<li class="rounded-xl bg-surface-container p-space-md"><h3 class="font-label-lg text-label-lg text-on-surface">2 · ID ve parolayı iletin</h3><p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Pencerede görünen ID ve parolayı danışmanınıza söyleyin.</p></li>
+<li class="rounded-xl bg-surface-container p-space-md"><h3 class="font-label-lg text-label-lg text-on-surface">3 · Bağlantı hazır</h3><p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Danışmanınız bağlanır. Pencereyi kapatarak istediğiniz an sonlandırırsınız.</p></li>
+</ol>
+<div class="mt-space-md rounded-xl bg-surface-container-high/60 p-space-md flex flex-wrap items-center justify-between gap-space-sm">
+<p class="font-body-sm text-body-sm text-on-surface-variant"><strong class="text-on-surface">Danışmanınız hatta mı?</strong><br/>Takıldığınız noktada telefonla yardım alabilirsiniz.</p>
+<a class="inline-flex items-center gap-space-xs px-space-md py-2 rounded-full bg-surface-container text-on-surface font-label-lg text-label-lg" href="tel:+905307302002"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">phone_in_talk</span>0530 730 20 02</a>
+</div>
+<p class="font-telemetry-data text-telemetry-data text-on-surface-variant break-all mt-space-md" id="sonra-ozet-satir" hidden>SHA-256: <span id="sonra-ozet"></span></p>
+<form method="dialog" class="mt-space-md"><button type="submit" class="px-space-lg py-2 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-lg text-label-lg">Pencereyi kapat</button></form>
 </dialog>
-
-<footer>
-  <p>Sürüm <span id="surum">—</span> · Güncelleme <span id="guncelleme">—</span></p>
-  <p>Mehmet Mesut YILMAZ © 2026 M2Y Software</p>
-  <a href="https://mehmetmesut.com">Yeşil Dönüşüm Mühendisi © Creator M²Y</a>
+<footer class="w-full bg-surface-container-lowest py-space-xl shadow-[0_-1px_12px_rgba(0,0,0,0.5)]">
+<div class="max-w-7xl mx-auto px-margin-mobile lg:px-margin">
+<div class="flex flex-col md:flex-row items-center justify-between gap-space-lg pb-space-lg">
+<div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_#4cd7f6]"></span><span class="font-telemetry-data text-telemetry-data text-on-surface-variant">Sürüm <span data-surum>—</span> · Güncelleme <span data-guncelleme>—</span></span></div>
+<div class="flex flex-wrap items-center justify-center gap-space-lg">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors" href="/ios-ayarlar">Mobil ayarlar</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors" href="/kvkk">KVKK Aydınlatma Metni</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors" href="/gizlilik-politikasi">Gizlilik Politikası</a></div></div>
+<div class="pt-space-md flex flex-col sm:flex-row items-center justify-between gap-space-sm">
+<p class="font-label-sm text-label-sm text-outline">Mehmet Mesut YILMAZ © 2026 M2Y Software</p>
+<a class="font-label-sm text-label-sm text-outline hover:text-on-surface transition-colors" href="https://mehmetmesut.com">Yeşil Dönüşüm Mühendisi © Creator M²Y</a></div></div>
 </footer>
-
 <script src="qrcode.min.js"></script>
 <script src="ayar.js"></script>
 <script src="m2y-indir.js"></script>
