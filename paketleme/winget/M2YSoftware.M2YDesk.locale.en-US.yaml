@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.6.0.schema.json
 
 PackageIdentifier: M2YSoftware.M2YDesk
-PackageVersion: 1.0.9
+PackageVersion: 1.0.13
 PackageLocale: en-US
 Publisher: M2Y Software
 PublisherUrl: https://mehmetmesut.com
@@ -25,6 +25,6 @@ Tags:
 - rustdesk
 - screen-sharing
 - remote-access
-ReleaseNotesUrl: https://github.com/mehmetmesut/M2YDesk/releases/tag/v1.0.9
+ReleaseNotesUrl: https://github.com/mehmetmesut/M2YDesk/releases/tag/v1.0.13
 ManifestType: defaultLocale
 ManifestVersion: 1.6.0

@@ -1,6 +1,6 @@
 cask "m2ydesk" do
-  version "1.0.9"
-  sha256 "6e3854fdc3afab0cf6e3f64e25a5a7714af2c770c21d884fd5f9df4ceca9320e"
+  version "1.0.13"
+  sha256 "3cef555d20561899a6e0163115f0d7ab3e2f7706d7e2955fde89a8149eb8a5d9"
 
   url "https://github.com/mehmetmesut/M2YDesk/releases/download/v#{version}/M2YDesk-#{version}-aarch64.dmg",
       verified: "github.com/mehmetmesut/M2YDesk/"
