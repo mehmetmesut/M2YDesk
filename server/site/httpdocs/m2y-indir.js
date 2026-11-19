@@ -84,7 +84,8 @@
     else {
       l.href = 'indir/' + encodeURIComponent(a.dosyalar[o.dosya]);
       l.setAttribute('download', a.dosyalar[o.dosya]);
-      l.setAttribute('data-indir', '1');
+      l.setAttribute('data-indir', o.dosya);
+      l.setAttribute('data-ad', o.ad);
       l.insertAdjacentHTML('beforeend', INDIR_IKON);
       l.appendChild(h('span', null, 'İndir'));
     }
@@ -159,6 +160,29 @@
     sec(gorunen[(i + yon + gorunen.length) % gorunen.length], true);
   });
 
+  // İndirme başlayınca rehber penceresi; SHA-256 imzalı surum.json'dan, alınamazsa satır gizli kalır.
+  var ozetler = null;
+  function ozetGoster(anahtar) {
+    var d = ozetler && ozetler[anahtar], ozet = d && d.sha256;
+    var gecerli = typeof ozet === 'string' && /^[0-9a-f]{64}$/.test(ozet);
+    $('sonra-ozet-satir').hidden = !gecerli;
+    if (gecerli) $('sonra-ozet').textContent = ozet;
+  }
+  function indirmeSonrasi(el) {
+    var pencere = $('sonra'), anahtar = el.getAttribute('data-indir');
+    if (!pencere.showModal) return;
+    $('sonra-baslik').textContent = 'M2YDesk · ' + el.getAttribute('data-ad');
+    $('sonra-dosya').textContent = a.dosyalar[anahtar];
+    $('sonra-yeniden').href = el.href;
+    $('sonra-yeniden').setAttribute('download', a.dosyalar[anahtar]);
+    ozetGoster(anahtar);
+    pencere.showModal();
+    if (ozetler) return;
+    fetch('guncelleme/surum.json').then(function (r) { return r.ok ? r.json() : {}; })
+      .then(function (j) { ozetler = (j && j.dosyalar) || {}; ozetGoster(anahtar); })
+      .catch(function () { ozetler = {}; });
+  }
+
   // KVKK onayı: onay verilmeden dosya indirilemez
   function kilit() {
     panel.querySelectorAll('[data-indir]').forEach(function (el) {
@@ -174,7 +198,8 @@
   });
   panel.addEventListener('click', function (ev) {
     var el = ev.target.closest && ev.target.closest('[data-indir]');
-    if (!el || onay.checked) return;
+    if (!el) return;
+    if (onay.checked) { indirmeSonrasi(el); return; }
     ev.preventDefault();
     onayNot.textContent = 'İndirmek için önce bu onay kutusunu işaretleyin.';
     onay.focus();

@@ -103,6 +103,15 @@
   .kartlar p,.adimlar p{margin:0;font-size:.93rem;color:var(--ikincil)}
   .neden>p{max-width:820px}
   footer p{margin:0 0 4px}
+  #sonra{color:var(--metin);background:#111a3c;width:min(680px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto}
+  #sonra::backdrop{background:rgba(3,6,18,.72);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+  #sonra h2{margin-top:10px}
+  #sonra code{white-space:normal;word-break:break-all}
+  #sonra .adimlar li{background:var(--satir);border:1px solid var(--cizgi);border-radius:12px;padding:12px}
+  #sonra h3{margin:0 0 4px;font-size:1rem}
+  .hat{display:flex;gap:8px 16px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin:14px 0;padding:12px;border-radius:12px;background:var(--vurgu-acik);border:1px solid var(--cizgi)}
+  .hat p{margin:0;font-size:.93rem}
+  .hat a{font-weight:700;font-size:1.1rem;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -177,6 +186,20 @@
     </ol>
   </section>
 </main>
+
+<dialog id="sonra" class="cam" aria-labelledby="sonra-baslik">
+  <span class="etiket">İNDİRME BAŞLATILDI</span>
+  <h2 id="sonra-baslik">M2YDesk</h2>
+  <p>Dosya: <code id="sonra-dosya"></code>. İndirme başlamadıysa <a id="sonra-yeniden" href="#indir">yeniden indirin</a>.</p>
+  <ol class="adimlar">
+    <li><span class="no" aria-hidden="true">1</span><h3>Dosyayı açın</h3><p>İnen dosyayı açın. Uyarı çıkarsa indirme kutusundaki nota bakın.</p></li>
+    <li><span class="no" aria-hidden="true">2</span><h3>ID ve parolayı iletin</h3><p>Pencerede görünen ID ve parolayı danışmanınıza söyleyin.</p></li>
+    <li><span class="no" aria-hidden="true">3</span><h3>Bağlantı hazır</h3><p>Danışmanınız bağlanır. Pencereyi kapatarak istediğiniz an sonlandırırsınız.</p></li>
+  </ol>
+  <div class="hat"><p><b>Danışmanınız hatta mı?</b><br>Takıldığınız noktada telefonla yardım alabilirsiniz.</p><a href="tel:+905307302002">0530 730 20 02</a></div>
+  <p class="kucuk" id="sonra-ozet-satir" hidden>Dosya doğrulama (SHA-256): <code id="sonra-ozet"></code></p>
+  <form method="dialog"><button class="btn" type="submit">Pencereyi kapat</button></form>
+</dialog>
 
 <footer>
   <p>Sürüm <span id="surum">—</span> · Güncelleme <span id="guncelleme">—</span></p>
