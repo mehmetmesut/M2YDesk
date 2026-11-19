@@ -59,8 +59,10 @@ fn make_tray() -> hbb_common::ResultType<()> {
     ) == "Y";
     // The tray icon is only shown when the service is running, so we don't need to check
     // the `stop-service` option here.
+    // M2YDesk: Windows'ta "Çıkış" hizmeti silmeden durdurur; uygulama açılınca hizmet geri gelir.
+    let quit_label = if cfg!(windows) { "Exit" } else { "Stop service" };
     let quit_i = if !hide_stop_service {
-        Some(MenuItem::new(translate("Stop service".to_owned()), true, None))
+        Some(MenuItem::new(translate(quit_label.to_owned()), true, None))
     } else {
         None
     };
@@ -185,7 +187,11 @@ fn make_tray() -> hbb_common::ResultType<()> {
                         return;
                     }
                     */
-                    if !crate::platform::uninstall_service(false, false) {
+                    #[cfg(windows)]
+                    let failed = crate::platform::windows::m2y_quit_app();
+                    #[cfg(not(windows))]
+                    let failed = crate::platform::uninstall_service(false, false);
+                    if !failed {
                         *control_flow = ControlFlow::Exit;
                     }
                 } else if event.id == open_i.id() {

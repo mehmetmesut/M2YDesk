@@ -558,6 +558,17 @@ class _GeneralState extends State<_General> {
           kOptionAllowAutoUpdate,
           isServer: true,
         ),
+      // M2YDesk: kurulu sürümde hizmetin başlangıç türü; değişiklik yönetici onayı ister.
+      if (isWindows && bind.mainIsInstalled() && !outgoingOnly)
+        _OptionCheckBox(
+          context,
+          'Sistem başlangıcında otomatik çalıştır',
+          'm2y-autostart',
+          optGetter: () =>
+              bind.mainGetLocalOption(key: 'm2y-autostart') != 'N',
+          optSetter: (k, v) async =>
+              await bind.mainSetCommon(key: k, value: v ? 'Y' : 'N'),
+        ),
       if (isWindows && !outgoingOnly)
         _OptionCheckBox(
           context,

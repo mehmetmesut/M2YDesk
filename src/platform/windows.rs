@@ -3178,6 +3178,10 @@ pub fn uninstall_service(show_new_window: bool, _: bool) -> bool {
     log::info!("Uninstalling service...");
     let filter = format!(" /FI \"PID ne {}\"", get_current_pid());
     Config::set_option("stop-service".into(), "Y".into());
+    if show_new_window {
+        // M2YDesk: Ayarlar > Servis > Durdur ardından açılan pencere hizmeti geri kurmasın.
+        config::LocalConfig::set_option(M2Y_OPT_SKIP_RESTORE.into(), "Y".into());
+    }
     let cmds = format!(
         "
     chcp 65001
@@ -3192,6 +3196,7 @@ pub fn uninstall_service(show_new_window: bool, _: bool) -> bool {
     );
     if let Err(err) = run_cmds(cmds, false, "uninstall") {
         Config::set_option("stop-service".into(), "".into());
+        config::LocalConfig::set_option(M2Y_OPT_SKIP_RESTORE.into(), "".into());
         log::debug!("{err}");
         return true;
     }
@@ -3751,10 +3756,105 @@ sc start {app_name}
 // diğer girdiler `sc create` varsayılan güvenlik tanımlayıcısıyla aynıdır.
 fn m2y_service_tuning_cmds(app_name: &str) -> String {
     format!("
-sc config {app_name} start= delayed-auto
+{autostart}
 sc failure {app_name} reset= 86400 actions= restart/5000/restart/10000/restart/30000
 sc sdset {app_name} D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWRPLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)S:(AU;FA;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;WD)
-")
+", autostart = m2y_autostart_cmds(app_name, m2y_autostart_enabled()))
+}
+
+const M2Y_OPT_AUTOSTART: &str = "m2y-autostart";
+const M2Y_OPT_SKIP_RESTORE: &str = "m2y-skip-restore";
+
+#[inline]
+fn m2y_autostart_enabled() -> bool {
+    config::LocalConfig::get_option(M2Y_OPT_AUTOSTART) != "N"
+}
+
+// M2YDesk: kurulu sürümde sistem başlangıcı = hizmetin başlangıç türü + Başlangıç klasöründeki
+// tepsi kısayolu. Kapalıyken hizmet "isteğe bağlı" olur; uygulama elle açılınca yine başlar
+// (m2y_try_start_service_on_launch). Açarken kısayolu `m2y_set_autostart` geri koyar.
+fn m2y_autostart_cmds(app_name: &str, enable: bool) -> String {
+    if enable {
+        return format!("sc config {app_name} start= delayed-auto");
+    }
+    format!("sc config {app_name} start= demand
+if exist \"%PROGRAMDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\{app_name} Tray.lnk\" del /f /q \"%PROGRAMDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\{app_name} Tray.lnk\"")
+}
+
+#[cfg(test)]
+mod m2y_autostart_tests {
+    #[test]
+    fn autostart_cmds_switch_start_type_and_shortcut() {
+        let on = super::m2y_autostart_cmds("M2YDesk", true);
+        assert_eq!(on, "sc config M2YDesk start= delayed-auto");
+        let off = super::m2y_autostart_cmds("M2YDesk", false);
+        assert!(off.starts_with("sc config M2YDesk start= demand\n"));
+        assert!(off.contains("Startup\\M2YDesk Tray.lnk\" del /f /q"));
+    }
+}
+
+/// M2YDesk: Ayarlar'daki "sistem başlangıcında çalıştır" seçeneği (kurulu sürüm). Yönetici
+/// onayı ister; onay verilmezse tercih değişmez.
+pub fn m2y_set_autostart(enable: bool) -> ResultType<()> {
+    if !is_installed() {
+        bail!("not installed");
+    }
+    let app_name = crate::get_app_name();
+    let shortcut = if enable {
+        let (_, path, _, exe) = get_install_info();
+        let tmp_path = std::env::temp_dir().to_string_lossy().to_string();
+        let tray_shortcut = get_tray_shortcut(&path, &exe, &exe, &tmp_path)?;
+        format!("cscript \"{tray_shortcut}\"
+copy /Y \"{tmp_path}\\{app_name} Tray.lnk\" \"%PROGRAMDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\\"
+if exist \"{tray_shortcut}\" del /f /q \"{tray_shortcut}\"")
+    } else {
+        "".to_owned()
+    };
+    let cmds = format!(
+        "
+chcp 65001
+{}
+{shortcut}
+    ",
+        m2y_autostart_cmds(&app_name, enable)
+    );
+    run_cmds(cmds, false, "autostart")?;
+    config::LocalConfig::set_option(
+        M2Y_OPT_AUTOSTART.into(),
+        if enable { "" } else { "N" }.into(),
+    );
+    Ok(())
+}
+
+/// M2YDesk: tepsi menüsündeki "Çıkış". Hizmeti durdurur ama SİLMEZ ve `stop-service` yazmaz;
+/// uygulama yeniden açılınca hizmet yönetici izni istemeden başlar
+/// (m2y_try_start_service_on_launch). Başarısızsa true döner, başarılıysa süreç sonlanır.
+pub fn m2y_quit_app() -> bool {
+    log::info!("M2YDesk: çıkış");
+    let app_name = crate::get_app_name();
+    let filter = format!("PID ne {}", get_current_pid());
+    if is_installed() {
+        let cmds = format!(
+            "
+    chcp 65001
+    sc stop {app_name}
+    taskkill /F /IM {broker_exe}
+    taskkill /F /IM {app_name}.exe /FI \"{filter}\"
+    ",
+            broker_exe = WIN_TOPMOST_INJECTED_PROCESS_EXE,
+        );
+        if let Err(err) = run_cmds(cmds, false, "quit") {
+            log::debug!("{err}");
+            return true;
+        }
+    } else {
+        // Kurulu değilse hizmet yok; kullanıcının kendi süreçleri yönetici izni olmadan kapanır.
+        allow_err!(std::process::Command::new("taskkill")
+            .args(["/F", "/IM", format!("{app_name}.exe").as_str(), "/FI", filter.as_str()])
+            .creation_flags(winapi::um::winbase::CREATE_NO_WINDOW)
+            .status());
+    }
+    std::process::exit(0);
 }
 
 /// M2YDesk: hizmeti kullanıcı bilinçli olarak mı durdurdu? `stop-service` = "Y" ama bunu
@@ -3782,12 +3882,13 @@ pub fn m2y_service_autostart_failed() -> bool {
 /// başlattığı `--server` ile IPC çakışması olmaz. Tekrar deneme yoktur; başarısızsa arayüz
 /// "Servisi başlat" bağlantısını gösterir. Arka plan iş parçacığında çağrılmalıdır (bloklar).
 pub fn m2y_try_start_service_on_launch() {
-    let user_stopped = m2y_user_stopped_service();
-    if config::is_outgoing_only()
-        || !is_installed()
-        || user_stopped
-        || is_self_service_running()
-    {
+    if config::is_outgoing_only() {
+        return;
+    }
+    if m2y_user_stopped_service() && !m2y_restore_stopped_service() {
+        return;
+    }
+    if !is_installed() || is_self_service_running() {
         return;
     }
     log::info!("M2YDesk: hizmet çalışmıyor, sessizce başlatılıyor");
@@ -3805,6 +3906,33 @@ pub fn m2y_try_start_service_on_launch() {
         std::thread::sleep(Duration::from_secs(1));
     }
     log::warn!("M2YDesk: hizmet başlatıldı ama sunucu 15 sn içinde hazır olmadı");
+}
+
+/// M2YDesk: uygulama nasıl kapatılmış olursa olsun yeniden açılınca hizmet geri gelir.
+/// `stop-service` = "Y" temizlendiyse true döner. Hizmet silinmişse (Ayarlar > Durdur ya da eski
+/// sürümlerin tepsi "Servisi Durdur"u) yeniden kurulum yönetici onayı ister; onaylanırsa süreç
+/// yeniden başlar, reddedilirse arayüz "Servisi başlat" bağlantısını gösterir.
+fn m2y_restore_stopped_service() -> bool {
+    if config::LocalConfig::get_option(M2Y_OPT_SKIP_RESTORE) == "Y" {
+        config::LocalConfig::set_option(M2Y_OPT_SKIP_RESTORE.into(), "".into());
+        return false;
+    }
+    if is_installed() && !m2y_self_service_exists() {
+        install_service();
+        return false;
+    }
+    Config::set_option("stop-service".into(), "".into());
+    true
+}
+
+fn m2y_self_service_exists() -> bool {
+    use windows_service::{
+        service::ServiceAccess,
+        service_manager::{ServiceManager, ServiceManagerAccess},
+    };
+    ServiceManager::local_computer(None::<&str>, ServiceManagerAccess::CONNECT)
+        .and_then(|m| m.open_service(crate::get_app_name(), ServiceAccess::QUERY_STATUS))
+        .is_ok()
 }
 
 fn m2y_start_self_service() -> ResultType<()> {

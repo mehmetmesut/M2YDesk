@@ -2994,6 +2994,14 @@ pub fn main_get_common_sync(key: String) -> SyncReturn<String> {
 }
 
 pub fn main_set_common(_key: String, _value: String) {
+    // M2YDesk: yönetici onayı beklenir; arayüz dönüşte tercihi yeniden okur.
+    #[cfg(target_os = "windows")]
+    if _key == "m2y-autostart" {
+        if let Err(e) = crate::platform::windows::m2y_set_autostart(_value != "N") {
+            log::error!("M2YDesk: sistem başlangıcı ayarı değiştirilemedi: {}", e);
+        }
+        return;
+    }
     #[cfg(target_os = "windows")]
     if _key == "install-printer" && crate::platform::is_win_10_or_greater() {
         std::thread::spawn(move || {

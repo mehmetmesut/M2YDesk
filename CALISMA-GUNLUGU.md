@@ -92,3 +92,4 @@
 - 26.10.2026 · Store Submission 4 → 1.0.12 · 1.0.9 incelemesi iptal (kullanıcı), 1.0.12 MSIX yüklendi ve doğrulandı, Yenilikler güncellendi, geçici adres silindi · Submit kullanıcıda
 - 26.10.2026 · Store 1.0.12 gönderildi (kullanıcı Submit) · Submission + Pre-processing geçti, Certification bekliyor · Devam ediyor
 - 01.11.2026 · hbbs KeyExchange yaması (oturumlu resmî mobil RustDesk 'Failed to secure tcp') · derlendi, 2 test geçti, sunucuda yayında (m2y-hbbs:yerel); iPhone testi kullanıcıda · Devam ediyor
+- 19.11.2026 · Tepsi 'Servisi Durdur' → 'Çıkış' (hizmet silinmez), açılışta hizmet kendiliğinden geri gelir, Ayarlar'a 'Sistem başlangıcında otomatik çalıştır' · kod yazıldı, 1.0.13 derlemeye gönderildi; yerelde Rust derlenemedi (cargo yok), Dart analizi yeni sorun vermedi · Devam ediyor
