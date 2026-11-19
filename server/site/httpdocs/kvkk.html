@@ -10,40 +10,10 @@
 <meta name="theme-color" content="#eef3f9" media="(prefers-color-scheme: light)">
 <link rel="canonical" href="https://desk.mehmetmesut.com/kvkk">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/m2y.css">
 <style>
-  :root{
-    --bg:#eef3f9; --bg2:#f7f9fc;
-    --metin:#0f172a; --ikincil:#51617a; --vurgu:#0e7cff; --vurgu2:#0862d1;
-    --cam:rgba(255,255,255,.62); --cam-cerceve:rgba(255,255,255,.78);
-    --cizgi:rgba(15,23,42,.12); --satir:rgba(15,23,42,.04);
-    --golge:0 10px 40px rgba(15,23,42,.10), 0 1px 0 rgba(255,255,255,.8) inset;
-    --blob1:#9fc6ff; --blob2:#b8f0e4; --blob3:#e2d4ff;
-  }
-  @media (prefers-color-scheme:dark){
-    :root{
-      --bg:#0b1220; --bg2:#0f172a;
-      --metin:#f1f5f9; --ikincil:#a0aec0; --vurgu:#3b9dff; --vurgu2:#1d7fe6;
-      --cam:rgba(30,41,59,.58); --cam-cerceve:rgba(255,255,255,.12);
-      --cizgi:rgba(255,255,255,.14); --satir:rgba(255,255,255,.05);
-      --golge:0 10px 40px rgba(0,0,0,.45), 0 1px 0 rgba(255,255,255,.08) inset;
-      --blob1:#1e4fa3; --blob2:#0f6b5c; --blob3:#4b2f9e;
-    }
-  }
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth;scroll-padding-top:16px}
-  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Inter,Roboto,system-ui,sans-serif;
-       background:var(--bg);color:var(--metin);line-height:1.62;-webkit-font-smoothing:antialiased}
-  :focus-visible{outline:3px solid var(--vurgu);outline-offset:2px}
-  a{color:var(--vurgu)}
-  .arka{position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,var(--bg),var(--bg2));overflow:hidden}
-  .arka i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.7}
-  .arka i:nth-child(1){width:50vw;height:50vw;max-width:520px;max-height:520px;background:var(--blob1);top:-12%;left:-10%}
-  .arka i:nth-child(2){width:42vw;height:42vw;max-width:440px;max-height:440px;background:var(--blob2);top:40%;right:-12%}
-  .arka i:nth-child(3){width:38vw;height:38vw;max-width:400px;max-height:400px;background:var(--blob3);bottom:-10%;left:16%}
-  main{max-width:860px;margin:0 auto;padding:clamp(16px,3vw,40px) 16px 40px;display:grid;gap:14px}
-  .cam{background:var(--cam);border:1px solid var(--cam-cerceve);border-radius:22px;box-shadow:var(--golge);padding:clamp(16px,3vw,28px);
-       -webkit-backdrop-filter:blur(26px) saturate(170%);backdrop-filter:blur(26px) saturate(170%)}
-  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.cam{background:var(--bg2)}}
+
+  main{max-width:860px}
   h1{font-size:clamp(1.5rem,4.6vw,2.2rem);letter-spacing:-.03em;line-height:1.15;margin:0 0 6px;text-wrap:balance}
   h2{font-size:1.2rem;letter-spacing:-.01em;margin:0 0 10px}
   h3{font-size:1rem;margin:18px 0 6px}
@@ -61,16 +31,18 @@
   th{background:var(--satir);font-weight:600}
   tr:last-child td{border-bottom:0}
   .kutu{border-left:4px solid var(--vurgu);background:var(--satir);padding:10px 14px;border-radius:0 12px 12px 0;margin:10px 0}
-  footer{max-width:860px;margin:0 auto;padding:0 16px 32px;color:var(--ikincil);font-size:.88rem}
+  footer{max-width:860px}
   @media (max-width:560px){nav ol{columns:1}}
-  @media print{.arka{display:none}.cam{box-shadow:none;border:0;background:none;backdrop-filter:none}body{background:#fff;color:#000}a{color:#000}}
+  @media print{.cam{border:0}body{background:#fff;color:#000}a{color:#000}}
 </style>
 </head>
 <body>
-<div class="arka" aria-hidden="true"><i></i><i></i><i></i></div>
+<header class="ust"><div>
+  <a class="marka" href="/"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="3" y="6" width="26" height="17" rx="4" stroke="currentColor" stroke-width="2.4"/><path d="M11 27h10M16 23v4" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M11 14.5l3 3 7-7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>M2YDesk</a>
+  <nav aria-label="Sayfalar"><a href="/">İndir</a><a href="/ios-ayarlar">Mobil ayarlar</a><a href="/kvkk" aria-current="page">KVKK</a><a href="/gizlilik-politikasi">Gizlilik</a></nav>
+</div></header>
 <main>
   <section class="cam">
-    <a class="geri" href="/">← M2YDesk ana sayfası</a>
     <h1>Kişisel Verilerin Korunması (KVKK) Metinleri</h1>
     <p class="not">M2YDesk Uzaktan Destek · Sürüm 1.0 · Yürürlük tarihi: 06.10.2026 · Dayanak: 6698 sayılı Kişisel Verilerin Korunması Kanunu (“Kanun”) ve ilgili ikincil mevzuat.</p>
     <nav aria-label="İçindekiler">

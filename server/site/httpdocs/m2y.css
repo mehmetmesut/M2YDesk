@@ -1,0 +1,33 @@
+/* M2YDesk site ortak tasarımı (Google Stitch taslağından): açık zemin, beyaz kutular, tek mavi vurgu, Calibri. */
+:root{
+  --bg:#f5f7fb; --yuzey:#fff; --metin:#0f172a; --ikincil:#55637a; --vurgu:#2563eb; --vurgu2:#1d4ed8; --vurgu-acik:#e8effd;
+  --cizgi:#dfe5ee; --satir:#f1f4f9; --hata:#b3261e; --acik:#15803d; --kapali:#94a3b8; --uyari:#b45309;
+  --uyari-bg:#fff7ed; --uyari-k:#fdba74; --kose:10px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0b1220; --yuzey:#131c2e; --metin:#f1f5f9; --ikincil:#a3b1c6; --vurgu:#5b9bff; --vurgu2:#3b82f6; --vurgu-acik:#1a2a4a;
+    --cizgi:#27344b; --satir:#182236; --hata:#ffb4a9; --acik:#34d399; --kapali:#64748b; --uyari:#fbbf24;
+    --uyari-bg:#33240f; --uyari-k:#8a5a14;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:16px}
+body{margin:0;font-family:Calibri,Carlito,"Segoe UI",system-ui,sans-serif;font-size:17px;line-height:1.5;background:var(--bg);color:var(--metin)}
+:focus-visible{outline:3px solid var(--vurgu);outline-offset:2px}
+[hidden]{display:none!important}
+a{color:var(--vurgu)}
+
+/* Üst çubuk: her sayfada aynı */
+.ust{background:var(--yuzey);border-bottom:1px solid var(--cizgi)}
+.ust div{max-width:960px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px 20px;flex-wrap:wrap}
+.marka{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:1.2rem;color:var(--metin);text-decoration:none}
+.marka svg{width:28px;height:28px;color:var(--vurgu)}
+.ust nav{display:flex;gap:4px 18px;flex-wrap:wrap}
+.ust nav a{color:var(--ikincil);text-decoration:none;font-weight:600;font-size:.95rem}
+.ust nav a:hover,.ust nav a[aria-current]{color:var(--vurgu)}
+
+main{max-width:960px;margin:0 auto;padding:24px 16px 16px;display:grid;gap:16px}
+.cam{background:var(--yuzey);border:1px solid var(--cizgi);border-radius:var(--kose);padding:clamp(16px,3vw,24px)}
+footer{max-width:960px;margin:0 auto;padding:8px 16px 28px;color:var(--ikincil);font-size:.9rem}
+@media print{.ust{display:none}.cam{border:0;padding:0}body{background:#fff;color:#000}a{color:#000}}
